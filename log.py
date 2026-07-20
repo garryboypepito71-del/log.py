@@ -1,34 +1,11 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import os
 
 # --- Theme Configuration & Injected Premium Glassmorphism Background Style ---
-st.set_page_config(
-    page_title="AILYN HOUSE - Construction & Payroll Planner | Project Management",
-    page_icon="🏗️",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-    menu_items={
-        'About': "🏗️ AILYN HOUSE Advanced Project & Payroll Planner v30000 - Professional Construction Management"
-    }
-)
+st.set_page_config(page_title="Ailyn House Premium Planner", page_icon="🏗️", layout="wide")
 
-# SEO Meta Tags for Search Engines
-st.markdown("""
-    <meta name="description" content="Advanced construction project management and payroll planning system with receipt tracking, financial dashboard, and organized ledger views.">
-    <meta name="keywords" content="construction management, project planning, receipt tracking, payroll, financial dashboard, building planner, project ledger">
-    <meta name="author" content="Ailyn House Development Team">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta property="og:title" content="AILYN HOUSE - Construction & Payroll Planner">
-    <meta property="og:description" content="Professional construction project management platform with advanced receipt tracking and financial analytics.">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80">
-    <meta name="theme-color" content="#22c55e">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://ailyn-house-planner.streamlit.app">
-""", unsafe_allow_html=True)
-
-# Custom UI CSS to replicate the screenshot background, blur filter, and container layout
 st.markdown("""
     <style>
     /* Global Background Image with Dark Overlay and Blur */
@@ -52,15 +29,15 @@ st.markdown("""
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Custom Header Container from your Image */
+    /* Custom Header Container */
     .glass-header {
         text-align: center;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
         padding-bottom: 10px;
     }
     
     .glass-header h1 {
-        color: #22c55e !important; /* Vibrant Emerald Green Title */
+        color: #22c55e !important;
         font-size: 2.3rem !important;
         font-weight: 700 !important;
         letter-spacing: 1.5px;
@@ -69,19 +46,18 @@ st.markdown("""
     }
     
     .glass-header p {
-        color: #a7f3d0 !important; /* Soft Sage text */
+        color: #a7f3d0 !important;
         font-weight: 500;
         margin-top: 8px;
         font-size: 0.9rem;
     }
 
-    /* Text elements inside forms, tabs and widgets */
     h2, h3, label, .stWidgetLabel p, .stSubheader {
         color: #22c55e !important;
         font-weight: 600 !important;
     }
 
-    /* Quick Stats Receipt Cards styling exactly like the screenshot */
+    /* Metrics display structural cards */
     .stat-card-container {
         display: flex;
         gap: 20px;
@@ -90,30 +66,101 @@ st.markdown("""
 
     .stat-card {
         flex: 1;
-        background: rgba(6, 25, 18, 0.6);
-        border: 1px solid rgba(34, 197, 94, 0.2);
-        padding: 20px;
-        border-radius: 12px;
+        background: rgba(4, 28, 20, 0.7);
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        padding: 24px;
+        border-radius: 14px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
     }
 
     .stat-card .label {
-        font-size: 0.75rem;
+        font-size: 0.8rem;
         color: #22c55e;
         text-transform: uppercase;
-        font-weight: bold;
-        letter-spacing: 0.5px;
-        margin-bottom: 5px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
     }
 
     .stat-card .value {
-        font-size: 1.8rem;
-        font-weight: 700;
+        font-size: 2rem;
+        font-weight: 800;
         color: #ffffff;
     }
 
-    /* Input Fields Custom Dark Translucent Styling */
+    .form-box {
+        background: rgba(6, 20, 15, 0.4);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
+
+    /* Calendar Grid System */
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 10px;
+        width: 100%;
+    }
+
+    .calendar-event-card {
+        background: rgba(4, 28, 20, 0.75);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 14px 14px 0 0;
+        overflow: hidden;
+    }
+
+    .calendar-event-header {
+        background: rgba(34, 197, 94, 0.2);
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(34, 197, 94, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .calendar-event-date {
+        font-weight: 700;
+        color: #22c55e;
+        font-size: 1rem;
+    }
+
+    .calendar-event-daybadge {
+        background: #22c55e;
+        color: #041c14;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 6px;
+        text-transform: uppercase;
+    }
+
+    .calendar-event-body {
+        padding: 15px;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        color: #e5e7eb;
+        min-height: 100px;
+        white-space: pre-line;
+    }
+
+    .week-divider-title {
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 4px solid #22c55e;
+        padding: 8px 15px;
+        font-weight: 700;
+        color: #a7f3d0;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        border-radius: 0 6px 6px 0;
+        font-size: 1.05rem;
+    }
+
+    /* Elements Framework Injections */
     div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="textarea"] {
-        background-color: rgba(10, 35, 25, 0.6) !important;
+        background-color: rgba(8, 30, 22, 0.75) !important;
         border: 1px solid rgba(34, 197, 94, 0.3) !important;
         border-radius: 8px !important;
     }
@@ -122,98 +169,117 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Navigation Menu Buttons override */
     div.stButton > button {
-        background-color: rgba(10, 45, 30, 0.7) !important;
+        background-color: rgba(8, 40, 28, 0.8) !important;
         color: #22c55e !important;
         border: 1px solid rgba(34, 197, 94, 0.4) !important;
         border-radius: 8px !important;
-        font-weight: 600 !important;
-        padding: 12px 24px !important;
-        transition: all 0.3s ease !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.5px;
+        padding: 14px 28px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     }
     div.stButton > button:hover {
         background-color: #047857 !important;
         color: white !important;
-        box-shadow: 0 0 15px rgba(34, 197, 94, 0.4) !important;
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.5) !important;
     }
-
-    /* Cleaned Dataframe Styles for dark theme balance */
-    .stDataFrame {
-        background-color: rgba(6, 25, 18, 0.6) !important;
-        border-radius: 12px;
-        padding: 10px;
-        border: 1px solid rgba(255,255,255,0.05);
+    
+    /* Styled delete button container match */
+    .delete-btn-box div.stButton > button {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        color: #f87171 !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important;
+        border-top: none !important;
+        border-radius: 0 0 14px 14px !important;
+        padding: 6px !important;
+        font-size: 0.8rem !important;
+    }
+    .delete-btn-box div.stButton > button:hover {
+        background-color: #ef4444 !important;
+        color: white !important;
+        box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# --- Session State Data Container Initialisation ---
+# --- CSV Local Storage Synchronization Handlers ---
+DB_FILE = "ailyn_house_data.csv"
+
+def load_data():
+    if os.path.exists(DB_FILE):
+        try:
+            df = pd.read_csv(DB_FILE)
+            # Ensure proper string padding for structural layouts
+            df['Date'] = df['Date'].astype(str).str.zfill(2)
+            return df
+        except Exception:
+            pass
+    return pd.DataFrame(columns=["Date", "Month", "Year", "Day of Week", "Week Number", "Description of Work"])
+
+def save_data(df):
+    df.to_csv(DB_FILE, index=False)
+
+# Initialize data structures from disk file instead of standard session volatile memory
 if "tasks_df" not in st.session_state:
-    st.session_state.tasks_df = pd.DataFrame(
-        columns=["Date", "Month", "Year", "Day of Week", "Week Number", "Receipt No", "Vendor", "Amount", "Description of Work"]
-    )
+    st.session_state.tasks_df = load_data()
 if "current_page" not in st.session_state:
     st.session_state.current_page = "dashboard"
 
-# --- Dynamic Title Header matching screenshot structural accents ---
+# --- Title Header Layout ---
 st.markdown("""
     <div class="glass-header">
-        <h1>🏗️ AILYN HOUSE PROJECT & PAYROLL PLANNER</h1>
+        <h1>🏗️ AILYN HOUSE PROJECT PLANNER</h1>
         <p>Combined System | Mobile Operating Engine v30000</p>
     </div>
 """, unsafe_allow_html=True)
 
-# --- Two-Button Page Navigation Menu ---
+# --- Top Navigation Bar ---
 col_nav1, col_nav2 = st.columns(2)
 with col_nav1:
-    if st.button("📊 INPUT DASHBOARD", use_container_width=True):
+    if st.button("📊 ACCESS ENGINE INPUT DASHBOARD", use_container_width=True):
         st.session_state.current_page = "dashboard"
 with col_nav2:
-    if st.button("📑 ORGANISED PROJECT LEDGER", use_container_width=True):
+    if st.button("📑 VIEW ORGANISED PROJECT LEDGER", use_container_width=True):
         st.session_state.current_page = "ledger"
 
 st.markdown("<br>", unsafe_allow_html=True)
 
+month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
 # ----------------- PAGE 1: INPUT DASHBOARD -----------------
 if st.session_state.current_page == "dashboard":
-    st.subheader("📋 Advanced Activity & Receipt Entry")
+    st.subheader("📋 Structural Operations Registry")
     
     with st.form("construction_form", clear_on_submit=True):
-        # 1. Date Inputs Stacked
-        day = st.number_input("Day", min_value=1, max_value=31, value=datetime.now().day)
+        st.markdown('<div class="form-box">', unsafe_allow_html=True)
         
-        month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-        current_month_idx = datetime.now().month - 1
-        month = st.selectbox("Month", options=month_list, index=current_month_idx)
-        
-        year = st.number_input("Year", min_value=2020, max_value=2035, value=datetime.now().year)
-        
-        st.markdown("<hr style='border: 0.5px solid rgba(34, 197, 94, 0.2)'>", unsafe_allow_html=True)
-        st.write("🧾 Receipt Tracking Details (Optional)")
-        
-        # 2. Receipt Tracker Upgrades
-        col_r1, col_r2, col_r3 = st.columns(3)
-        with col_r1:
-            receipt_no = st.text_input("Receipt / Invoice Number", placeholder="e.g. OR-10234")
-        with col_r2:
-            vendor = st.text_input("Vendor / Store Name", placeholder="e.g. Citi Hardware")
-        with col_r3:
-            amount = st.number_input("Total Receipt Amount (PHP)", min_value=0.0, step=50.0, value=0.0)
+        col_d1, col_d2, col_d3 = st.columns(3)
+        with col_d1:
+            day_options = list(range(1, 32))
+            current_day_idx = datetime.now().day - 1
+            day = st.selectbox("I Target Day Option", options=day_options, index=current_day_idx)
+        with col_d2:
+            current_month_idx = datetime.now().month - 1
+            month_input = st.selectbox("📅 Planning Month Group", options=month_list, index=current_month_idx)
+        with col_d3:
+            year_options = list(range(2020, 2036))
+            current_year_idx = year_options.index(datetime.now().year) if datetime.now().year in year_options else 6
+            year = st.selectbox("📁 Fiscal Management Year", options=year_options, index=current_year_idx)
             
-        st.markdown("<hr style='border: 0.5px solid rgba(34, 197, 94, 0.2)'>", unsafe_allow_html=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
         
-        # 3. Description Field Below
-        desc = st.text_area("Description of Structural/Material Work", placeholder="Specify masonry details, item descriptions, quantities...")
-        
-        submit_btn = st.form_submit_button("Secure Log Into Ledger")
+        desc = st.text_area("✍️ Task Execution & Structural Log Details", height=150, placeholder="Document structural parameters, concrete formulations, deployment schedules...")
+        st.markdown("<br>", unsafe_allow_html=True)
+        submit_btn = st.form_submit_button("Secure Activity to Ledger Database", use_container_width=True)
         
         if submit_btn:
             if desc.strip() == "":
-                st.error("Submission blocked. Please input execution details.")
+                st.error("Registry transaction aborted. Description layout parameter must contain text inputs.")
             else:
                 try:
-                    month_num = month_list.index(month) + 1
+                    month_num = month_list.index(month_input) + 1
                     date_obj = datetime(year, month_num, day)
                     day_name = date_obj.strftime("%A")
                     formatted_date = f"{day:02d}"
@@ -221,64 +287,91 @@ if st.session_state.current_page == "dashboard":
                     
                     new_row = {
                         "Date": formatted_date,
-                        "Month": month,
+                        "Month": month_input,
                         "Year": str(year),
                         "Day of Week": day_name,
                         "Week Number": week_num,
-                        "Receipt No": receipt_no if receipt_no else "N/A",
-                        "Vendor": vendor if vendor else "N/A",
-                        "Amount": float(amount),
                         "Description of Work": desc
                     }
                     
                     st.session_state.tasks_df = pd.concat([st.session_state.tasks_df, pd.DataFrame([new_row])], ignore_index=True)
-                    st.success("Activity and structural financial assets secured inside transaction ledger log.")
+                    save_data(st.session_state.tasks_df)
+                    st.success("Activity logged and stored inside local persistent database storage configuration.")
                 except ValueError:
-                    st.error("❌ Chronological processing error. Verify your Day/Month configuration framework.")
+                    st.error("❌ Chronological matrix mismatch error. Selected configuration framework is invalid.")
 
 # ----------------- PAGE 2: LEDGER OF WORK & HTML BUILDER -----------------
 elif st.session_state.current_page == "ledger":
-    st.subheader("📊 Quick Stats & Materials Ledger Preview")
-    
-    # Dynamic Financial Dashboard Cards Cloned From Your Layout
-    total_spent = 0.0 if st.session_state.tasks_df.empty else st.session_state.tasks_df['Amount'].sum()
+    st.subheader("📑 Materials Ledger & Operations Preview")
     
     st.markdown(f"""
         <div class="stat-card-container">
             <div class="stat-card">
-                <div class="label">Total Logs Count</div>
-                <div class="value">{len(st.session_state.tasks_df)} Entries</div>
-            </div>
-            <div class="stat-card">
-                <div class="label">Total Materials Spent</div>
-                <div class="value">PHP {total_spent:,.2f}</div>
+                <div class="label">Total Secure Log Records (Persistent Archive)</div>
+                <div class="value">📑 {len(st.session_state.tasks_df)} Active Entries</div>
             </div>
         </div>
     """, unsafe_allow_html=True)
     
     if st.session_state.tasks_df.empty:
-        st.info("No records available yet. Access input dashboard framework to generate dynamic transactions.")
+        st.info("Log database empty. Utilize the primary registry frame console to record items.")
     else:
-        month_map = {"January":1, "February":2, "March":3, "April":4, "May":5, "June":6, "July":7, "August":8, "September":9, "October":10, "November":11, "December":12}
+        # --- Advanced UI Search Bar & Month Filter Matrix ---
+        col_f1, col_f2 = st.columns([2, 1])
+        with col_f1:
+            search_query = st.text_input("🔍 Search Logs Content Description", placeholder="Type keywords to filter calendar layout...")
+        with col_f2:
+            filter_month = st.selectbox("📅 Filter by Month Matrix", options=["All Months"] + month_list)
+            
         display_df = st.session_state.tasks_df.copy()
         display_df['Month_Num'] = display_df['Month'].map(lambda m: month_list.index(m)+1 if m in month_list else 1)
-        display_df = display_df.sort_values(by=['Year', 'Month_Num', 'Date']).drop(columns=['Month_Num'])
+        display_df = display_df.sort_values(by=['Year', 'Month_Num', 'Date'])
         
-        # Display advanced tabular tracking matrix
-        st.dataframe(display_df, use_container_width=True, hide_index=True)
-        
+        # Apply Live Queries Filters
+        if search_query:
+            display_df = display_df[display_df['Description of Work'].str.contains(search_query, case=False, na=False)]
+        if filter_month != "All Months":
+            display_df = display_df[display_df['Month'] == filter_month]
+            
+        # Render the logged entries as an interactive Calendar Grid System with custom structural deletion
+        grouped = display_df.groupby("Week Number", sort=False)
+        for week, group in grouped:
+            st.markdown(f'<div class="week-divider-title">📅 {week}</div>', unsafe_allow_html=True)
+            
+            # Use dynamic layout column blocks to house structural components 
+            cols = st.columns(3)
+            for idx, (_, row) in enumerate(group.iterrows()):
+                target_col = cols[idx % 3]
+                with target_col:
+                    grid_html = f'<div class="calendar-event-card"><div class="calendar-event-header"><span class="calendar-event-date">{row["Month"]} {row["Date"]}, {row["Year"]}</span><span class="calendar-event-daybadge">{row["Day of Week"][:3]}</span></div><div class="calendar-event-body">{row["Description of Work"]}</div></div>'
+                    st.markdown(grid_html, unsafe_allow_html=True)
+                    
+                    # Custom programmatic inline delete layout key mapping mechanics
+                    st.markdown('<div class="delete-btn-box">', unsafe_allow_html=True)
+                    # Find exact match location in core dataframe array
+                    match_indices = st.session_state.tasks_df[
+                        (st.session_state.tasks_df['Date'] == row['Date']) & 
+                        (st.session_state.tasks_df['Month'] == row['Month']) & 
+                        (st.session_state.tasks_df['Year'] == row['Year']) & 
+                        (st.session_state.tasks_df['Description of Work'] == row['Description of Work'])
+                    ].index
+                    
+                    if not match_indices.empty:
+                        if st.button(f"🗑️ Delete Entry Row", key=f"del_{match_indices[0]}_{idx}", use_container_width=True):
+                            st.session_state.tasks_df = st.session_state.tasks_df.drop(match_indices[0]).reset_index(drop=True)
+                            save_data(st.session_state.tasks_df)
+                            st.rerun()
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    st.markdown("<br>", unsafe_allow_html=True)
+
         # --- Native Programmatic HTML Exporter Document Framework ---
         def generate_html(dataframe):
-            sorted_df = dataframe.copy()
-            sorted_df['Month_Num'] = sorted_df['Month'].map(lambda m: month_list.index(m)+1 if m in month_list else 1)
-            sorted_df = sorted_df.sort_values(by=['Year', 'Month_Num', 'Date'])
-            
             html_content = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>Advanced Project & Receipt Ledger</title>
+                <title>Organised Project Planner Ledger</title>
                 <style>
                     body {{ 
                         font-family: 'Segoe UI', Arial, sans-serif; 
@@ -290,72 +383,48 @@ elif st.session_state.current_page == "ledger":
                     .header {{ text-align: center; border-bottom: 2px solid #22c55e; padding-bottom: 20px; margin-bottom: 30px; }}
                     .header h1 {{ color: #22c55e; margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }}
                     .header p {{ color: #a7f3d0; font-weight: 500; margin: 5px 0 0 0; font-size: 13px; }}
-                    .summary-title {{ font-size: 20px; color: #22c55e; font-weight: bold; margin-bottom: 15px; }}
                     .week-section {{ margin-bottom: 35px; }}
                     .week-title {{ background: rgba(34, 197, 94, 0.2); border-left: 4px solid #22c55e; color: #22c55e; padding: 10px 15px; font-size: 16px; font-weight: bold; border-radius: 0 6px 6px 0; margin-bottom: 12px; }}
-                    table {{ width: 100%; border-collapse: collapse; margin-bottom: 10px; table-layout: fixed; }}
-                    th, td {{ padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; word-wrap: break-word; }}
-                    th {{ background-color: rgba(10, 35, 25, 0.5); color: #22c55e; font-weight: bold; font-size: 13px; text-transform: uppercase; }}
-                    td.date-cell {{ color: #a7f3d0; width: 25%; font-weight: 600; }}
-                    td.receipt-cell {{ color: #cbd5e1; width: 25%; font-size: 13px; }}
-                    td.desc-cell {{ color: #e5e7eb; width: 50%; line-height: 1.5; white-space: pre-line; }}
-                    tr:nth-child(even) td {{ background-color: rgba(255,255,255,0.02); }}
+                    .calendar-grid-html {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-bottom: 15px; }}
+                    .card-html {{ background: rgba(10, 35, 25, 0.6); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 10px; overflow: hidden; }}
+                    .card-h-head {{ background: rgba(34, 197, 94, 0.15); padding: 10px; display: flex; justify-content: space-between; font-weight: bold; color: #22c55e; font-size: 14px; border-bottom: 1px solid rgba(34, 197, 94, 0.2); }}
+                    .card-h-body {{ padding: 12px; color: #e5e7eb; font-size: 13px; line-height: 1.4; white-space: pre-line; }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
                         <h1>AILYN HOUSE PROJECT LEDGER</h1>
-                        <p>Total Material Expenditures Accounted: PHP {total_spent:,.2f}</p>
+                        <p>Weekly Organised Construction Execution Records</p>
                     </div>
             """
-            
-            grouped = sorted_df.groupby("Week Number")
-            for week, group in grouped:
+            grouped_html = dataframe.groupby("Week Number", sort=False)
+            for week, group in grouped_html:
                 html_content += f"""
                 <div class="week-section">
                     <div class="week-title">📅 {week}</div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 25%;">Date / Day</th>
-                                <th style="width: 25%;">Receipt & Vendor Details</th>
-                                <th style="width: 50%;">Description of Structural Execution</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                    <div class="calendar-grid-html">
                 """
                 for _, row in group.iterrows():
                     html_content += f"""
-                            <tr>
-                                <td class="date-cell">{row['Month']} {row['Date']}, {row['Year']}<br><span style='font-size:12px; color:#94a3b8;'>{row['Day of Week']}</span></td>
-                                <td class="receipt-cell">
-                                    <b>No:</b> {row['Receipt No']}<br>
-                                    <b>Store:</b> {row['Vendor']}<br>
-                                    <span style='color:#22c55e; font-weight:bold;'>PHP {row['Amount']:,.2f}</span>
-                                </td>
-                                <td class="desc-cell">{row['Description of Work']}</td>
-                            </tr>
+                        <div class="card-html">
+                            <div class="card-h-head">
+                                <span>{row['Month']} {row['Date']}, {row['Year']}</span>
+                                <span style="background:#22c55e; color:#062319; padding:1px 5px; border-radius:4px; font-size:11px;">{row['Day of Week'][:3].upper()}</span>
+                            </div>
+                            <div class="card-h-body">{row['Description of Work']}</div>
+                        </div>
                     """
-                html_content += """
-                        </tbody>
-                    </table>
-                </div>
-                """
-                
-            html_content += """
-                </div>
-            </body>
-            </html>
-            """
+                html_content += "</div></div>"
+            html_content += "</div></body></html>"
             return html_content
 
         html_string = generate_html(display_df)
-        
+        st.markdown("<br>", unsafe_allow_html=True)
         st.download_button(
-            label="📥 Export Organised Weekly Receipts Ledger as HTML",
+            label="📥 Export Organised Visual Calendar Ledger as HTML",
             data=html_string,
-            file_name=f"advanced_receipt_ledger_{datetime.now().strftime('%Y%m%d')}.html",
+            file_name=f"calendar_planner_ledger_{datetime.now().strftime('%Y%m%d')}.html",
             mime="text/html",
             use_container_width=True
         )
