@@ -1,0 +1,19 @@
+{
+  "records": [],
+  "labor_records": [
+    {
+      "name": "1.1",
+      "role": "Labor",
+      "days": 1.1,
+      "rate": 500.0,
+      "gross_pay": 562.5,
+      "ca": 0.0,
+      "net": 562.5
+    }
+  ],
+  "payroll_expenses": [],
+  "planner_tasks": [],
+  "budget": 0.0,
+  "remaining_money": 0.0,
+  "view": "payroll_export"
+}

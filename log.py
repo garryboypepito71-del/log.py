@@ -1,430 +1,1450 @@
-import streamlit as st
-import pandas as pd
-from datetime import datetime
 import os
+import time
+import base64
+from datetime import datetime
+import streamlit as st
+import smtplib
+from email.message import EmailMessage
 
-# --- Theme Configuration & Injected Premium Glassmorphism Background Style ---
-st.set_page_config(page_title="Ailyn House Premium Planner", page_icon="🏗️", layout="wide")
+# --- PERSISTENCE HELPERS ---
+PERSISTENT_KEYS = [
+    "records",
+    "labor_records",
+    "payroll_expenses",
+    "planner_tasks",
+    "budget",
+    "remaining_money",
+    "view"
+]
 
-st.markdown("""
+try:
+    from persistence import delete_report_file, list_saved_reports, load_state, save_report_html, save_state
+except ImportError:
+    import json
+
+    def load_state():
+        if os.path.exists("app_state.json"):
+            try:
+                with open("app_state.json", "r") as f:
+                    data = json.load(f)
+                    # Filter out any streamlit internal widget/form submitter keys
+                    return {k: v for k, v in data.items() if k in PERSISTENT_KEYS}
+            except Exception:
+                return {}
+        return {}
+
+    def save_state(state):
+        data = {k: state[k] for k in PERSISTENT_KEYS if k in state}
+        with open("app_state.json", "w") as f:
+            json.dump(data, f, indent=2, default=str)
+
+    def save_report_html(report_type, html_content, title="Receipt"):
+        os.makedirs(f"archive/{report_type}", exist_ok=True)
+        filename = f"archive/{report_type}/{title}_{int(time.time())}.html"
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(html_content)
+        return filename
+
+    def list_saved_reports(report_type):
+        folder = f"archive/{report_type}"
+        if not os.path.exists(folder):
+            return []
+        from pathlib import Path
+        return list(Path(folder).glob("*.html"))
+
+    def delete_report_file(path):
+        if os.path.exists(path):
+            os.remove(path)
+
+# --- TIER SCHEDULE & PAYROLL CALCULATOR CORE LOGIC ---
+TIER_TABLE = {
+    0.1: {"Labor": 0.00,   "Skill": 0.00,   "Forman": 0.00},
+        0.2: {"Labor": 62.50,  "Skill": 81.25,  "Forman": 100.00},
+        0.3: {"Labor": 125.00, "Skill": 162.50, "Forman": 200.00},
+        0.4: {"Labor": 187.50, "Skill": 243.75, "Forman": 300.00},
+        0.5: {"Labor": 250.00, "Skill": 325.00, "Forman": 400.00},
+        0.6: {"Labor": 312.50, "Skill": 406.25, "Forman": 500.00},
+        0.7: {"Labor": 375.00, "Skill": 487.50, "Forman": 600.00},
+        0.8: {"Labor": 437.50, "Skill": 568.75, "Forman": 700.00},
+        0.9: {"Labor": 500.00, "Skill": 650.00, "Forman": 800.00}
+}
+
+FULL_DAY_RATES = {
+    "Labor": 500.00,
+    "Skill": 650.00,
+    "Forman": 800.00
+}
+
+def get_partial_rate(decimal_part: float, role: str) -> float:
+    decimal_key = round(decimal_part, 1)
+    return TIER_TABLE.get(decimal_key, {}).get(role, 0.0)
+
+def calculate_labor_pay(worked_days: float, role: str):
+    full_days = int(worked_days)
+    decimal_part = round(worked_days - full_days, 1)
+    
+    full_days_pay = full_days * FULL_DAY_RATES.get(role, 0.0)
+    partial_days_pay = get_partial_rate(decimal_part, role)
+    
+    gross_pay = full_days_pay + partial_days_pay
+    return gross_pay, full_days_pay, partial_days_pay
+
+APP_VERSION = "AILY OS v30001 — GREEN EMERALD CORE"
+RECEIVER_EMAIL = "garryboypepito2004@gmail.com"
+RECEIVER_AILYN = "ailyn_peps0678@yahoo.com"
+SENDER_EMAIL = "garryboypepito71@gmail.com"
+SENDER_PASSWORD = "fhyv cimp gync wjmj"
+
+st.set_page_config(
+    page_title="Ailyn Construction Management",
+    page_icon="🧊",
+    layout="wide",
+)
+
+# Load persisted state safely
+state_data = load_state()
+
+for key in PERSISTENT_KEYS:
+    if key in state_data and key not in st.session_state:
+        st.session_state[key] = state_data[key]
+
+if "records" not in st.session_state:
+    st.session_state.records = []
+
+if "labor_records" not in st.session_state:
+    st.session_state.labor_records = []
+
+if "payroll_expenses" not in st.session_state:
+    st.session_state.payroll_expenses = []
+
+if "planner_tasks" not in st.session_state:
+    st.session_state.planner_tasks = []
+
+if "budget" not in st.session_state:
+    st.session_state.budget = 0.0
+
+if "remaining_money" not in st.session_state:
+    st.session_state.remaining_money = 0.0
+
+if "view" not in st.session_state:
+    st.session_state.view = "home"
+
+if "selected_role" not in st.session_state:
+    st.session_state.selected_role = "Labor"
+
+def set_view(v):
+    st.session_state.view = v
+    persist_state()
+    st.rerun()
+
+def total_materials():
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "material")
+
+def total_expenses():
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "expense")
+
+def total_excess():
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "excess")
+
+def get_total():
+    return total_materials() + total_expenses()
+
+def get_balance():
+    return float(st.session_state.budget) + total_excess() - get_total()
+
+def clear_all():
+    st.session_state.records = []
+    st.session_state.labor_records = []
+    st.session_state.payroll_expenses = []
+    st.session_state.planner_tasks = []
+    st.session_state.budget = 0.0
+    st.session_state.remaining_money = 0.0
+    st.session_state.view = "home"
+    st.session_state.selected_role = "Labor"
+    save_state(st.session_state)
+
+def persist_state():
+    save_state(st.session_state)
+
+def add_tx(name, price, qty, delivery, ttype, sender):
+    p = float(price or 0.0)
+    q = int(qty or 0)
+    d = float(delivery or 0.0)
+
+    if p <= 0 or q <= 0:
+        return False
+
+    amount = (p * q) + d if ttype == "material" else p
+
+    st.session_state.records.append({
+        "id": str(time.time()),
+        "date": datetime.now().strftime("%b %d, %Y"),
+        "name": name.upper(),
+        "price": p,
+        "qty": q,
+        "delivery": d,
+        "amount": float(amount),
+        "type": ttype,
+        "sender": sender
+    })
+    persist_state()
+    return True
+
+def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
+    material_and_expense_records = [r for r in records if r["type"] in ["material", "expense"]]
+    excess_records = [r for r in records if r["type"] == "excess"]
+
+    material_total = sum(r["amount"] for r in material_and_expense_records)
+    excess_total = sum(r["amount"] for r in excess_records)
+    remaining_balance = get_balance()
+    date_now = datetime.now().strftime("%B %d, %Y")
+
+    sobra_amount = 0.0
+    kulang_amount = 0.0
+
+    if remaining_balance > 0:
+        sobra_amount = remaining_balance
+    elif remaining_balance < 0:
+        kulang_amount = abs(remaining_balance)
+
+    balance_color = "#ffffff" if budget <= 0 else ("#e57373" if remaining_balance < 0 else "#a5d6a7")
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-    /* Global Background Image with Dark Overlay and Blur */
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"] {
-        background: linear-gradient(rgba(10, 25, 20, 0.75), rgba(10, 25, 20, 0.75)), 
-                    url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-        background-size: cover;
-        font-family: 'Inter', sans-serif;
-        color: #ffffff;
-    }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 20px; color: #333; }}
+        .receipt-container {{ max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+        .header {{ display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }}
+        .company-info h1 {{ color: #1b5e20; margin: 0; font-size: 24px; letter-spacing: -1px; }}
+        .company-info p {{ margin: 4px 0; font-size: 12px; color: #666; }}
+        .receipt-meta {{ text-align: left; margin-top: 10px; }}
+        @media (min-width: 768px) {{ .receipt-meta {{ text-align: right; margin-top: 0; }} }}
+        .receipt-meta h2 {{ margin: 0; font-size: 16px; text-transform: uppercase; color: #1b5e20; }}
+        .receipt-meta p {{ margin: 4px 0; font-size: 12px; font-weight: bold; }}
 
-    /* Target the main view block wrapper */
-    [data-testid="stMainBlockContainer"] {
-        background: rgba(6, 35, 25, 0.4);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        padding: 40px !important;
-        border-radius: 20px;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-    }
+        table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }}
+        th {{ background-color: #1b5e20; color: #ffffff; text-align: left; padding: 10px; text-transform: uppercase; letter-spacing: 1px; }}
+        td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
+        .qty-col, .desccol, .pricecol, .deliverycol, .totalcol {{ text-align: left; }}
+        .desccol {{ font-weight: 700; color: #1b5e20; }}
 
-    /* Custom Header Container */
-    .glass-header {
-        text-align: center;
-        margin-bottom: 30px;
-        padding-bottom: 10px;
-    }
-    
-    .glass-header h1 {
-        color: #22c55e !important;
-        font-size: 2.3rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 1.5px;
-        margin: 0;
-        text-transform: uppercase;
-    }
-    
-    .glass-header p {
-        color: #a7f3d0 !important;
-        font-weight: 500;
-        margin-top: 8px;
-        font-size: 0.9rem;
-    }
+        .summary-container {{ display: flex; justify-content: flex-end; }}
+        .summary-table {{ width: 100%; }}
+        @media (min-width: 768px) {{ .summary-table {{ width: 420px; }} }}
+        .grand-total {{ background: #1b5e20; color: white; padding: 20px; border-radius: 4px; margin-top: 15px; }}
 
-    h2, h3, label, .stWidgetLabel p, .stSubheader {
-        color: #22c55e !important;
-        font-weight: 600 !important;
-    }
+        .balance-info {{ font-size: 13px; line-height: 1.8; }}
+        .balance-row {{ display: flex; justify-content: space-between; }}
+        .material-row {{ font-size: 18px; font-weight: bold; }}
+        .final-balance-row {{ display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.4); margin-top: 8px; padding-top: 8px; font-size: 18px; font-weight: bold; }}
 
-    /* Metrics display structural cards */
-    .stat-card-container {
-        display: flex;
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    .stat-card {
-        flex: 1;
-        background: rgba(4, 28, 20, 0.7);
-        border: 1px solid rgba(34, 197, 94, 0.25);
-        padding: 24px;
-        border-radius: 14px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .stat-card .label {
-        font-size: 0.8rem;
-        color: #22c55e;
-        text-transform: uppercase;
-        font-weight: 700;
-        letter-spacing: 1px;
-        margin-bottom: 8px;
-    }
-
-    .stat-card .value {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #ffffff;
-    }
-
-    .form-box {
-        background: rgba(6, 20, 15, 0.4);
-        border: 1px solid rgba(255,255,255,0.05);
-        padding: 25px;
-        border-radius: 12px;
-        margin-bottom: 20px;
-    }
-
-    /* Calendar Grid System */
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
-        margin-bottom: 10px;
-        width: 100%;
-    }
-
-    .calendar-event-card {
-        background: rgba(4, 28, 20, 0.75);
-        border: 1px solid rgba(34, 197, 94, 0.3);
-        border-radius: 14px 14px 0 0;
-        overflow: hidden;
-    }
-
-    .calendar-event-header {
-        background: rgba(34, 197, 94, 0.2);
-        padding: 12px 15px;
-        border-bottom: 1px solid rgba(34, 197, 94, 0.3);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .calendar-event-date {
-        font-weight: 700;
-        color: #22c55e;
-        font-size: 1rem;
-    }
-
-    .calendar-event-daybadge {
-        background: #22c55e;
-        color: #041c14;
-        font-size: 0.75rem;
-        font-weight: 800;
-        padding: 3px 8px;
-        border-radius: 6px;
-        text-transform: uppercase;
-    }
-
-    .calendar-event-body {
-        padding: 15px;
-        font-size: 0.95rem;
-        line-height: 1.5;
-        color: #e5e7eb;
-        min-height: 100px;
-        white-space: pre-line;
-    }
-
-    .week-divider-title {
-        background: rgba(255, 255, 255, 0.05);
-        border-left: 4px solid #22c55e;
-        padding: 8px 15px;
-        font-weight: 700;
-        color: #a7f3d0;
-        margin-top: 25px;
-        margin-bottom: 15px;
-        border-radius: 0 6px 6px 0;
-        font-size: 1.05rem;
-    }
-
-    /* Elements Framework Injections */
-    div[data-baseweb="input"], div[data-baseweb="select"], div[data-baseweb="textarea"] {
-        background-color: rgba(8, 30, 22, 0.75) !important;
-        border: 1px solid rgba(34, 197, 94, 0.3) !important;
-        border-radius: 8px !important;
-    }
-    
-    input, textarea, div[data-baseweb="select"] {
-        color: #ffffff !important;
-    }
-
-    div.stButton > button {
-        background-color: rgba(8, 40, 28, 0.8) !important;
-        color: #22c55e !important;
-        border: 1px solid rgba(34, 197, 94, 0.4) !important;
-        border-radius: 8px !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.5px;
-        padding: 14px 28px !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    }
-    div.stButton > button:hover {
-        background-color: #047857 !important;
-        color: white !important;
-        box-shadow: 0 0 20px rgba(34, 197, 94, 0.5) !important;
-    }
-    
-    /* Styled delete button container match */
-    .delete-btn-box div.stButton > button {
-        background-color: rgba(239, 68, 68, 0.15) !important;
-        color: #f87171 !important;
-        border: 1px solid rgba(239, 68, 68, 0.3) !important;
-        border-top: none !important;
-        border-radius: 0 0 14px 14px !important;
-        padding: 6px !important;
-        font-size: 0.8rem !important;
-    }
-    .delete-btn-box div.stButton > button:hover {
-        background-color: #ef4444 !important;
-        color: white !important;
-        box-shadow: 0 0 15px rgba(239, 68, 68, 0.4) !important;
-    }
+        .footer {{ margin-top: 30px; text-align: center; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }}
+        
+        .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
+        .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
+        .save-img-btn:hover {{ background-color: #2e7d32; }}
+        @media print {{ .save-btn-container {{ display: none; }} }}
     </style>
-""", unsafe_allow_html=True)
-
-# --- CSV Local Storage Synchronization Handlers ---
-DB_FILE = "ailyn_house_data.csv"
-
-def load_data():
-    if os.path.exists(DB_FILE):
-        try:
-            df = pd.read_csv(DB_FILE)
-            # Ensure proper string padding for structural layouts
-            df['Date'] = df['Date'].astype(str).str.zfill(2)
-            return df
-        except Exception:
-            pass
-    return pd.DataFrame(columns=["Date", "Month", "Year", "Day of Week", "Week Number", "Description of Work"])
-
-def save_data(df):
-    df.to_csv(DB_FILE, index=False)
-
-# Initialize data structures from disk file instead of standard session volatile memory
-if "tasks_df" not in st.session_state:
-    st.session_state.tasks_df = load_data()
-if "current_page" not in st.session_state:
-    st.session_state.current_page = "dashboard"
-
-# --- Title Header Layout ---
-st.markdown("""
-    <div class="glass-header">
-        <h1>🏗️ AILYN HOUSE PROJECT PLANNER</h1>
-        <p>Combined System | Mobile Operating Engine v30000</p>
+</head>
+<body>
+    <div class="save-btn-container">
+        <button class="save-img-btn" onclick="saveAsImage()">📸 SEE PHOTO & DOWNLOAD IMAGE (Phone & Laptop)</button>
     </div>
-""", unsafe_allow_html=True)
 
-# --- Top Navigation Bar ---
-col_nav1, col_nav2 = st.columns(2)
-with col_nav1:
-    if st.button("📊 ACCESS ENGINE INPUT DASHBOARD", use_container_width=True):
-        st.session_state.current_page = "dashboard"
-with col_nav2:
-    if st.button("📑 VIEW ORGANISED PROJECT LEDGER", use_container_width=True):
-        st.session_state.current_page = "ledger"
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-# ----------------- PAGE 1: INPUT DASHBOARD -----------------
-if st.session_state.current_page == "dashboard":
-    st.subheader("📋 Structural Operations Registry")
-    
-    with st.form("construction_form", clear_on_submit=True):
-        st.markdown('<div class="form-box">', unsafe_allow_html=True)
-        
-        col_d1, col_d2, col_d3 = st.columns(3)
-        with col_d1:
-            day_options = list(range(1, 32))
-            current_day_idx = datetime.now().day - 1
-            day = st.selectbox("I Target Day Option", options=day_options, index=current_day_idx)
-        with col_d2:
-            current_month_idx = datetime.now().month - 1
-            month_input = st.selectbox("📅 Planning Month Group", options=month_list, index=current_month_idx)
-        with col_d3:
-            year_options = list(range(2020, 2036))
-            current_year_idx = year_options.index(datetime.now().year) if datetime.now().year in year_options else 6
-            year = st.selectbox("📁 Fiscal Management Year", options=year_options, index=current_year_idx)
-            
-        st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-        
-        desc = st.text_area("✍️ Task Execution & Structural Log Details", height=150, placeholder="Document structural parameters, concrete formulations, deployment schedules...")
-        st.markdown("<br>", unsafe_allow_html=True)
-        submit_btn = st.form_submit_button("Secure Activity to Ledger Database", use_container_width=True)
-        
-        if submit_btn:
-            if desc.strip() == "":
-                st.error("Registry transaction aborted. Description layout parameter must contain text inputs.")
-            else:
-                try:
-                    month_num = month_list.index(month_input) + 1
-                    date_obj = datetime(year, month_num, day)
-                    day_name = date_obj.strftime("%A")
-                    formatted_date = f"{day:02d}"
-                    week_num = f"Week {date_obj.strftime('%U')} ({year})"
-                    
-                    new_row = {
-                        "Date": formatted_date,
-                        "Month": month_input,
-                        "Year": str(year),
-                        "Day of Week": day_name,
-                        "Week Number": week_num,
-                        "Description of Work": desc
-                    }
-                    
-                    st.session_state.tasks_df = pd.concat([st.session_state.tasks_df, pd.DataFrame([new_row])], ignore_index=True)
-                    save_data(st.session_state.tasks_df)
-                    st.success("Activity logged and stored inside local persistent database storage configuration.")
-                except ValueError:
-                    st.error("❌ Chronological matrix mismatch error. Selected configuration framework is invalid.")
-
-# ----------------- PAGE 2: LEDGER OF WORK & HTML BUILDER -----------------
-elif st.session_state.current_page == "ledger":
-    st.subheader("📑 Materials Ledger & Operations Preview")
-    
-    st.markdown(f"""
-        <div class="stat-card-container">
-            <div class="stat-card">
-                <div class="label">Total Secure Log Records (Persistent Archive)</div>
-                <div class="value">📑 {len(st.session_state.tasks_df)} Active Entries</div>
+    <div class="receipt-container" id="receiptContent">
+        <div class="header">
+            <div class="company-info">
+                <h1>AILYN HOUSE PROJECT</h1>
+                <p>Official Material & Expense Inventory</p>
+                <p>Management System {APP_VERSION}</p>
+                <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
+            </div>
+            <div class="receipt-meta">
+                <h2>{custom_title}</h2>
+                <p>Date: {date_now}</p>
             </div>
         </div>
-    """, unsafe_allow_html=True)
-    
-    if st.session_state.tasks_df.empty:
-        st.info("Log database empty. Utilize the primary registry frame console to record items.")
-    else:
-        # --- Advanced UI Search Bar & Month Filter Matrix ---
-        col_f1, col_f2 = st.columns([2, 1])
-        with col_f1:
-            search_query = st.text_input("🔍 Search Logs Content Description", placeholder="Type keywords to filter calendar layout...")
-        with col_f2:
-            filter_month = st.selectbox("📅 Filter by Month Matrix", options=["All Months"] + month_list)
-            
-        display_df = st.session_state.tasks_df.copy()
-        display_df['Month_Num'] = display_df['Month'].map(lambda m: month_list.index(m)+1 if m in month_list else 1)
-        display_df = display_df.sort_values(by=['Year', 'Month_Num', 'Date'])
-        
-        # Apply Live Queries Filters
-        if search_query:
-            display_df = display_df[display_df['Description of Work'].str.contains(search_query, case=False, na=False)]
-        if filter_month != "All Months":
-            display_df = display_df[display_df['Month'] == filter_month]
-            
-        # Render the logged entries as an interactive Calendar Grid System with custom structural deletion
-        grouped = display_df.groupby("Week Number", sort=False)
-        for week, group in grouped:
-            st.markdown(f'<div class="week-divider-title">📅 {week}</div>', unsafe_allow_html=True)
-            
-            # Use dynamic layout column blocks to house structural components 
-            cols = st.columns(3)
-            for idx, (_, row) in enumerate(group.iterrows()):
-                target_col = cols[idx % 3]
-                with target_col:
-                    grid_html = f'<div class="calendar-event-card"><div class="calendar-event-header"><span class="calendar-event-date">{row["Month"]} {row["Date"]}, {row["Year"]}</span><span class="calendar-event-daybadge">{row["Day of Week"][:3]}</span></div><div class="calendar-event-body">{row["Description of Work"]}</div></div>'
-                    st.markdown(grid_html, unsafe_allow_html=True)
-                    
-                    # Custom programmatic inline delete layout key mapping mechanics
-                    st.markdown('<div class="delete-btn-box">', unsafe_allow_html=True)
-                    # Find exact match location in core dataframe array
-                    match_indices = st.session_state.tasks_df[
-                        (st.session_state.tasks_df['Date'] == row['Date']) & 
-                        (st.session_state.tasks_df['Month'] == row['Month']) & 
-                        (st.session_state.tasks_df['Year'] == row['Year']) & 
-                        (st.session_state.tasks_df['Description of Work'] == row['Description of Work'])
-                    ].index
-                    
-                    if not match_indices.empty:
-                        if st.button(f"🗑️ Delete Entry Row", key=f"del_{match_indices[0]}_{idx}", use_container_width=True):
-                            st.session_state.tasks_df = st.session_state.tasks_df.drop(match_indices[0]).reset_index(drop=True)
-                            save_data(st.session_state.tasks_df)
-                            st.rerun()
-                    st.markdown('</div>', unsafe_allow_html=True)
-                    st.markdown("<br>", unsafe_allow_html=True)
 
-        # --- Native Programmatic HTML Exporter Document Framework ---
-        def generate_html(dataframe):
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="utf-8">
-                <title>Organised Project Planner Ledger</title>
-                <style>
-                    body {{ 
-                        font-family: 'Segoe UI', Arial, sans-serif; 
-                        background: linear-gradient(rgba(10, 25, 20, 0.85), rgba(10, 25, 20, 0.85)), url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
-                        background-size: cover;
-                        color: #ffffff; margin: 0; padding: 40px; 
-                    }}
-                    .container {{ max-width: 1000px; margin: 0 auto; background: rgba(6, 35, 25, 0.7); backdrop-filter: blur(10px); padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); }}
-                    .header {{ text-align: center; border-bottom: 2px solid #22c55e; padding-bottom: 20px; margin-bottom: 30px; }}
-                    .header h1 {{ color: #22c55e; margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 1px; }}
-                    .header p {{ color: #a7f3d0; font-weight: 500; margin: 5px 0 0 0; font-size: 13px; }}
-                    .week-section {{ margin-bottom: 35px; }}
-                    .week-title {{ background: rgba(34, 197, 94, 0.2); border-left: 4px solid #22c55e; color: #22c55e; padding: 10px 15px; font-size: 16px; font-weight: bold; border-radius: 0 6px 6px 0; margin-bottom: 12px; }}
-                    .calendar-grid-html {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-bottom: 15px; }}
-                    .card-html {{ background: rgba(10, 35, 25, 0.6); border: 1px solid rgba(34, 197, 94, 0.3); border-radius: 10px; overflow: hidden; }}
-                    .card-h-head {{ background: rgba(34, 197, 94, 0.15); padding: 10px; display: flex; justify-content: space-between; font-weight: bold; color: #22c55e; font-size: 14px; border-bottom: 1px solid rgba(34, 197, 94, 0.2); }}
-                    .card-h-body {{ padding: 12px; color: #e5e7eb; font-size: 13px; line-height: 1.4; white-space: pre-line; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>AILYN HOUSE PROJECT LEDGER</h1>
-                        <p>Weekly Organised Construction Execution Records</p>
-                    </div>
-            """
-            grouped_html = dataframe.groupby("Week Number", sort=False)
-            for week, group in grouped_html:
-                html_content += f"""
-                <div class="week-section">
-                    <div class="week-title">📅 {week}</div>
-                    <div class="calendar-grid-html">
-                """
-                for _, row in group.iterrows():
-                    html_content += f"""
-                        <div class="card-html">
-                            <div class="card-h-head">
-                                <span>{row['Month']} {row['Date']}, {row['Year']}</span>
-                                <span style="background:#22c55e; color:#062319; padding:1px 5px; border-radius:4px; font-size:11px;">{row['Day of Week'][:3].upper()}</span>
-                            </div>
-                            <div class="card-h-body">{row['Description of Work']}</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th class="qty-col">Qty</th>
+                    <th class="desccol">Description</th>
+                    <th class="pricecol">Unit Price</th>
+                    <th class="deliverycol">Delivery</th>
+                    <th class="totalcol">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+"""
+
+    for r in material_and_expense_records:
+        html += f"""
+                <tr>
+                    <td>{r['date']}</td>
+                    <td class="qty-col">{r['qty']}</td>
+                    <td class="desccol">{r['name']}</td>
+                    <td class="pricecol">{float(r.get('price', r['amount'])):,.2f}</td>
+                    <td class="deliverycol">{float(r['delivery']):,.2f}</td>
+                    <td class="totalcol">PHP {float(r['amount']):,.2f}</td>
+                </tr>
+"""
+
+    html += f"""
+            </tbody>
+        </table>
+
+        <div class="summary-container">
+            <div class="summary-table">
+                <div class="grand-total">
+                    <div class="balance-info">
+                        <div class="balance-row material-row">
+                            <span>Material/Expense Total:</span>
+                            <span>PHP {material_total:,.2f}</span>
                         </div>
-                    """
-                html_content += "</div></div>"
-            html_content += "</div></body></html>"
-            return html_content
+                        <div class="balance-row" style="font-size: 13px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 4px;">
+                            <span>Excess Money Total:</span>
+                            <span style="color: #a5d6a7;">PHP {excess_total:,.2f}</span>
+                        </div>
+                        <div class="balance-row" style="font-size: 13px;">
+                            <span>Total Budget:</span>
+                            <span>PHP {budget:,.2f}</span>
+                        </div>
+"""
 
-        html_string = generate_html(display_df)
-        st.markdown("<br>", unsafe_allow_html=True)
+    if sobra_amount > 0:
+        html += f"""
+                        <div class="final-balance-row">
+                            <span>EXCESS</span>
+                            <span style="color: #a5d6a7;">PHP {sobra_amount:,.2f}</span>
+                        </div>
+"""
+
+    if kulang_amount > 0:
+        html += f"""
+                        <div class="final-balance-row">
+                            <span>SHORTAGE</span>
+                            <span style="color: #e57373;">PHP {kulang_amount:,.2f}</span>
+                        </div>
+"""
+
+    html += f"""
+                        <div class="final-balance-row">
+                            <span>FINAL BALANCE</span>
+                            <span style="color: {balance_color};">PHP {remaining_balance:,.2f}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            This document was electronically generated and is valid without signature.
+        </div>
+    </div>
+
+    <script>
+        function saveAsImage() {{
+            const element = document.getElementById('receiptContent');
+            html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
+                const link = document.createElement('a');
+                link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }});
+        }}
+    </script>
+</body>
+</html>
+"""
+    return html
+
+def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, custom_title="INVENTORY RECEIPT"):
+    date_str = datetime.now().strftime("%B %d, %Y | %I:%M %p")
+    total_labor = sum(r['net'] for r in labor_records)
+    total_expenses = sum(e['price'] for e in expense_records)
+    
+    sub_total = total_labor + total_expenses
+    grand_total = sub_total - (remaining_money or 0.0)
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
+        .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
+        .save-img-btn:hover {{ background-color: #2e7d32; }}
+        @media print {{ .save-btn-container {{ display: none; }} }}
+    </style>
+</head>
+<body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px;">
+    <div class="save-btn-container">
+        <button class="save-img-btn" onclick="saveAsImage()">📸 SEE PHOTO & DOWNLOAD IMAGE (Phone & Laptop)</button>
+    </div>
+
+<div id="receiptContent" style="max-width: 900px; margin: auto; background: white; border-top: 10px solid #1b5e20; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <tr>
+            <td>
+                <h1 style="color: #1b5e20; margin: 0; text-transform: uppercase;">Ailyn Construction</h1>
+                <p style="color: #555; margin: 5px 0 0 0;">Official Labor & Payroll Inventory</p>
+                <p style="color: #777; font-size: 14px; margin: 0;">Management System v3.6 Enterprise</p>
+            </td>
+            <td style="text-align: right;">
+                <h3 style="color: #1b5e20; margin: 0;">{custom_title}</h3>
+                <p style="color: #555; font-size: 14px; margin: 5px 0 0 0;">Date: {date_str}</p>
+                <p style="color: #777; font-size: 12px; margin: 5px 0 0 0;">Account: {RECEIVER_EMAIL}</p>
+            </td>
+        </tr>
+    </table>
+
+    <div style="border-bottom: 2px solid #eee; margin-bottom: 30px;"></div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+        <thead>
+            <tr style="background-color: #1b5e20; color: white; text-transform: uppercase; font-size: 14px;">
+                <th style="padding: 12px; text-align: left;">Worker Name</th>
+                <th style="padding: 12px; text-align: center;">Role</th>
+                <th style="padding: 12px; text-align: center;">Days / Point</th>
+                <th style="padding: 12px; text-align: right;">Gross Pay</th>
+                <th style="padding: 12px; text-align: right;">C.A.</th>
+                <th style="padding: 12px; text-align: right;">Net Pay</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
+
+    for r in labor_records:
+        role_display = r.get('role', 'Labor')
+        gross = r.get('gross_pay', r['days'] * r['rate'])
+        html += f"""
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold;">{r['name']}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center;">{role_display}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center;">{r['days']:.1f}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">{gross:,.2f}</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right; color: #d32f2f;">({r['ca']:,.2f})</td>
+                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right; font-weight: bold; color: #1b5e20;">{r['net']:,.2f}</td>
+            </tr>
+"""
+
+    if expense_records:
+        html += """
+            <tr>
+                <td colspan="6" style="padding: 12px 0;"></td>
+            </tr>
+            <tr style="background-color: #388e3c; color: white; text-transform: uppercase; font-size: 14px;">
+                <th colspan="5" style="padding: 10px; text-align: left;">Expense Description</th>
+                <th style="padding: 10px; text-align: right;">Amount</th>
+            </tr>
+"""
+        for e in expense_records:
+            html += f"""
+            <tr>
+                <td colspan="5" style="padding: 10px; border-bottom: 1px solid #ddd;">{e['item']}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right; font-weight: bold;">{e['price']:,.2f}</td>
+            </tr>
+"""
+
+    html += f"""
+        </tbody>
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 30px;">
+        <tr style="border-top: 2px solid #bbb;">
+            <td style="padding: 12px; font-weight: bold; text-align: right; font-size: 15px;">Subtotal Expenses:</td>
+            <td style="padding: 12px; width: 180px; text-align: right; font-weight: bold; font-size: 15px; color: #333;">PHP {sub_total:,.2f}</td>
+        </tr>
+"""
+
+    if remaining_money and remaining_money > 0:
+        html += f"""
+        <tr style="border-bottom: 2px solid #bbb;">
+            <td style="padding: 12px; font-weight: bold; text-align: right; color: #d32f2f; font-size: 15px;">Remaining/Leftover Money:</td>
+            <td style="padding: 12px; width: 180px; text-align: right; font-weight: bold; color: #d32f2f; font-size: 15px;">-PHP {remaining_money:,.2f}</td>
+        </tr>
+"""
+
+    html += f"""
+    </table>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <tr>
+            <td></td>
+            <td style="width: 350px; background: #1b5e20; color: white; padding: 20px; border-radius: 8px; text-align: right;">
+                <span style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Final Output Amount</span><br>
+                <span style="font-size: 32px; font-weight: bold; margin-top: 5px; display: inline-block;">PHP {grand_total:,.2f}</span>
+            </td>
+        </tr>
+    </table>
+
+    <div style="text-align: center; margin-top: 60px; border-top: 1px solid #eee; padding-top: 20px;">
+        <p style="color: #999; font-size: 11px; letter-spacing: 1px; text-transform: uppercase;">
+            THIS DOCUMENT WAS ELECTRONICALLY GENERATED AND IS VALID WITHOUT SIGNATURE.
+        </p>
+    </div>
+
+</div>
+
+    <script>
+        function saveAsImage() {{
+            const element = document.getElementById('receiptContent');
+            html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
+                const link = document.createElement('a');
+                link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }});
+        }}
+    </script>
+</body>
+</html>
+"""
+    return html, grand_total
+
+def generate_planner_html(planner_tasks, custom_title="WORK SCHEDULE & CALENDAR RECEIPT"):
+    date_now = datetime.now().strftime("%B %d, %Y")
+    sorted_tasks = sorted(planner_tasks, key=lambda x: x.get('date_obj', ''))
+
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+        body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0; margin: 0; padding: 30px; color: #1e293b; }}
+        .receipt-card {{ max-width: 900px; margin: auto; background: #ffffff; border-radius: 12px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+        .header {{ border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; }}
+        .title h1 {{ color: #1b5e20; margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase; }}
+        .title p {{ color: #64748b; margin: 4px 0 0 0; font-size: 13px; font-weight: 600; }}
+        .meta {{ text-align: right; font-size: 12px; color: #475569; }}
+        .meta h3 {{ margin: 0; color: #1b5e20; font-size: 16px; text-transform: uppercase; }}
+        
+        .task-grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }}
+        .task-card {{ background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 8px; border-left: 5px solid #22c55e; }}
+        .task-date {{ font-size: 12px; font-weight: 800; color: #1b5e20; text-transform: uppercase; letter-spacing: 0.5px; background: #dcfce7; padding: 4px 8px; border-radius: 6px; width: fit-content; }}
+        .task-name {{ font-size: 15px; font-weight: 700; color: #0f172a; margin: 4px 0; }}
+        .task-phase {{ font-size: 12px; color: #64748b; font-weight: 600; }}
+        .task-status {{ font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; width: fit-content; text-transform: uppercase; letter-spacing: 0.5px; margin-top: auto; }}
+        .status-completed {{ background: #dcfce7; color: #15803d; }}
+        .status-inprogress {{ background: #fef3c7; color: #b45309; }}
+        .status-notstarted {{ background: #f1f5f9; color: #475569; }}
+
+        .photo-gallery {{ display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; border-top: 1px dashed #e2e8f0; padding-top: 10px; }}
+        .photo-img {{ width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 1px solid #cbd5e1; }}
+
+        .footer {{ margin-top: 40px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }}
+        
+        .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
+        .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
+        .save-img-btn:hover {{ background-color: #2e7d32; }}
+        @media print {{ .save-btn-container {{ display: none; }} }}
+    </style>
+</head>
+<body>
+    <div class="save-btn-container">
+        <button class="save-img-btn" onclick="saveAsImage()">📸 SEE PHOTO & DOWNLOAD IMAGE (Phone & Laptop)</button>
+    </div>
+
+    <div class="receipt-card" id="receiptContent">
+        <div class="header">
+            <div class="title">
+                <h1>📅 {custom_title}</h1>
+                <p>AILYN HOUSE PROJECT MANAGEMENT</p>
+            </div>
+            <div class="meta">
+                <h3>OFFICIAL SCHEDULE</h3>
+                <p><b>Generated:</b> {date_now}</p>
+            </div>
+        </div>
+
+        <div class="task-grid">
+"""
+    for t in sorted_tasks:
+        st_class = "status-completed" if t['status'] == "Completed" else "status-inprogress" if t['status'] == "In Progress" else "status-notstarted"
+        
+        photos_html = ""
+        if t.get("photos"):
+            photos_html = '<div class="photo-gallery">'
+            for p in t["photos"]:
+                photos_html += f'<img src="{p}" class="photo-img" />'
+            photos_html += '</div>'
+
+        html += f"""
+            <div class="task-card">
+                <div class="task-date">📅 {t.get('month', '')} {t.get('day', '')}, {t.get('year', '')}</div>
+                <div class="task-name">{t['name']}</div>
+                <div class="task-phase">🔨 Phase: {t['phase']}</div>
+                <div class="task-status {st_class}">{t['status']}</div>
+                {photos_html}
+            </div>
+"""
+
+    html += """
+        </div>
+
+        <div class="footer">
+            Official Construction Task Schedule Document • Electronically Generated
+        </div>
+    </div>
+
+    <script>
+        function saveAsImage() {{
+            const element = document.getElementById('receiptContent');
+            html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
+                const link = document.createElement('a');
+                link.download = 'Schedule_Receipt.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }});
+        }}
+    </script>
+</body>
+</html>
+"""
+    return html
+
+st.markdown("""
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
+
+:root {
+    --bg-deep: #07110b;
+    --text-main: #f4fff7;
+    --accent: #4ade80;
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none !important; 
+  margin: 0 !important; 
+}
+input[type=number] {
+  -moz-appearance: textfield !important;
+}
+
+div[data-testid="stNumberInput"] button {
+    display: none !important;
+}
+
+div[data-baseweb="input"], 
+div[data-baseweb="base-input"],
+input, textarea, select {
+    background-color: rgba(16, 45, 28, 0.95) !important;
+    border: 1px solid rgba(132, 255, 179, 0.4) !important;
+    border-radius: 12px !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    font-size: 16px !important;
+    min-height: 48px !important;
+    box-shadow: none !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #a7f3d0 !important;
+    -webkit-text-fill-color: #a7f3d0 !important;
+    opacity: 0.7;
+}
+
+div[data-baseweb="input"]:focus-within, input:focus, textarea:focus {
+    border-color: #4ade80 !important;
+    box-shadow: 0 0 10px rgba(74, 222, 128, 0.4) !important;
+}
+
+@media (max-width: 768px) {
+    .block-container {
+        padding: 16px 12px !important;
+    }
+    h1, h2, h3 {
+        font-size: 18px !important;
+        text-align: center;
+    }
+    button {
+        width: 100% !important;
+        margin-bottom: 8px !important;
+        font-size: 15px !important;
+        padding: 12px !important;
+    }
+    .stColumns {
+        flex-direction: column !important;
+    }
+}
+
+.stApp {
+    background: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c") no-repeat center center fixed;
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.block-container {
+    background: rgba(12, 32, 22, 0.82) !important;
+    backdrop-filter: blur(22px);
+    border-radius: 28px;
+    border: 1px solid rgba(132, 255, 179, 0.18);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    padding: 36px 24px 24px 24px !important;
+    margin-top: 15px !important;
+}
+
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, rgba(12, 45, 28, 0.96) 0%, rgba(6, 26, 16, 0.98) 100%) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(132, 255, 179, 0.22);
+    box-shadow: 6px 0 30px rgba(0, 0, 0, 0.35);
+}
+
+section[data-testid="stSidebar"] * {
+    color: #e6f9ed !important;
+}
+
+.headbar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 28px auto;
+    width: 100%;
+}
+
+.headbar-card {
+    background: linear-gradient(135deg, rgba(16, 54, 34, 0.95), rgba(8, 30, 18, 0.95));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(132, 255, 179, 0.35);
+    border-radius: 20px;
+    padding: 16px 36px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.headbar-title {
+    font-size: 20px !important;
+    font-weight: 800;
+    color: #f0fff4 !important;
+    margin: 0;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.headbar-subtitle {
+    font-size: 11px;
+    color: #a7f3d0;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 5px;
+    font-weight: 700;
+}
+
+button, .stDownloadButton > button {
+    background: linear-gradient(135deg, rgba(22, 78, 48, 0.9), rgba(12, 48, 28, 0.85)) !important;
+    color: #ffffff !important;
+    border-radius: 18px !important;
+    border: 1px solid rgba(132, 255, 179, 0.3) !important;
+    font-weight: 700;
+    min-height: 46px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+    backdrop-filter: blur(12px);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button:hover, .stDownloadButton > button:hover {
+    transform: translateY(-3px) scale(1.01);
+    background: linear-gradient(135deg, rgba(34, 122, 72, 0.95), rgba(20, 88, 50, 0.9)) !important;
+    border-color: rgba(132, 255, 179, 0.7) !important;
+    box-shadow: 0 12px 28px rgba(74, 222, 128, 0.25), 0 0 14px rgba(132, 255, 179, 0.35) !important;
+}
+
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, rgba(14, 46, 28, 0.88), rgba(8, 28, 17, 0.85));
+    border-radius: 22px;
+    padding: 16px 20px;
+    border: 1px solid rgba(132, 255, 179, 0.22);
+    margin-bottom: 14px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+[data-testid="stMetric"] label {
+    color: #a7f3d0 !important;
+    font-weight: 700;
+}
+
+[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+    color: #ffffff !important;
+    font-weight: 800;
+}
+
+.sidebar-brand {
+    padding: 14px 16px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(132, 255, 179, 0.22);
+    margin-bottom: 16px;
+}
+
+.sidebar-brand h3 {
+    margin: 0 0 4px 0;
+    color: #ffffff !important;
+    font-size: 15px;
+}
+
+.sidebar-brand p {
+    margin: 0;
+    color: #a7f3d0;
+    font-size: 12px;
+}
+
+.cal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 15px;
+}
+
+.cal-card {
+    background: linear-gradient(135deg, rgba(16, 45, 28, 0.9), rgba(8, 28, 17, 0.9));
+    border: 1px solid rgba(132, 255, 179, 0.25);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.cal-date-badge {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(74, 222, 128, 0.4);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    width: fit-content;
+}
+
+.cal-task-title {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 2px 0;
+}
+
+.cal-phase {
+    color: #a7f3d0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cal-status-tag {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    width: fit-content;
+    text-transform: uppercase;
+}
+
+.badge-notstarted { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; }
+.badge-inprogress { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+
+.card-photos {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.card-photo-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(132, 255, 179, 0.4);
+}
+
+.pos-role-box {
+    background: rgba(16, 45, 28, 0.95);
+    border: 2px solid rgba(74, 222, 128, 0.5);
+    border-radius: 16px;
+    padding: 12px;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown("""
+<div class="headbar-container">
+    <div class="headbar-card">
+        <div class="headbar-title">🏗️ AILYN HOUSE PROJECT & PAYROLL</div>
+        <div class="headbar-subtitle">Management Core System</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+with st.sidebar:
+    st.markdown("""
+    <div class="sidebar-brand">
+        <h3>📱 SYSTEM DATA CONTROL</h4>
+        <p>Ledger • Payroll • Schedule</p>
+    </div>
+    """, unsafe_allow_html=True)
+    st.caption(f"{datetime.now().strftime('%I:%M %p | %b %d')}")
+    st.divider()
+    st.subheader("🏠 Account Summary")
+    if st.button("🏠 Financial Dashboard", use_container_width=True):
+            set_view("home")
+
+    budget_input = st.number_input("Set Balance Account Budget", min_value=0.0, key="budget_input_sidebar", value=None, placeholder="Enter budget...")
+    if st.button("APPLY BUDGET", use_container_width=True):
+        if budget_input is not None:
+            st.session_state.budget = float(budget_input)
+            persist_state()
+            st.success("Budget applied!")
+            st.rerun()
+        else:
+            st.warning("Please enter a budget amount.")
+        
+    if st.button("🔄 RESET SYSTEM", use_container_width=True):
+        clear_all()
+        set_view("home")
+
+    
+    
+    
+    st.markdown("---")
+    st.subheader("📅 Account Planner")
+    col_p1, col_p2 = st.columns(2)
+    with col_p1:
+        if st.button("📥 Entry Input", use_container_width=True):
+            set_view("planner_input")
+    with col_p2:
+        if st.button("📅 Schedule Log", use_container_width=True):
+            set_view("planner_output")
+
+    st.markdown("---")
+    st.subheader("🧱 Financial Ledger")
+    if st.button("➕ Post Material Entry", use_container_width=True):
+        set_view("material")
+    if st.button("📝 Post Expense Entry", use_container_width=True):
+        set_view("expense")
+    if st.button("💰 Post Excess Deposit", use_container_width=True):
+        set_view("excess")
+    if st.button("📋 View Account Ledger", use_container_width=True):
+        set_view("ledger")
+    if st.button("📤 Export Financial Report", use_container_width=True):
+        set_view("export")
+        
+    st.markdown("---")
+    st.subheader("👷 Payroll Accounting")
+    if st.button("➕ Post Labor Account", use_container_width=True):
+        set_view("add_labor")
+    if st.button("📝 Post Payroll Expense", use_container_width=True):
+        set_view("add_payroll_expense")
+    if st.button("➖ Set Account Remainder", use_container_width=True):
+        set_view("payroll_remaining")
+    if st.button("📋 View Labor Accounts", use_container_width=True):
+        set_view("payroll_ledger")
+    if st.button("📤 Export Payroll Report", use_container_width=True):
+        set_view("payroll_export")
+    if st.button("📁 Account Receipt Archive", use_container_width=True):
+        set_view("receipt_archive")
+
+view = st.session_state.view
+
+if view == "home":
+    st.subheader("📊 QUICK STATS")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("BUDGET", f"PHP {st.session_state.budget:,.2f}")
+    col2.metric("USED", f"PHP {get_total():,.2f}")
+    col3.metric("BALANCE", f"PHP {get_balance():,.2f}")
+    
+    st.markdown("---")
+    st.subheader("📋 MATERIALS LEDGER PREVIEW")
+    if not st.session_state.records:
+        st.info("No materials yet.")
+    else:
+        materials = [r for r in st.session_state.records if r["type"] == "material"]
+        for r in materials[-5:]:
+            st.markdown(f"""
+            ---
+            🧱 **{r['name']}** 💰 PHP {float(r['amount']):,.2f}  
+            👤 {r['sender']}  
+            📅 {r['date']}
+            """)
+
+elif view == "planner_input":
+    st.subheader("📥 PLANNER INPUT — ADD NEW WORK TASK")
+    st.caption("Select date details, work description, and optional photo proofs.")
+
+    with st.form(key="planner_input_form", clear_on_submit=True):
+        selected_date = st.date_input("Select Day, Month, and Year", value=datetime.now())
+        work_description = st.text_area("Work Description / Task Details", placeholder="Describe construction work...")
+        phase = st.selectbox("Construction Phase", ["Site Prep", "Foundation", "Framing & Masonry", "Roofing", "Plumbing & Electrical", "Finishing", "Inspection"])
+        uploaded_files = st.file_uploader("Upload Work Proof Photos (Optional)", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+        submitted = st.form_submit_button("💾 SAVE TASK TO PERMANENT STORAGE")
+
+    if submitted:
+        if work_description.strip():
+            photos_base64 = []
+            if uploaded_files:
+                for file in uploaded_files:
+                    bytes_data = file.read()
+                    b64_str = base64.b64encode(bytes_data).decode('utf-8')
+                    mime_type = file.type or "image/png"
+                    photos_base64.append(f"data:{mime_type};base64,{b64_str}")
+
+            st.session_state.planner_tasks.append({
+                "id": str(time.time()),
+                "day": selected_date.strftime("%d"),
+                "month": selected_date.strftime("%B"),
+                "year": selected_date.strftime("%Y"),
+                "date_obj": selected_date.strftime("%Y-%m-%d"),
+                "name": work_description.upper(),
+                "phase": phase,
+                "status": "Not Started",
+                "photos": photos_base64
+            })
+            persist_state()
+            st.success("Task & photos permanently saved!")
+            st.rerun()
+        else:
+            st.warning("Please fill in the work description.")
+
+    st.divider()
+    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+        set_view("home")
+
+elif view == "planner_output":
+    st.subheader("📅 PLANNER OUTPUT — WORK SCHEDULE CALENDAR")
+    tasks = st.session_state.planner_tasks
+
+    if not tasks:
+        st.info("No work scheduled yet.")
+    else:
+        sorted_tasks = sorted(tasks, key=lambda x: x.get('date_obj', ''))
+        cards_html = '<div class="cal-grid">'
+        for t in sorted_tasks:
+            badge_class = "badge-completed" if t['status'] == "Completed" else "badge-inprogress" if t['status'] == "In Progress" else "badge-notstarted"
+            photos_thumbs = ""
+            if t.get("photos"):
+                photos_thumbs = '<div class="card-photos">'
+                for p in t["photos"]:
+                    photos_thumbs += f'<img src="{p}" class="card-photo-thumb" />'
+                photos_thumbs += '</div>'
+
+            cards_html += f'''
+            <div class="cal-card">
+                <div class="cal-date-badge">📅 {t.get("month", "")} {t.get("day", "")}, {t.get("year", "")}</div>
+                <div class="cal-task-title">{t["name"]}</div>
+                <div class="cal-phase">🔨 {t["phase"]}</div>
+                <div class="cal-status-tag {badge_class}">{t["status"]}</div>
+                {photos_thumbs}
+            </div>
+            '''
+        cards_html += '</div>'
+        st.markdown(cards_html, unsafe_allow_html=True)
+        st.markdown("---")
+
+        st.subheader("⚙️ Task Management & Photo Inspector")
+        for t in list(sorted_tasks):
+            with st.expander(f"📅 {t.get('month')} {t.get('day')}, {t.get('year')} — {t['name']} ({t['status']})", expanded=False):
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    new_status = st.selectbox("Update Status", ["Not Started", "In Progress", "Completed"], index=["Not Started", "In Progress", "Completed"].index(t["status"]), key=f"st_{t['id']}")
+                    if new_status != t["status"]:
+                        t["status"] = new_status
+                        persist_state()
+                        st.rerun()
+                with col2:
+                    if st.button("❌ Delete Task", key=f"del_{t['id']}", use_container_width=True):
+                        st.session_state.planner_tasks = [x for x in st.session_state.planner_tasks if x["id"] != t["id"]]
+                        persist_state()
+                        st.rerun()
+
+                st.markdown("#### 📷 Work Gallery for this Day")
+                if t.get("photos"):
+                    img_cols = st.columns(4)
+                    for idx, photo_b64 in enumerate(list(t["photos"])):
+                        with img_cols[idx % 4]:
+                            st.image(photo_b64, use_container_width=True)
+                            if st.button("🗑️ Remove Photo", key=f"del_img_{t['id']}_{idx}", use_container_width=True):
+                                t["photos"].pop(idx)
+                                persist_state()
+                                st.rerun()
+                else:
+                    st.info("No photo proof attached for this work day yet.")
+
+                st.markdown("##### ➕ Add More Photos")
+                with st.form(key=f"upload_form_{t['id']}", clear_on_submit=True):
+                    new_photos = st.file_uploader("Upload Additional Photos", type=["jpg", "jpeg", "png"], accept_multiple_files=True, key=f"up_{t['id']}")
+                    add_photos_btn = st.form_submit_button("⬆️ UPLOAD PHOTOS")
+                    
+                if add_photos_btn and new_photos:
+                    if "photos" not in t or t["photos"] is None:
+                        t["photos"] = []
+                    for f in new_photos:
+                        bytes_data = f.read()
+                        b64_str = base64.b64encode(bytes_data).decode('utf-8')
+                        mime_type = f.type or "image/png"
+                        t["photos"].append(f"data:{mime_type};base64,{b64_str}")
+                    persist_state()
+                    st.success("Photos added successfully!")
+                    st.rerun()
+
+        st.markdown("---")
+        custom_receipt_title = st.text_input("Receipt Title", value="Construction Schedule Receipt", placeholder="Enter a custom title...")
+        html_report = generate_planner_html(sorted_tasks, custom_title=custom_receipt_title)
+        
+        st.markdown("### 📸 SEE PHOTO & DOWNLOAD SCHEDULE RECEIPT")
+        st.components.v1.html(html_report, height=650, scrolling=True)
+        
         st.download_button(
-            label="📥 Export Organised Visual Calendar Ledger as HTML",
-            data=html_string,
-            file_name=f"calendar_planner_ledger_{datetime.now().strftime('%Y%m%d')}.html",
+            label="⬇️ DOWNLOAD SCHEDULE RECEIPT HTML",
+            data=html_report,
+            file_name="construction_schedule_receipt.html",
             mime="text/html",
             use_container_width=True
         )
+
+    st.divider()
+    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+        set_view("home")
+
+elif view == "material":
+    st.subheader("➕ ADD MATERIAL")
+    with st.form(key="material_form", clear_on_submit=True):
+        name = st.text_input("Material Name")
+        price = st.number_input("Price", min_value=0.01, value=None, placeholder="0.00")
+        qty = st.number_input("Qty", min_value=1, value=None, placeholder="1")
+        delivery = st.number_input("Delivery", min_value=0.0, value=None, placeholder="0.00")
+        sender = st.selectbox("Sender", ["Garr", "Aily"])
+        submitted = st.form_submit_button(label="SAVE MATERIAL")
+
+    if submitted:
+        ok = add_tx(name, price, qty, delivery or 0.0, "material", sender)
+        if ok:
+            st.success("Saved! Ready for next order.")
+            st.rerun()
+        else:
+            st.warning("Invalid data, please fill out Price and Qty.")
+
+    st.divider()
+    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+        set_view("home")
+
+elif view == "expense":
+    st.subheader("📝 ADD CONSTRUCTION EXPENSE")
+    with st.form(key="expense_form", clear_on_submit=True):
+        name = st.text_input("Expense Name")
+        amount = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
+        sender = st.selectbox("Sender", ["Garr", "Aily"])
+        submitted = st.form_submit_button(label="SAVE EXPENSE")
+
+    if submitted:
+        if amount and amount > 0:
+            add_tx(name, amount, 1, 0, "expense", sender)
+            st.success("Expense Added → Ledger Updated")
+            st.rerun()
+        else:
+            st.warning("Please enter an amount greater than zero.")
+
+    st.divider()
+    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+        set_view("home")
+
+elif view == "excess":
+    st.subheader("💰 ADD EXCESS MONEY")
+    with st.form(key="excess_form", clear_on_submit=True):
+        name = st.text_input("Reason")
+        amount = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
+        sender = st.selectbox("Sender", ["Garr", "Aily"])
+        submitted = st.form_submit_button(label="ADD EXCESS")
+
+    if submitted:
+        if amount and amount > 0:
+            st.session_state.records.append({
+                "id": str(time.time()),
+                "date": datetime.now().strftime("%b %d, %Y"),
+                "name": name.upper(),
+                "price": float(amount),
+                "qty": 1,
+                "delivery": 0.0,
+                "amount": float(amount),
+                "type": "excess",
+                "sender": sender
+            })
+            persist_state()
+            st.success("Excess Added")
+            st.rerun()
+        else:
+            st.warning("Please enter a valid amount.")
+
+    st.divider()
+    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+        set_view("home")
+
+elif view == "ledger":
+    st.subheader("📋 CONSTRUCTION LEDGER")
+    if not st.session_state.records:
+        st.info("No transaction records found in ledger.")
+    else:
+        for r in list(st.session_state.records):
+            st.markdown(f"""
+            ---
+            **{r['name']}** 💰 PHP {float(r['amount']):,.2f}  
+            👤 {r['sender']}  
+            📦 {r['type']}  
+            📅 {r['date']}
+            """)
+            if st.button("❌ DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
+                st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
+                persist_state()
+                st.rerun()
+
+elif view == "export":
+    st.subheader("📤 EXPORT CONSTRUCTION REPORT")
+    receipt_title = st.text_input("Receipt Title", value="Construction Receipt", placeholder="Enter a title for this receipt")
+    html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
+
+    st.markdown("### 📸 SEE PHOTO & DOWNLOAD CONSTRUCTION RECEIPT")
+    st.components.v1.html(html, height=650, scrolling=True)
+
+    if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
+        if receipt_title.strip():
+            archive_path = save_report_html("construction", html, title=receipt_title)
+            st.success(f"Saved to archive: {archive_path}")
+        else:
+            st.warning("Please enter a title before saving.")
+
+    st.download_button(
+        label="⬇️ DOWNLOAD CONSTRUCTION REPORT HTML",
+        data=html,
+        file_name="construction_report.html",
+        mime="text/html",
+        use_container_width=True
+    )
+
+    if st.button("📁 OPEN RECEIPT ARCHIVE", use_container_width=True):
+        set_view("receipt_archive")
+
+elif view == "add_labor":
+    st.subheader("👷 ADD LABOR ACCOUNT")
+    st.caption("Click a role button below (Cashier POS Style) to select the work role quickly:")
+
+    # CASHIER/POS QUICK SELECTION BUTTONS OUTSIDE THE FORM
+    col_r1, col_r2, col_r3 = st.columns(3)
+    with col_r1:
+        if st.button("🛠️ LABOR\n₱500 / day", use_container_width=True):
+            st.session_state.selected_role = "Labor"
+    with col_r2:
+        if st.button("⚙️ SKILL\n₱650 / day", use_container_width=True):
+            st.session_state.selected_role = "Skill"
+    with col_r3:
+        if st.button("👷 FORMAN\n₱800 / day", use_container_width=True):
+            st.session_state.selected_role = "Forman"
+
+    active_role = st.session_state.selected_role
+    st.markdown(f"""
+    <div class="pos-role-box">
+        ✅ CURRENTLY SELECTED ROLE: <span style="color:#4ade80; font-size:20px;">{active_role.upper()}</span> (₱{FULL_DAY_RATES[active_role]:,.2f}/day)
+    </div>
+    """, unsafe_allow_html=True)
+
+    with st.form(key="labor_input_form", clear_on_submit=True):
+        name = st.text_input("Worker Name")
+        days = st.number_input("Worked Days / Point ", min_value=0.1, value=1.0, step=0.1, placeholder="1.0")
+        ca = st.number_input("Cash Advance (C.A.)", min_value=0.0, value=None, placeholder="0.00")
+        submitted = st.form_submit_button("💾 SAVE LABOR ACCOUNT")
+        
+    if submitted:
+        d = float(days or 0.0)
+        c = float(ca or 0.0)
+        if d > 0 and name.strip():
+            gross_pay, full_pay, partial_pay = calculate_labor_pay(d, active_role)
+            net = gross_pay - c
+            rate = FULL_DAY_RATES.get(active_role, 0.0)
+            
+            st.session_state.labor_records.append({
+                "name": name.upper(),
+                "role": active_role,
+                "days": d,
+                "rate": rate,
+                "gross_pay": gross_pay,
+                "ca": c,
+                "net": net
+            })
+            persist_state()
+            st.success(f"Record for {name.upper()} ({active_role}, {d:.1f} day) added. Net: ₱{net:,.2f}")
+            st.rerun()
+        else:
+            st.warning("Please enter a worker name and valid worked days/points.")
+
+elif view == "add_payroll_expense":
+    st.subheader("📝 ADD PAYROLL EXPENSE")
+    with st.form(key="payroll_expense_form", clear_on_submit=True):
+        desc = st.text_input("Expense Description")
+        amt = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
+        submitted = st.form_submit_button("SAVE EXPENSE")
+        
+    if submitted:
+        if amt and amt > 0:
+            st.session_state.payroll_expenses.append({
+                "item": desc.upper(),
+                "price": float(amt)
+            })
+            persist_state()
+            st.success(f"Expense {desc.upper()} added.")
+            st.rerun()
+        else:
+            st.warning("Please enter a valid amount.")
+
+elif view == "payroll_remaining":
+    st.subheader("➖ SET REMAINING MONEY")
+    res = st.number_input("Leftover/Remaining money to subtract from total", min_value=0.0, value=None, placeholder="0.00")
+    if st.button("APPLY REMAINING MONEY", use_container_width=True):
+        if res is not None:
+            st.session_state.remaining_money = float(res)
+            persist_state()
+            st.success("Remaining money applied.")
+            st.rerun()
+        else:
+            st.warning("Please enter an amount.")
+
+elif view == "payroll_ledger":
+    st.subheader("📋 LABOR & PAYROLL LEDGER")
+    st.markdown("### Labor Records")
+    if not st.session_state.labor_records:
+        st.info("No labor records.")
+    for i, r in enumerate(list(st.session_state.labor_records)):
+        role_disp = r.get('role', 'Labor')
+        gross_disp = r.get('gross_pay', r['days'] * r['rate'])
+        st.markdown(f"""
+        ---
+        **{r['name']}** ({role_disp}) - Worked: {r['days']:.1f} Day(s)  
+        - Gross Pay: PHP {gross_disp:,.2f}  
+        - C.A.: PHP {r['ca']:,.2f}  
+        - **Net Pay: PHP {r['net']:,.2f}**
+        """)
+        if st.button("❌ DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
+            st.session_state.labor_records.pop(i)
+            persist_state()
+            st.rerun()
+            
+    st.markdown("---")
+    st.markdown("### Payroll Expenses")
+    if not st.session_state.payroll_expenses:
+        st.info("No payroll expenses.")
+    for i, e in enumerate(list(st.session_state.payroll_expenses)):
+        st.markdown(f"- **{e['item']}**: PHP {e['price']:,.2f}")
+        if st.button("❌ DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
+            st.session_state.payroll_expenses.pop(i)
+            persist_state()
+            st.rerun()
+
+elif view == "payroll_export":
+    st.subheader("📤 EXPORT PAYROLL REPORT")
+    receipt_title = st.text_input("Receipt Title", value="Payroll Receipt", placeholder="Enter a title for this receipt")
+    html, total = generate_payroll_html(
+        st.session_state.labor_records, 
+        st.session_state.payroll_expenses, 
+        st.session_state.remaining_money,
+        custom_title=receipt_title
+    )
+    
+    st.markdown("### 📸 SEE PHOTO & DOWNLOAD PAYROLL RECEIPT")
+    st.components.v1.html(html, height=650, scrolling=True)
+
+    if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
+        if receipt_title.strip():
+            archive_path = save_report_html("payroll", html, title=receipt_title)
+            st.success(f"Saved to archive: {archive_path}")
+        else:
+            st.warning("Please enter a title before saving.")
+    
+    st.download_button(
+        label="⬇️ DOWNLOAD PAYROLL REPORT HTML",
+        data=html,
+        file_name="payroll_report.html",
+        mime="text/html",
+        use_container_width=True
+    )
+
+    if st.button("📁 OPEN RECEIPT ARCHIVE", use_container_width=True):
+        set_view("receipt_archive")
+    
+    if st.button("📧 EMAIL PAYROLL REPORT", use_container_width=True):
+        try:
+            msg = EmailMessage()
+            msg['Subject'] = f"Construction Report: PHP {total:,.2f} - {datetime.now().strftime('%Y-%m-%d')}"
+            msg['From'] = SENDER_EMAIL
+            msg['To'] = RECEIVER_EMAIL
+            msg.add_alternative(html, subtype='html')
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login(SENDER_EMAIL, SENDER_PASSWORD)
+                smtp.send_message(msg)
+            st.success("🚀 SUCCESS! Emailed report.")
+        except Exception as e:
+            st.error(f"❌ EMAIL FAILED: {e}")
+
+elif view == "receipt_archive":
+    st.subheader("📁 RECEIPT ARCHIVE")
+    st.caption("Browse saved receipts in neat construction and payroll folders.")
+
+    if st.button("⬅️ BACK TO CONSTRUCTION EXPORT", use_container_width=True):
+        set_view("export")
+    if st.button("⬅️ BACK TO PAYROLL EXPORT", use_container_width=True):
+        set_view("payroll_export")
+
+    for title, report_type in [("🏗️ Construction Receipts", "construction"), ("👷 Payroll Receipts", "payroll")]:
+        with st.expander(title, expanded=True):
+            saved_reports = list_saved_reports(report_type)
+            if not saved_reports:
+                st.info(f"No saved {report_type} receipts yet.")
+                continue
+
+            for report_path in saved_reports:
+                st.markdown(f"- **{report_path.name}**")
+                with open(report_path, "r", encoding="utf-8") as handle:
+                    report_html = handle.read()
+                
+                st.components.v1.html(report_html, height=400, scrolling=True)
+                
+                st.download_button(
+                    label="⬇️ DOWNLOAD THIS RECEIPT HTML",
+                    data=report_html,
+                    file_name=report_path.name,
+                    mime="text/html",
+                    use_container_width=True,
+                    key=f"download_{report_type}_{report_path.name}"
+                )
+                if st.button("🗑️ DELETE THIS RECEIPT", key=f"delete_{report_type}_{report_path.name}", use_container_width=True):
+                    delete_report_file(report_path)
+                    st.success(f"Deleted: {report_path.name}")
+                    st.rerun()
+
+else:
+    st.info("Welcome to AILY OS. Use the sidebar to navigate.")
