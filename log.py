@@ -1034,83 +1034,38 @@ elif view == "planner_output":
 
 elif view == "material":
     st.subheader("➕ ADD MATERIAL")
-    st.caption("📅 Choose the purchase date, then CLICK a material below.")
-
-    # Quick-click material list.
-    # The client can select a common material without typing its name.
-    QUICK_MATERIALS = [
-        "CHB #6",
-        "CHB #4",
-        "HOLCIM CEMENT",
-        "GRAVEL",
-        "SAND",
-        "COCOLUMBER 2X4X12",
-        "COCOLUMBER 2X3X12",
-        "REBAR 10MM",
-        "REBAR 16MM",
-        'PVC PIPE 2"',
-        'PVC PIPE 3"',
-        'PVC PIPE 4"',
-        "PVC GLUE",
-        "WELDING RODS",
-        "GLOVES",
-        "RICE",
-        "SACKS",
-        'NAIL 2"',
-        'NAIL 3"',
-        'NAIL 4"',
-        "CONCRETE NAILS 4",
-        "CUTTING DISC",
-        "CUTTING DISC CEMENT",
-    ]
+    st.caption("📅 Select the actual date the materials were purchased.")
 
     with st.form(key="material_form", clear_on_submit=True):
+        # Client can click the calendar, change month/year, and choose the exact purchase day.
         purchase_date = st.date_input(
             "📅 MATERIAL PURCHASE DATE",
             value=datetime.now().date(),
             format="DD/MM/YYYY"
         )
 
-        selected_material = st.selectbox(
-            "🧱 CLICK / SELECT MATERIAL",
-            QUICK_MATERIALS,
-            index=0,
-            help="Click the box and choose the material. The material name is filled automatically."
+        name = st.text_input(
+            "Material Name",
+            placeholder="Example: Cement"
         )
-
-        # Optional custom material.
-        use_custom = st.checkbox("✏️ USE CUSTOM MATERIAL NAME")
-
-        if use_custom:
-            name = st.text_input(
-                "Custom Material Name",
-                placeholder="Type another material..."
-            )
-        else:
-            name = selected_material
-            st.success(f"✅ SELECTED: {name}")
-
         price = st.number_input(
             "Price",
             min_value=0.01,
             value=None,
             placeholder="0.00"
         )
-
         qty = st.number_input(
             "Qty",
             min_value=1,
             value=None,
             placeholder="1"
         )
-
         delivery = st.number_input(
             "Delivery",
             min_value=0.0,
             value=None,
             placeholder="0.00"
         )
-
         sender = st.selectbox("Sender", ["Garr", "Aily"])
 
         submitted = st.form_submit_button(
@@ -1119,8 +1074,8 @@ elif view == "material":
         )
 
         if submitted:
-            if not name or not name.strip():
-                st.warning("Please select or enter a material.")
+            if not name.strip():
+                st.warning("Please enter the material name.")
             elif not price or price <= 0:
                 st.warning("Please enter the material price.")
             elif not qty or qty <= 0:
@@ -1135,18 +1090,15 @@ elif view == "material":
                     sender,
                     purchase_date
                 )
-
                 if ok:
                     st.success(
-                        f"✅ {name.upper()} saved for "
-                        f"{purchase_date.strftime('%B %d, %Y')}!"
+                        f"Material saved for {purchase_date.strftime('%B %d, %Y')}!"
                     )
                     st.rerun()
+                else:
+                    st.warning("Invalid material data.")
 
     st.divider()
-    st.markdown("### 🧱 QUICK MATERIAL LIST")
-    st.caption("The list above is used for fast entry. Choose CUSTOM MATERIAL for anything not listed.")
-
     if st.button("🏠 RETURN TO HOME", use_container_width=True):
         set_view("home")
 
