@@ -2,16 +2,93 @@
   "records": [],
   "labor_records": [
     {
-      "name": "1.1",
-      "role": "Labor",
-      "days": 1.1,
-      "rate": 500.0,
-      "gross_pay": 562.5,
+      "name": "ARMANDO",
+      "role": "Forman",
+      "days": 5.0,
+      "rate": 800.0,
+      "gross_pay": 4000.0,
       "ca": 0.0,
-      "net": 562.5
+      "net": 4000.0
+    },
+    {
+      "name": "MIKE",
+      "role": "Skill",
+      "days": 6.0,
+      "rate": 650.0,
+      "gross_pay": 3900.0,
+      "ca": 0.0,
+      "net": 3900.0
+    },
+    {
+      "name": "MASON",
+      "role": "Skill",
+      "days": 5.0,
+      "rate": 650.0,
+      "gross_pay": 3250.0,
+      "ca": 0.0,
+      "net": 3250.0
+    },
+    {
+      "name": "YAHMARK",
+      "role": "Labor",
+      "days": 6.0,
+      "rate": 500.0,
+      "gross_pay": 3000.0,
+      "ca": 0.0,
+      "net": 3000.0
+    },
+    {
+      "name": "YAH TAGALOG",
+      "role": "Labor",
+      "days": 6.0,
+      "rate": 500.0,
+      "gross_pay": 3000.0,
+      "ca": 0.0,
+      "net": 3000.0
+    },
+    {
+      "name": "AMAHAN",
+      "role": "Labor",
+      "days": 6.0,
+      "rate": 500.0,
+      "gross_pay": 3000.0,
+      "ca": 0.0,
+      "net": 3000.0
+    },
+    {
+      "name": "YAH UNION",
+      "role": "Labor",
+      "days": 5.5,
+      "rate": 500.0,
+      "gross_pay": 2750.0,
+      "ca": 0.0,
+      "net": 2750.0
+    },
+    {
+      "name": "YAH UDONG ",
+      "role": "Labor",
+      "days": 5.0,
+      "rate": 500.0,
+      "gross_pay": 2500.0,
+      "ca": 0.0,
+      "net": 2500.0
+    },
+    {
+      "name": "AKO",
+      "role": "Labor",
+      "days": 6.0,
+      "rate": 500.0,
+      "gross_pay": 3000.0,
+      "ca": 0.0,
+      "net": 3000.0
     }
   ],
-  "payroll_expenses": [],
+  "payroll_expenses": [
+    {
+      "item": "GAS",
+      "price": 200.0
+    }
+  ],
   "planner_tasks": [],
   "budget": 0.0,
   "remaining_money": 0.0,

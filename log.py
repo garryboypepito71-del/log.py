@@ -156,16 +156,24 @@ def clear_all():
 def persist_state():
     save_state(st.session_state)
 
-def add_tx(name, price, qty, delivery, ttype, sender):
+def add_tx(name, price, qty, delivery, ttype, sender, purchase_date=None):
     p = float(price or 0.0)
     q = int(qty or 0)
     d = float(delivery or 0.0)
     if p <= 0 or q <= 0:
         return False
+
     amount = (p * q) + d if ttype == "material" else p
+
+    # Materials can use a client-selected purchase date.
+    # Expenses/excess entries keep using today's date unless a date is supplied.
+    if purchase_date is None:
+        purchase_date = datetime.now().date()
+
     st.session_state.records.append({
         "id": str(time.time()),
-        "date": datetime.now().strftime("%b %d, %Y"),
+        "date": purchase_date.strftime("%b %d, %Y"),
+        "date_obj": purchase_date.strftime("%Y-%m-%d"),
         "name": name.upper(),
         "price": p,
         "qty": q,
@@ -1026,20 +1034,70 @@ elif view == "planner_output":
 
 elif view == "material":
     st.subheader("➕ ADD MATERIAL")
+    st.caption("📅 Select the actual date the materials were purchased.")
+
     with st.form(key="material_form", clear_on_submit=True):
-        name = st.text_input("Material Name")
-        price = st.number_input("Price", min_value=0.01, value=None, placeholder="0.00")
-        qty = st.number_input("Qty", min_value=1, value=None, placeholder="1")
-        delivery = st.number_input("Delivery", min_value=0.0, value=None, placeholder="0.00")
+        # Client can click the calendar, change month/year, and choose the exact purchase day.
+        purchase_date = st.date_input(
+            "📅 MATERIAL PURCHASE DATE",
+            value=datetime.now().date(),
+            format="DD/MM/YYYY"
+        )
+
+        name = st.text_input(
+            "Material Name",
+            placeholder="Example: Cement"
+        )
+        price = st.number_input(
+            "Price",
+            min_value=0.01,
+            value=None,
+            placeholder="0.00"
+        )
+        qty = st.number_input(
+            "Qty",
+            min_value=1,
+            value=None,
+            placeholder="1"
+        )
+        delivery = st.number_input(
+            "Delivery",
+            min_value=0.0,
+            value=None,
+            placeholder="0.00"
+        )
         sender = st.selectbox("Sender", ["Garr", "Aily"])
-        submitted = st.form_submit_button(label="SAVE MATERIAL")
+
+        submitted = st.form_submit_button(
+            label="💾 SAVE MATERIAL",
+            use_container_width=True
+        )
+
         if submitted:
-            ok = add_tx(name, price, qty, delivery or 0.0, "material", sender)
-            if ok:
-                st.success("Saved! Ready for next order.")
-                st.rerun()
+            if not name.strip():
+                st.warning("Please enter the material name.")
+            elif not price or price <= 0:
+                st.warning("Please enter the material price.")
+            elif not qty or qty <= 0:
+                st.warning("Please enter the quantity.")
             else:
-                st.warning("Invalid data, please fill out Price and Qty.")
+                ok = add_tx(
+                    name,
+                    price,
+                    qty,
+                    delivery or 0.0,
+                    "material",
+                    sender,
+                    purchase_date
+                )
+                if ok:
+                    st.success(
+                        f"Material saved for {purchase_date.strftime('%B %d, %Y')}!"
+                    )
+                    st.rerun()
+                else:
+                    st.warning("Invalid material data.")
+
     st.divider()
     if st.button("🏠 RETURN TO HOME", use_container_width=True):
         set_view("home")
