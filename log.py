@@ -1034,10 +1034,37 @@ elif view == "planner_output":
 
 elif view == "material":
     st.subheader("➕ ADD MATERIAL")
-    st.caption("📅 Select the actual date the materials were purchased.")
+    st.caption("📅 Choose the purchase date. For the material, the client can CLICK a quick material button OR WRITE any material name manually.")
+
+    QUICK_MATERIALS = [
+        "CHB #6", "CHB #4", "HOLCIM CEMENT", "GRAVEL", "SAND",
+        "COCOLUMBER 2X4X12", "COCOLUMBER 2X3X12", "REBAR 10MM", "REBAR 16 MM",
+        "PVC PIPE 2", "PVC PIPE 3", "PVC PIPE 4", "PVC GLUE", "WELDING RODS",
+        "GLOVES", "RICE", "SACKS", "NAIL 2", "NAIL 3", "NAIL 4",
+        "CONCRETE NAILS", "CUTTING DISC", "CUTTING DISC CEMENT",
+    ]
+
+    if "material_name_input" not in st.session_state:
+        st.session_state.material_name_input = ""
+
+    st.markdown("### ⚡ QUICK MATERIALS")
+    st.caption("Click a material to automatically fill the name, or skip the buttons and type your own below.")
+
+    for start in range(0, len(QUICK_MATERIALS), 5):
+        cols = st.columns(5)
+        for col, material in zip(cols, QUICK_MATERIALS[start:start + 5]):
+            with col:
+                if st.button(
+                    material,
+                    key=f"quick_material_{start}_{material}",
+                    use_container_width=True
+                ):
+                    st.session_state.material_name_input = material
+                    st.rerun()
+
+    st.divider()
 
     with st.form(key="material_form", clear_on_submit=True):
-        # Client can click the calendar, change month/year, and choose the exact purchase day.
         purchase_date = st.date_input(
             "📅 MATERIAL PURCHASE DATE",
             value=datetime.now().date(),
@@ -1045,55 +1072,29 @@ elif view == "material":
         )
 
         name = st.text_input(
-            "Material Name",
-            placeholder="Example: Cement"
+            "Material Name — CLICK A MATERIAL ABOVE OR TYPE YOUR OWN",
+            key="material_name_input",
+            placeholder="Example: Cement, CHB #6, or any material"
         )
-        price = st.number_input(
-            "Price",
-            min_value=0.01,
-            value=None,
-            placeholder="0.00"
-        )
-        qty = st.number_input(
-            "Qty",
-            min_value=1,
-            value=None,
-            placeholder="1"
-        )
-        delivery = st.number_input(
-            "Delivery",
-            min_value=0.0,
-            value=None,
-            placeholder="0.00"
-        )
+        price = st.number_input("Price", min_value=0.01, value=None, placeholder="0.00")
+        qty = st.number_input("Qty", min_value=1, value=None, placeholder="1")
+        delivery = st.number_input("Delivery", min_value=0.0, value=None, placeholder="0.00")
         sender = st.selectbox("Sender", ["Garr", "Aily"])
 
-        submitted = st.form_submit_button(
-            label="💾 SAVE MATERIAL",
-            use_container_width=True
-        )
+        submitted = st.form_submit_button("💾 SAVE MATERIAL", use_container_width=True)
 
         if submitted:
             if not name.strip():
-                st.warning("Please enter the material name.")
+                st.warning("Please click a quick material or type a material name.")
             elif not price or price <= 0:
                 st.warning("Please enter the material price.")
             elif not qty or qty <= 0:
                 st.warning("Please enter the quantity.")
             else:
-                ok = add_tx(
-                    name,
-                    price,
-                    qty,
-                    delivery or 0.0,
-                    "material",
-                    sender,
-                    purchase_date
-                )
+                ok = add_tx(name, price, qty, delivery or 0.0, "material", sender, purchase_date)
                 if ok:
-                    st.success(
-                        f"Material saved for {purchase_date.strftime('%B %d, %Y')}!"
-                    )
+                    st.success(f"Material saved: {name.upper()} — {purchase_date.strftime('%B %d, %Y')}!")
+                    st.session_state.material_name_input = ""
                     st.rerun()
                 else:
                     st.warning("Invalid material data.")
