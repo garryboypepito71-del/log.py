@@ -236,7 +236,7 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
-<h1>AILYNHOUSEPROJECT</h1>
+<h1>AILYN HOUSEP ROJECT</h1>
 <p>Official Material & Expense Inventory</p>
 <p>Management System {APP_VERSION}</p>
 <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
@@ -723,11 +723,15 @@ label{font-weight:700!important;color:#c8e8d2!important}
 """, unsafe_allow_html=True)
 
 st.markdown("""
+</div>
+</div>
+</div>
 <div class="headbar-container">
   <div class="headbar-card">
-    <div class="headbar-title"><span class="logo-mark">AH</span> Ailyn Project Management System</div>
-    <div class="headbar-subtitle">AILYNHOUSEPROJECT • PROJECT CONTROL CENTER</div>
+    <div class="headbar-title"><span class="logo-mark">AHP</span> Ailyn Project Management System</div>
+    <div class="headbar-subtitle">AILYN HOUSE PROJECT • PROJECT CONTROL CENTER</div>
   </div>
+</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -735,15 +739,15 @@ with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
       <div class="brand-row">
-        <div class="brand-icon">AH</div>
+        <div class="brand-icon">AHP</div>
         <div>
-          <div class="brand-title">AILYNHOUSEPROJECT</div>
+          <div class="brand-title">AILYN HOUSE PROJECT</div>
           <div class="brand-sub">Ailyn Project Management System</div>
         </div>
       </div>
     </div>
     """, unsafe_allow_html=True)
-    st.caption(f"● LIVE SYSTEM  •  {datetime.now().strftime('%I:%M %p  |  %b %d')}")
+    st.caption(f" •  {datetime.now().strftime('%I:%M %p  |  %b %d')}")
     st.divider()
 
     st.subheader("Executive Overview")
@@ -763,6 +767,7 @@ with st.sidebar:
         set_view("home")
 
     st.markdown("---")
+    st.subheader("Project Control")
     st.subheader("Project Control")
     if st.button("＋  New Work Entry", use_container_width=True):
         set_view("planner_input")
