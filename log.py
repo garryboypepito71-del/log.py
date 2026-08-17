@@ -622,6 +622,8 @@ with st.sidebar:
       <div class="brand-row">
         <div class="brand-icon">AH</div>
         <div>
+        <div>
+        <div>
           <div class="brand-title">AILYNHOUSEPROJECT</div>
           <div class="brand-sub">Project Management System</div>
         </div>
