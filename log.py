@@ -88,15 +88,15 @@ def calculate_labor_pay(worked_days: float, role: str):
     gross_pay = full_days_pay + partial_days_pay
     return gross_pay, full_days_pay, partial_days_pay
 
-APP_VERSION = "Ailyn House Project v3.0 — Construction Management"
+APP_VERSION = "Ailyn BuildDesk v3.0 — Construction Management"
 RECEIVER_EMAIL = "garryboypepito2004@gmail.com"
 RECEIVER_AILYN = "ailyn_peps0678@yahoo.com"
 SENDER_EMAIL = "garryboypepito71@gmail.com"
 SENDER_PASSWORD = "fhyv cimp gync wjmj"
 
 st.set_page_config(
-    page_title="Ailyn House Project",
-    page_icon="⬡",
+    page_title="Ailyn BuildDesk",
+    page_icon="🏗️",
     layout="wide",
 )
 
@@ -481,6 +481,7 @@ def generate_planner_html(planner_tasks, custom_title="WORK SCHEDULE & CALENDAR 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
 body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0; margin: 0; padding: 30px; color: #1e293b; }}
 .receipt-card {{ max-width: 900px; margin: auto; background: #ffffff; border-radius: 12px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
 .header {{ border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; }}
@@ -563,6 +564,7 @@ function saveAsImage() {{
 
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
 :root {
   --bg-deep: #07110b;
   --text-main: #f4fff7;
@@ -617,12 +619,11 @@ div[data-baseweb="input"]:focus-within, input:focus, textarea:focus {
   }
 }
 .stApp {
-  background:
-    radial-gradient(circle at 15% 10%, rgba(62,255,160,.10), transparent 30%),
-    radial-gradient(circle at 85% 15%, rgba(0,220,255,.07), transparent 28%),
-    linear-gradient(135deg, #030806 0%, #07130d 48%, #020504 100%);
+  background: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c") no-repeat center center fixed;
+  background-size: cover;
+  background-position: center;
   min-height: 100vh;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .block-container {
   background: rgba(12, 32, 22, 0.82) !important;
@@ -683,22 +684,21 @@ section[data-testid="stSidebar"] * {
   font-weight: 700;
 }
 button, .stDownloadButton > button {
-  background: linear-gradient(145deg, rgba(34,104,66,.88), rgba(7,34,20,.92)) !important;
-  color: #ffffff !important; border-radius: 16px !important;
-  border: 1px solid rgba(132,255,179,.28) !important; font-weight: 800; min-height: 46px;
-  box-shadow: 0 6px 0 rgba(1,10,6,.75), 0 12px 22px rgba(0,0,0,.25),
-              inset 0 2px 0 rgba(255,255,255,.14) !important;
+  background: linear-gradient(135deg, rgba(22, 78, 48, 0.9), rgba(12, 48, 28, 0.85)) !important;
+  color: #ffffff !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(132, 255, 179, 0.3) !important;
+  font-weight: 700;
+  min-height: 46px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
   backdrop-filter: blur(12px);
-  transition: transform .16s ease, box-shadow .16s ease, filter .16s ease !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 button:hover, .stDownloadButton > button:hover {
-  transform: translateY(-4px); filter: brightness(1.10);
-  box-shadow: 0 10px 0 rgba(1,10,6,.68), 0 18px 30px rgba(0,0,0,.30),
-              0 0 18px rgba(74,222,128,.18), inset 0 2px 0 rgba(255,255,255,.22) !important;
-}
-button:active, .stDownloadButton > button:active {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 rgba(1,10,6,.80), inset 0 3px 7px rgba(0,0,0,.22) !important;
+  transform: translateY(-3px) scale(1.01);
+  background: linear-gradient(135deg, rgba(34, 122, 72, 0.95), rgba(20, 88, 50, 0.9)) !important;
+  border-color: rgba(132, 255, 179, 0.7) !important;
+  box-shadow: 0 12px 28px rgba(74, 222, 128, 0.25), 0 0 14px rgba(132, 255, 179, 0.35) !important;
 }
 [data-testid="stMetric"] {
   background: linear-gradient(145deg, rgba(14, 46, 28, 0.88), rgba(8, 28, 17, 0.85));
@@ -733,138 +733,51 @@ button:active, .stDownloadButton > button:active {
   color: #a7f3d0;
   font-size: 12px;
 }
-/* NEXA BUILDOPS PRO — REAL 3D GLASS SIDEBAR */
-section[data-testid="stSidebar"] {
-  background:
-    radial-gradient(circle at 20% 0%, rgba(73,255,169,.13), transparent 30%),
-    linear-gradient(180deg, rgba(5,20,13,.98), rgba(2,8,5,.99)) !important;
-  border-right: 1px solid rgba(123,255,190,.18) !important;
-  box-shadow: 18px 0 55px rgba(0,0,0,.48), inset -1px 0 rgba(255,255,255,.04) !important;
-}
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-  padding: 16px 12px 30px 12px !important;
-}
-.sidebar-brand {
+/* Premium floating glass sidebar controls */
+section[data-testid="stSidebar"] .stButton > button,
+section[data-testid="stSidebar"] .stDownloadButton > button {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px;
-  margin: 0 0 16px 0;
-  border-radius: 22px;
-  overflow: hidden;
-  background: linear-gradient(145deg, rgba(30,82,57,.72), rgba(5,22,14,.88));
-  border: 1px solid rgba(142,255,201,.28);
-  box-shadow: 0 2px 0 rgba(255,255,255,.10) inset, 0 -1px 0 rgba(0,0,0,.40) inset,
-              0 16px 28px rgba(0,0,0,.32), 0 0 35px rgba(52,255,154,.08);
-  backdrop-filter: blur(22px) saturate(150%);
-}
-.sidebar-brand::after {
-  content: "";
-  position: absolute;
-  inset: -70% -25%;
-  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.18) 50%, transparent 58%);
-  transform: translateX(-70%) rotate(8deg);
-  transition: transform .65s ease;
-  pointer-events: none;
-}
-.sidebar-brand:hover::after { transform: translateX(70%) rotate(8deg); }
-.brand-icon {
-  width: 46px; height: 46px; display: grid; place-items: center; flex: 0 0 46px;
-  border-radius: 15px; font-size: 25px; color: #baffd8 !important;
-  background: linear-gradient(145deg, #1c8b59, #063a24);
-  border: 1px solid rgba(183,255,215,.55);
-  box-shadow: 0 5px 0 #032516, 0 12px 20px rgba(0,0,0,.42),
-              inset 0 2px 0 rgba(255,255,255,.28), 0 0 22px rgba(55,255,157,.18);
-  text-shadow: 0 0 14px rgba(130,255,194,.55);
-}
-.brand-kicker { font-size: 9px; font-weight: 900; letter-spacing: .18em; color: #75eeb1 !important; }
-.sidebar-brand h3 { margin: 1px 0 2px 0; color: #f4fff8 !important; font-size: 16px; font-weight: 900; letter-spacing: .05em; }
-.sidebar-brand p { margin: 0; color: #9bcab1 !important; font-size: 10px; letter-spacing: .04em; }
-
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-  color: #a9f7c9 !important;
-  font-size: 10px !important;
-  font-weight: 900 !important;
-  letter-spacing: .16em !important;
-  text-transform: uppercase;
-  margin: 16px 5px 7px !important;
-}
-section[data-testid="stSidebar"] .stButton { margin: 0 !important; }
-section[data-testid="stSidebar"] .stButton > button {
-  position: relative;
-  isolation: isolate;
   overflow: hidden;
   width: 100%;
-  min-height: 52px;
-  margin: 5px 0 !important;
-  padding: 11px 15px !important;
-  border-radius: 17px !important;
-  color: #effff5 !important;
-  text-align: left !important;
-  border: 1px solid rgba(184,255,214,.22) !important;
-  background: linear-gradient(145deg, rgba(40,104,70,.62), rgba(6,28,17,.84)) !important;
-  box-shadow: 0 7px 0 rgba(1,10,6,.90), 0 14px 24px rgba(0,0,0,.30),
-              inset 0 2px 0 rgba(255,255,255,.14), inset 0 -2px 0 rgba(0,0,0,.26) !important;
-  backdrop-filter: blur(18px) saturate(155%);
-  transform: translateY(0) perspective(500px) rotateX(0deg);
-  transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease,
-              border-color .16s ease, filter .16s ease !important;
+  min-height: 48px;
+  margin: 6px 0;
+  padding: 10px 14px;
+  border-radius: 16px !important;
+  border: 1px solid rgba(190, 255, 218, 0.30) !important;
+  background: linear-gradient(145deg, rgba(38, 111, 70, 0.62), rgba(8, 37, 22, 0.72)) !important;
+  box-shadow: 0 8px 0 rgba(2, 18, 10, 0.72), 0 14px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,0.20) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease !important;
 }
-section[data-testid="stSidebar"] .stButton > button::before {
-  content: "";
-  position: absolute; z-index: -1; left: -80%; top: -20%; width: 55%; height: 150%;
-  background: linear-gradient(100deg, transparent, rgba(255,255,255,.22), transparent);
-  transform: skewX(-18deg);
-  transition: left .55s ease;
+section[data-testid="stSidebar"] .stButton > button:hover,
+section[data-testid="stSidebar"] .stDownloadButton > button:hover {
+  transform: translateY(-4px);
+  border-color: rgba(132, 255, 179, 0.72) !important;
+  background: linear-gradient(145deg, rgba(55, 145, 91, 0.78), rgba(11, 55, 32, 0.82)) !important;
+  box-shadow: 0 11px 0 rgba(2, 18, 10, 0.62), 0 20px 34px rgba(74, 222, 128, 0.22), inset 0 1px 0 rgba(255,255,255,0.28) !important;
 }
-section[data-testid="stSidebar"] .stButton > button::after {
-  content: "";
-  position: absolute; left: 12px; right: 12px; top: 7px; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+section[data-testid="stSidebar"] .stButton > button:active,
+section[data-testid="stSidebar"] .stDownloadButton > button:active {
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 rgba(2, 18, 10, 0.72), 0 7px 14px rgba(0,0,0,0.22), inset 0 2px 5px rgba(0,0,0,0.18) !important;
 }
-section[data-testid="stSidebar"] .stButton > button:hover {
-  transform: translateY(-5px) scale(1.012) perspective(500px) rotateX(1deg) !important;
-  border-color: rgba(143,255,192,.72) !important;
-  filter: brightness(1.13) saturate(1.08);
-  box-shadow: 0 11px 0 rgba(1,10,6,.82), 0 22px 35px rgba(0,0,0,.38),
-              0 0 24px rgba(57,255,158,.17), inset 0 2px 0 rgba(255,255,255,.22),
-              inset 0 -2px 0 rgba(0,0,0,.20) !important;
-}
-section[data-testid="stSidebar"] .stButton > button:hover::before { left: 130%; }
-section[data-testid="stSidebar"] .stButton > button:active {
-  transform: translateY(5px) scale(.992) !important;
-  box-shadow: 0 2px 0 rgba(1,10,6,.92), 0 5px 10px rgba(0,0,0,.30),
-              inset 0 3px 8px rgba(0,0,0,.25) !important;
-}
-section[data-testid="stSidebar"] .stButton > button:focus-visible {
-  outline: none !important;
-  border-color: #62ffab !important;
-  box-shadow: 0 0 0 2px rgba(98,255,171,.20), 0 8px 0 rgba(1,10,6,.86),
-              0 0 28px rgba(98,255,171,.22) !important;
-}
-section[data-testid="stSidebar"] .stButton > button p {
-  position: relative; z-index: 2; color: #effff5 !important;
-  font-weight: 850 !important; letter-spacing: .015em !important;
+section[data-testid="stSidebar"] .stButton > button p,
+section[data-testid="stSidebar"] .stDownloadButton > button p {
+  font-weight: 800 !important;
+  letter-spacing: 0.01em;
 }
 section[data-testid="stSidebar"] [data-baseweb="input"] {
-  min-height: 50px !important; border-radius: 16px !important;
-  background: rgba(4,22,14,.82) !important;
-  border: 1px solid rgba(132,255,179,.20) !important;
-  box-shadow: inset 0 3px 9px rgba(0,0,0,.34), 0 7px 15px rgba(0,0,0,.18) !important;
+  border-radius: 15px !important;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.20), 0 5px 14px rgba(0,0,0,0.16) !important;
+}
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+  padding: 18px 14px 28px 14px;
 }
 section[data-testid="stSidebar"] hr {
-  border: 0 !important; height: 1px !important; margin: 14px 4px !important;
-  background: linear-gradient(90deg, transparent, rgba(117,238,177,.20), transparent) !important;
+  border-color: rgba(132,255,179,0.16) !important;
 }
-.nexa-mark {
-  display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
-  background: linear-gradient(145deg, #2ca66b, #064128);
-  border: 1px solid rgba(177,255,211,.55);
-  box-shadow: 0 4px 0 #032516, 0 8px 18px rgba(0,0,0,.35),
-              inset 0 2px 0 rgba(255,255,255,.22);
-}
+
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -942,8 +855,8 @@ section[data-testid="stSidebar"] hr {
 st.markdown("""
 <div class="headbar-container">
 <div class="headbar-card">
-<div class="headbar-title"><span class="nexa-mark">⬡</span> NEXA BUILDOPS PRO</div>
-<div class="headbar-subtitle">OPERATIONS • FINANCE • PAYROLL • PROJECT CONTROL</div>
+<div class="headbar-title">🏗️ AILYN BUILDDESK</div>
+<div class="headbar-subtitle">Construction • Payroll • Finance</div>
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -951,23 +864,19 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
-    <div class="brand-icon">⬡</div>
-    <div class="brand-copy">
-      <div class="brand-kicker">NEXA SYSTEMS</div>
-      <h3>BUILDOPS PRO</h3>
-      <p>Command • Finance • Payroll • Projects</p>
-    </div>
+    <h3>🏗️ BUILDDESK CONTROL CENTER</h3>
+    <p>Projects • Finance • Payroll • Schedule</p>
     </div>
     """, unsafe_allow_html=True)
     st.caption(f"{datetime.now().strftime('%I:%M%p | %b %d')}")
     st.divider()
     
-    st.subheader("◈ COMMAND CENTER")
-    if st.button("◈  COMMAND DASHBOARD", use_container_width=True):
+    st.subheader("💎 Account Center")
+    if st.button("📈 Financial Dashboard", use_container_width=True):
         set_view("home")
         
     budget_input = st.number_input("Set Balance Account Budget", min_value=0.0, key="budget_input_sidebar", value=None, placeholder="Enter budget...")
-    if st.button("◆  APPLY BUDGET", use_container_width=True):
+    if st.button("APPLY BUDGET", use_container_width=True):
         if budget_input is not None:
             st.session_state.budget = float(budget_input)
             persist_state()
@@ -976,46 +885,46 @@ with st.sidebar:
         else:
             st.warning("Please enter a budget amount.")
             
-    if st.button("⟳  RESET SYSTEM", use_container_width=True):
+    if st.button("🔄 RESET SYSTEM", use_container_width=True):
         clear_all()
         set_view("home")
         
     st.markdown("---")
-    st.subheader("▦ PROJECT OPERATIONS")
+    st.subheader("📅 Project Planner")
     col_p1, col_p2 = st.columns(2)
     with col_p1:
-        if st.button("＋  NEW PROJECT ENTRY", use_container_width=True):
+        if st.button("➕ Entry Input", use_container_width=True):
             set_view("planner_input")
     with col_p2:
-        if st.button("▦  LIVE SCHEDULE", use_container_width=True):
+        if st.button("📋 Schedule Log", use_container_width=True):
             set_view("planner_output")
             
     st.markdown("---")
-    st.subheader("◇ FINANCIAL CONTROL")
-    if st.button("＋  MATERIAL ENTRY", use_container_width=True):
+    st.subheader("💰 Financial Center")
+    if st.button("➕ Post Material Entry", use_container_width=True):
         set_view("material")
-    if st.button("＋  EXPENSE ENTRY", use_container_width=True):
+    if st.button("➕ Post Expense Entry", use_container_width=True):
         set_view("expense")
-    if st.button("＋  DEPOSIT / EXCESS", use_container_width=True):
+    if st.button("➕ Post Excess Deposit", use_container_width=True):
         set_view("excess")
-    if st.button("▤  FINANCIAL LEDGER", use_container_width=True):
+    if st.button("📖 View Account Ledger", use_container_width=True):
         set_view("ledger")
-    if st.button("⇩  FINANCIAL REPORT", use_container_width=True):
+    if st.button("📄 Export Financial Report", use_container_width=True):
         set_view("export")
         
     st.markdown("---")
-    st.subheader("◎ PAYROLL CONTROL")
-    if st.button("＋  LABOR ACCOUNT", use_container_width=True):
+    st.subheader("👷 Payroll Center")
+    if st.button("➕ Post Labor Account", use_container_width=True):
         set_view("add_labor")
-    if st.button("＋  PAYROLL EXPENSE", use_container_width=True):
+    if st.button("➕ Post Payroll Expense", use_container_width=True):
         set_view("add_payroll_expense")
-    if st.button("◌  REMAINING BALANCE", use_container_width=True):
+    if st.button("⚙️ Set Account Remainder", use_container_width=True):
         set_view("payroll_remaining")
-    if st.button("▤  LABOR LEDGER", use_container_width=True):
+    if st.button("📋 View Labor Accounts", use_container_width=True):
         set_view("payroll_ledger")
-    if st.button("⇩  PAYROLL REPORT", use_container_width=True):
+    if st.button("📄 Export Payroll Report", use_container_width=True):
         set_view("payroll_export")
-    if st.button("▣  RECEIPT VAULT", use_container_width=True):
+    if st.button("📂 Account Receipt Archive", use_container_width=True):
         set_view("receipt_archive")
 
 view = st.session_state.view
@@ -1458,4 +1367,4 @@ elif view == "receipt_archive":
                     st.rerun()
 
 else:
-    st.info("Welcome to NEXA BuildOps Pro. Use the command center to navigate.")
+    st.info("Welcome to AILY OS. Use the sidebar to navigate.")
