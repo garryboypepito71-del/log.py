@@ -730,11 +730,11 @@ section[data-testid="stSidebar"]::-webkit-scrollbar-thumb{background:linear-grad
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 """, unsafe_allow_html=True)
-
 st.markdown("""
 </div>
-</div>
-</div>
+""", unsafe_allow_html=True)
+
+st.markdown("""
 <div class="headbar-container">
   <div class="headbar-card">
     <div class="headbar-title"><span class="logo-mark">AH</span> Ailyn Project Management System</div>
