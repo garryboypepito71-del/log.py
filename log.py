@@ -734,6 +734,10 @@ st.markdown("""
 </div>
 </div>
 """, unsafe_allow_html=True)
+st.markdown("""
+</div>
+</div>
+""", unsafe_allow_html=True)
 
 
 st.markdown("""
