@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap');
+body { font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 20px; color: #333; }
+.receipt-container { max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }
+.header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }
+.company-info h1 { color: #1b5e20; margin: 0; font-size: 24px; letter-spacing: -1px; }
+.company-info p { margin: 4px 0; font-size: 12px; color: #666; }
+.receipt-meta { text-align: left; margin-top: 10px; }
+@media (min-width: 768px) { .receipt-meta { text-align: right; margin-top: 0; } }
+.receipt-meta h2 { margin: 0; font-size: 16px; text-transform: uppercase; color: #1b5e20; }
+.receipt-meta p { margin: 4px 0; font-size: 12px; font-weight: bold; }
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+th { background-color: #1b5e20; color: #ffffff; text-align: left; padding: 10px; text-transform: uppercase; letter-spacing: 1px; }
+td { padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }
+.qty-col, .desccol, .pricecol, .deliverycol, .totalcol { text-align: left; }
+.desccol { font-weight: 700; color: #1b5e20; }
+.summary-container { display: flex; justify-content: flex-end; }
+.summary-table { width: 100%; }
+@media (min-width: 768px) { .summary-table { width: 420px; } }
+.grand-total { background: #1b5e20; color: white; padding: 20px; border-radius: 4px; margin-top: 15px; }
+.balance-info { font-size: 13px; line-height: 1.8; }
+.balance-row { display: flex; justify-content: space-between; }
+.material-row { font-size: 18px; font-weight: bold; }
+.final-balance-row { display: flex; justify-content: space-between; border-top: 1px dashed rgba(255,255,255,0.4); margin-top: 8px; padding-top: 8px; font-size: 18px; font-weight: bold; }
+.footer { margin-top: 30px; text-align: center; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+.save-btn-container { text-align: center; margin-bottom: 25px; }
+.save-img-btn { background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+.save-img-btn:hover { background-color: #2e7d32; }
+@media print { .save-btn-container { display: none; } }
+</style>
+</head>
+<body>
+<div class="save-btn-container">
+<button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO & DOWNLOAD IMAGE (Phone & Laptop)</button>
+</div>
+<div class="receipt-container" id="receiptContent">
+<div class="header">
+<div class="company-info">
+<h1>AILYN HOUSE PROJECT</h1>
+<p>Official Material & Expense Inventory</p>
+<p>Management System AILY OS v30001 — GREEN EMERALD CORE</p>
+<p>Backup Receiver: <i>ailyn_peps0678@yahoo.com</i></p>
+</div>
+<div class="receipt-meta">
+<h2>Construction Receipt</h2>
+<p>Date: August 17, 2026</p>
+</div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th class="qty-col">Qty</th>
+<th class="desccol">Description</th>
+<th class="pricecol">Unit Price</th>
+<th class="deliverycol">Delivery</th>
+<th class="totalcol">Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">60</td>
+<td class="desccol">EMPTY SACK</td>
+<td class="pricecol">8.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 480.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">TAPE</td>
+<td class="pricecol">29.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 29.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">CHUCK KEY</td>
+<td class="pricecol">99.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 99.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">CARBON BRUSH</td>
+<td class="pricecol">104.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 104.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">GROCERY</td>
+<td class="pricecol">466.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 466.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">GAS</td>
+<td class="pricecol">1,175.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 1,175.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">2 KILO OIL</td>
+<td class="pricecol">85.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 170.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">300</td>
+<td class="desccol">CHB</td>
+<td class="pricecol">23.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 6,900.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">GRAVEL</td>
+<td class="pricecol">2,700.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 2,700.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">GLOVES</td>
+<td class="pricecol">32.40</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 64.80</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">10</td>
+<td class="desccol">TARPULIN</td>
+<td class="pricecol">20.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 200.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">BAG</td>
+<td class="pricecol">60.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 60.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">27</td>
+<td class="desccol">10MM REBAR</td>
+<td class="pricecol">130.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 3,510.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">400</td>
+<td class="desccol">CHB #6</td>
+<td class="pricecol">25.00</td>
+<td class="deliverycol">150.00</td>
+<td class="totalcol">PHP 10,150.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">40</td>
+<td class="desccol">HOLCIM CEMENT</td>
+<td class="pricecol">195.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 7,800.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">WELDING ROD</td>
+<td class="pricecol">160.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 160.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">SAND</td>
+<td class="pricecol">2,300.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 4,600.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">100</td>
+<td class="desccol">10 MM REBAR</td>
+<td class="pricecol">130.00</td>
+<td class="deliverycol">150.00</td>
+<td class="totalcol">PHP 13,150.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">3</td>
+<td class="desccol">RICE</td>
+<td class="pricecol">1,300.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 3,900.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">EGG</td>
+<td class="pricecol">531.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 531.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">NYLON #70</td>
+<td class="pricecol">50.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 100.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">TIREWIRE</td>
+<td class="pricecol">1,060.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 1,060.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">70</td>
+<td class="desccol">HOLCIM CEMENT</td>
+<td class="pricecol">195.00</td>
+<td class="deliverycol">200.00</td>
+<td class="totalcol">PHP 13,850.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">3</td>
+<td class="desccol">NYLON</td>
+<td class="pricecol">50.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 150.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">TERMITE</td>
+<td class="pricecol">1,650.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 3,300.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">GRAVEL</td>
+<td class="pricecol">2,700.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 5,400.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">SAND</td>
+<td class="pricecol">2,300.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 2,300.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">SAND</td>
+<td class="pricecol">2,300.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 4,600.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">GRAVEL</td>
+<td class="pricecol">2,700.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 5,400.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">FINE SAND</td>
+<td class="pricecol">2,200.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 2,200.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">200</td>
+<td class="desccol">CHB # 4</td>
+<td class="pricecol">20.00</td>
+<td class="deliverycol">150.00</td>
+<td class="totalcol">PHP 4,150.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">SOLVENT</td>
+<td class="pricecol">100.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 100.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">CIRCULAR SAW</td>
+<td class="pricecol">509.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 509.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">COST</td>
+<td class="pricecol">16,711.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 16,711.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">NAIL #2</td>
+<td class="pricecol">57.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 57.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">PHENOLIC</td>
+<td class="pricecol">850.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 1,700.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">DIAMOND DISC </td>
+<td class="pricecol">299.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 299.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">4</td>
+<td class="desccol">NAIL #2</td>
+<td class="pricecol">57.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 228.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">WELDING ROD</td>
+<td class="pricecol">160.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 160.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">GAS</td>
+<td class="pricecol">1,195.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 1,195.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">RICE</td>
+<td class="pricecol">2,640.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 5,280.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">2</td>
+<td class="desccol">OIL</td>
+<td class="pricecol">88.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 176.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">7</td>
+<td class="desccol">GLOVES</td>
+<td class="pricecol">49.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 343.00</td>
+</tr>
+<tr>
+<td>Aug 17, 2026</td>
+<td class="qty-col">1</td>
+<td class="desccol">GROCERY</td>
+<td class="pricecol">500.00</td>
+<td class="deliverycol">0.00</td>
+<td class="totalcol">PHP 500.00</td>
+</tr>
+</tbody>
+</table>
+<div class="summary-container">
+<div class="summary-table">
+<div class="grand-total">
+<div class="balance-info">
+<div class="balance-row material-row">
+<span>Material/Expense Total:</span>
+<span>PHP 126,016.80</span>
+</div>
+<div class="balance-row" style="font-size: 13px; margin-top: 4px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 4px;">
+<span>Excess Money Total:</span>
+<span style="color: #a5d6a7;">PHP 0.00</span>
+</div>
+<div class="balance-row" style="font-size: 13px;">
+<span>Total Budget:</span>
+<span>PHP 0.00</span>
+</div>
+
+<div class="final-balance-row">
+<span>SHORTAGE</span>
+<span style="color: #e57373;">PHP 126,016.80</span>
+</div>
+<div class="final-balance-row">
+<span>FINAL BALANCE</span>
+<span style="color: #ffffff;">PHP -126,016.80</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="footer">
+This document was electronically generated and is valid without signature.
+</div>
+</div>
+<script>
+function saveAsImage() {
+    const element = document.getElementById('receiptContent');
+    html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'Construction_Receipt_Receipt.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+}
+</script>
+</body>
+</html>
