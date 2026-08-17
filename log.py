@@ -236,7 +236,7 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
-<h1>AILYN HOUSEP ROJECT</h1>
+<h1>AILYNHOUSEPROJECT</h1>
 <p>Official Material & Expense Inventory</p>
 <p>Management System {APP_VERSION}</p>
 <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
@@ -592,34 +592,36 @@ html,body,[class*="css"]{font-family:'Manrope',sans-serif}
 /* top command deck */
 .headbar-container{display:flex;justify-content:center;margin:0 auto 28px}
 .headbar-card{
- width:100%;position:relative;overflow:hidden;padding:18px 22px 17px;
- display:flex;align-items:center;justify-content:space-between;gap:20px;
- border-radius:26px;background:linear-gradient(105deg,rgba(10,55,32,.90),rgba(4,25,16,.78));
- border:1px solid rgba(166,255,197,.25);
- box-shadow:0 18px 42px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.15);
+ position:relative;overflow:hidden;width:100%;min-height:92px;
+ padding:18px 24px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;text-align:center;gap:7px;
+ border-radius:26px;background:linear-gradient(135deg,rgba(20,91,55,.88),rgba(8,48,30,.82));
+ border:1px solid rgba(184,255,211,.28);
+ box-shadow:0 18px 42px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18);
 }
 .headbar-card:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,.08) 42%,transparent 54%);transform:translateX(-120%);animation:scan 8s linear infinite}
-.headbar-title{position:relative;display:flex;align-items:center;gap:13px;color:#fff!important;font-family:'Outfit';font-size:20px!important;font-weight:900;letter-spacing:.055em}
-.headbar-subtitle{position:relative;color:#aeeec3;font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:800;text-align:right}
-.logo-mark,.brand-icon{
- display:grid;place-items:center;font-family:'Outfit';font-weight:900;
- color:#062613!important;background:linear-gradient(145deg,#d6ffe5 0%,#65efa0 45%,#20a963 100%);
- border:1px solid rgba(255,255,255,.65);
- box-shadow:0 5px 0 #0b4a2b,0 13px 28px rgba(58,220,125,.30),inset 0 2px 0 rgba(255,255,255,.8);
+.headbar-title{
+ position:relative;display:flex;align-items:center;justify-content:center;
+ gap:12px;width:100%;text-align:center;color:#fff!important;
+ font-family:'Outfit';font-size:22px!important;font-weight:800;
+ letter-spacing:.025em;line-height:1.15;
 }
 .logo-mark{width:40px;height:40px;border-radius:13px;font-size:16px}
 
 /* sidebar: floating command rail */
 section[data-testid="stSidebar"]{
- background:linear-gradient(180deg,rgba(2,14,9,.97),rgba(4,24,14,.96))!important;
- border-right:1px solid rgba(170,255,198,.17)!important;
- box-shadow:18px 0 60px rgba(0,0,0,.48)!important;
+ background:linear-gradient(180deg,rgba(12,48,31,.96),rgba(8,39,25,.96))!important;
+ border-right:1px solid rgba(184,255,211,.24)!important;
+ box-shadow:12px 0 45px rgba(0,0,0,.28)!important;
 }
 section[data-testid="stSidebar"]>div{padding:16px 13px 24px!important}
-section[data-testid="stSidebar"] *{color:#edfff3!important}
+section[data-testid="stSidebar"] *{
+ color:#effff5!important;
+ font-family:'Manrope','Segoe UI',sans-serif!important;
+}
 .sidebar-brand{
  position:relative;overflow:hidden;padding:15px;border-radius:24px;margin-bottom:12px;
- background:linear-gradient(145deg,rgba(24,89,52,.92),rgba(5,30,18,.82));
+ background:linear-gradient(145deg,rgba(35,116,70,.90),rgba(11,57,35,.88));
  border:1px solid rgba(163,255,194,.25);
  box-shadow:0 16px 34px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.16);
 }
@@ -629,8 +631,11 @@ section[data-testid="stSidebar"] *{color:#edfff3!important}
 .brand-title{font-family:'Outfit';font-size:14px;font-weight:900;letter-spacing:.075em}
 .brand-sub{font-size:9px;color:#a8eac0!important;letter-spacing:.13em;text-transform:uppercase;margin-top:4px}
 section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
- font-family:'Outfit';font-size:9px!important;letter-spacing:.20em;text-transform:uppercase;
- color:#76e9a3!important;margin:18px 5px 7px!important;
+ font-family:'Outfit','Manrope',sans-serif!important;
+ font-size:9px!important;line-height:1.2!important;
+ letter-spacing:.15em;text-transform:uppercase;
+ color:#a8edc1!important;margin:18px 5px 8px!important;
+ font-weight:800!important;
 }
 section[data-testid="stSidebar"] hr{border-color:rgba(170,255,198,.10)!important;margin:10px 4px!important}
 
@@ -653,7 +658,11 @@ section[data-testid="stSidebar"] button:hover{
  box-shadow:0 8px 0 rgba(1,12,7,.92),0 18px 32px rgba(0,0,0,.40),0 0 25px rgba(70,230,132,.14),inset 0 1px 0 rgba(255,255,255,.20)!important;
 }
 section[data-testid="stSidebar"] button:active{transform:translate3d(2px,4px,0)!important;box-shadow:0 2px 0 rgba(1,12,7,.9),0 6px 12px rgba(0,0,0,.3)!important}
-section[data-testid="stSidebar"] button p{font-family:'Manrope'!important;font-weight:800!important;font-size:12px!important;letter-spacing:.01em}
+section[data-testid="stSidebar"] button p{
+ font-family:'Manrope','Segoe UI',sans-serif!important;
+ font-weight:650!important;font-size:11px!important;
+ letter-spacing:.015em;line-height:1.2;
+}
 
 /* general controls */
 button,.stDownloadButton>button,.stFormSubmitButton>button{
@@ -715,23 +724,21 @@ label{font-weight:700!important;color:#c8e8d2!important}
 @keyframes scan{0%,55%{transform:translateX(-130%)}80%,100%{transform:translateX(180%)}}
 @media(max-width:768px){
  .block-container{padding:18px 12px 24px!important;margin:8px!important;border-radius:24px}
- .headbar-card{display:block;text-align:center}.headbar-title{justify-content:center;font-size:16px!important}.headbar-subtitle{text-align:center;margin-top:7px}
- .cal-grid{grid-template-columns:1fr}
+ .headbar-card{display:block;text-align:center}.headbar-title{justify-content:center;font-size:16px!important}.headbar-subtitle{
+ position:relative;width:100%;text-align:center;color:#b9e9c9;
+ font-family:'Manrope';font-size:9px;letter-spacing:.18em;
+ text-transform:uppercase;font-weight:700;
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
-</div>
-</div>
-</div>
 <div class="headbar-container">
   <div class="headbar-card">
-    <div class="headbar-title"><span class="logo-mark">AHP</span> Ailyn Project Management System</div>
-    <div class="headbar-subtitle">AILYN HOUSE PROJECT • PROJECT CONTROL CENTER</div>
+    <div class="headbar-title"><span class="logo-mark">AH</span> Ailyn Project Management System</div>
+    <div class="headbar-subtitle">AILYNHOUSEPROJECT • PROJECT CONTROL CENTER</div>
   </div>
-</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -739,22 +746,22 @@ with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
       <div class="brand-row">
-        <div class="brand-icon">AHP</div>
+        <div class="brand-icon">AH</div>
         <div>
-          <div class="brand-title">AILYN HOUSE PROJECT</div>
+          <div class="brand-title">AILYNHOUSEPROJECT</div>
           <div class="brand-sub">Ailyn Project Management System</div>
         </div>
       </div>
     </div>
     """, unsafe_allow_html=True)
-    st.caption(f" •  {datetime.now().strftime('%I:%M %p  |  %b %d')}")
+    st.caption(f"● LIVE SYSTEM  •  {datetime.now().strftime('%I:%M %p  |  %b %d')}")
     st.divider()
 
     st.subheader("Executive Overview")
-    if st.button("◉  Dashboard", use_container_width=True):
+    if st.button("01   Dashboard", use_container_width=True):
         set_view("home")
     budget_input = st.number_input("Set Account Budget", min_value=0.0, key="budget_input_sidebar", value=None, placeholder="Enter budget...")
-    if st.button("◆  Apply Budget", use_container_width=True):
+    if st.button("02   Apply Budget", use_container_width=True):
         if budget_input is not None:
             st.session_state.budget = float(budget_input)
             persist_state()
@@ -762,56 +769,55 @@ with st.sidebar:
             st.rerun()
         else:
             st.warning("Please enter a budget amount.")
-    if st.button("↻  Reset System", use_container_width=True):
+    if st.button("03   Reset System", use_container_width=True):
         clear_all()
         set_view("home")
 
     st.markdown("---")
     st.subheader("Project Control")
-    st.subheader("Project Control")
-    if st.button("＋  New Work Entry", use_container_width=True):
+    if st.button("01   New Work Entry", use_container_width=True):
         set_view("planner_input")
-    if st.button("▦  Schedule & Progress", use_container_width=True):
+    if st.button("02   Schedule & Progress", use_container_width=True):
         set_view("planner_output")
 
     st.markdown("---")
     st.subheader("Financial Operations")
-    if st.button("＋  Material Entry", use_container_width=True):
+    if st.button("01   Material Entry", use_container_width=True):
         set_view("material")
-    if st.button("＋  Expense Entry", use_container_width=True):
+    if st.button("02   Expense Entry", use_container_width=True):
         set_view("expense")
-    if st.button("＋  Excess Deposit", use_container_width=True):
+    if st.button("03   Excess Deposit", use_container_width=True):
         set_view("excess")
-    if st.button("▤  Financial Ledger", use_container_width=True):
+    if st.button("04   Financial Ledger", use_container_width=True):
         set_view("ledger")
-    if st.button("⇩  Financial Report", use_container_width=True):
+    if st.button("05   Financial Report", use_container_width=True):
         set_view("export")
 
     st.markdown("---")
     st.subheader("Payroll Operations")
-    if st.button("＋  Labor Account", use_container_width=True):
+    if st.button("01   Labor Account", use_container_width=True):
         set_view("add_labor")
-    if st.button("＋  Payroll Expense", use_container_width=True):
+    if st.button("02   Payroll Expense", use_container_width=True):
         set_view("add_payroll_expense")
-    if st.button("◈  Account Remainder", use_container_width=True):
+    if st.button("03   Account Remainder", use_container_width=True):
         set_view("payroll_remaining")
-    if st.button("▤  Labor Accounts", use_container_width=True):
+    if st.button("04   Labor Accounts", use_container_width=True):
         set_view("payroll_ledger")
-    if st.button("⇩  Payroll Report", use_container_width=True):
+    if st.button("05   Payroll Report", use_container_width=True):
         set_view("payroll_export")
-    if st.button("▣  Receipt Archive", use_container_width=True):
+    if st.button("06   Receipt Archive", use_container_width=True):
         set_view("receipt_archive")
 
 view = st.session_state.view
 
 if view == "home":
-    st.subheader("📊 QUICK STATS")
+    st.subheader("QUICK STATS")
     col1, col2, col3 = st.columns(3)
     col1.metric("BUDGET", f"PHP {st.session_state.budget:,.2f}")
     col2.metric("USED", f"PHP {get_total():,.2f}")
     col3.metric("BALANCE", f"PHP {get_balance():,.2f}")
     st.markdown("---")
-    st.subheader("🧱 MATERIALS LEDGER PREVIEW")
+    st.subheader("MATERIALS LEDGER PREVIEW")
     if not st.session_state.records:
         st.info("No materials yet.")
     else:
