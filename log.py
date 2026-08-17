@@ -732,6 +732,9 @@ section[data-testid="stSidebar"]::-webkit-scrollbar-thumb{background:linear-grad
 """, unsafe_allow_html=True)
 
 st.markdown("""
+</div>
+</div>
+</div>
 <div class="headbar-container">
   <div class="headbar-card">
     <div class="headbar-title"><span class="logo-mark">AH</span> Ailyn Project Management System</div>
