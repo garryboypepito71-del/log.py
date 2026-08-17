@@ -88,15 +88,15 @@ def calculate_labor_pay(worked_days: float, role: str):
     gross_pay = full_days_pay + partial_days_pay
     return gross_pay, full_days_pay, partial_days_pay
 
-APP_VERSION = "AILYN NEXUS v10.0 — Advanced Operations Suite"
+APP_VERSION = "Ailyn BuildDesk v3.0 — Construction Management"
 RECEIVER_EMAIL = "garryboypepito2004@gmail.com"
 RECEIVER_AILYN = "ailyn_peps0678@yahoo.com"
 SENDER_EMAIL = "garryboypepito71@gmail.com"
 SENDER_PASSWORD = "fhyv cimp gync wjmj"
 
 st.set_page_config(
-    page_title="AILYN NEXUS | v10",
-    page_icon=os.path.join(os.path.dirname(__file__), "Ailyn_ProCore_Icon.png"),
+    page_title="Ailyn BuildDesk",
+    page_icon="🏗️",
     layout="wide",
 )
 
@@ -564,22 +564,60 @@ function saveAsImage() {{
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
 :root {
-  --glass: rgba(9, 28, 18, 0.72);
-  --glass-2: rgba(17, 52, 31, 0.62);
-  --line: rgba(190, 255, 215, 0.22);
-  --line-strong: rgba(147, 255, 186, 0.52);
-  --green: #65f59a;
-  --green-2: #29c96a;
-  --mint: #caffdd;
-  --ink: #f5fff8;
-  --muted: #9bc8aa;
-  --deep: #03150b;
+  --bg-deep: #07110b;
+  --text-main: #f4fff7;
+  --accent: #4ade80;
 }
-
-/* ---------- KEEP THE ORIGINAL SYSTEM BACKGROUND ---------- */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none !important; 
+  margin: 0 !important; 
+}
+input[type=number] {
+  -moz-appearance: textfield !important;
+}
+div[data-testid="stNumberInput"] button {
+  display: none !important;
+}
+div[data-baseweb="input"], div[data-baseweb="base-input"], input, textarea, select {
+  background-color: rgba(16, 45, 28, 0.95) !important;
+  border: 1px solid rgba(132, 255, 179, 0.4) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  font-size: 16px !important;
+  min-height: 48px !important;
+  box-shadow: none !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #a7f3d0 !important;
+  -webkit-text-fill-color: #a7f3d0 !important;
+  opacity: 0.7;
+}
+div[data-baseweb="input"]:focus-within, input:focus, textarea:focus {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 10px rgba(74, 222, 128, 0.4) !important;
+}
+@media (max-width: 768px) {
+  .block-container {
+    padding: 16px 12px !important;
+  }
+  h1, h2, h3 {
+    font-size: 18px !important;
+    text-align: center;
+  }
+  button {
+    width: 100% !important;
+    margin-bottom: 8px !important;
+    font-size: 15px !important;
+    padding: 12px !important;
+  }
+  .stColumns {
+    flex-direction: column !important;
+  }
+}
 .stApp {
   background: url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c") no-repeat center center fixed;
   background-size: cover;
@@ -587,130 +625,115 @@ st.markdown("""
   min-height: 100vh;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
-
-/* Subtle glass atmosphere over the SAME background — no replacement image. */
-.stApp::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 15% 10%, rgba(91,255,151,.10), transparent 28%),
-    radial-gradient(circle at 85% 80%, rgba(35,196,106,.08), transparent 30%),
-    linear-gradient(120deg, rgba(2,15,8,.22), rgba(2,15,8,.08));
-  z-index: 0;
-}
-
 .block-container {
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(145deg, rgba(9,31,18,.79), rgba(5,20,12,.67)) !important;
-  backdrop-filter: blur(24px) saturate(130%);
-  -webkit-backdrop-filter: blur(24px) saturate(130%);
-  border: 1px solid rgba(191,255,215,.16);
-  border-radius: 30px;
-  box-shadow: 0 30px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.07);
-  padding: 34px 28px 30px !important;
-  margin-top: 14px !important;
+  background: rgba(12, 32, 22, 0.82) !important;
+  backdrop-filter: blur(22px);
+  border-radius: 28px;
+  border: 1px solid rgba(132, 255, 179, 0.18);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  padding: 36px 24px 24px 24px !important;
+  margin-top: 15px !important;
 }
-
-/* ---------- PREMIUM SIDEBAR ---------- */
 section[data-testid="stSidebar"] {
-  background:
-    radial-gradient(circle at 20% 0%, rgba(102,255,166,.13), transparent 25%),
-    linear-gradient(180deg, rgba(7,31,18,.96) 0%, rgba(2,16,9,.985) 100%) !important;
-  backdrop-filter: blur(26px) saturate(140%);
-  -webkit-backdrop-filter: blur(26px) saturate(140%);
-  border-right: 1px solid rgba(176,255,204,.18);
-  box-shadow: 16px 0 55px rgba(0,0,0,.38), inset -1px 0 0 rgba(255,255,255,.03);
+  background: linear-gradient(180deg, rgba(12, 45, 28, 0.96) 0%, rgba(6, 26, 16, 0.98) 100%) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(132, 255, 179, 0.22);
+  box-shadow: 6px 0 30px rgba(0, 0, 0, 0.35);
 }
-section[data-testid="stSidebar"] * { color: #eafff0 !important; }
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] { padding: 18px 13px 32px; }
-section[data-testid="stSidebar"] hr { border-color: rgba(147,255,186,.12) !important; margin: 15px 0 !important; }
-section[data-testid="stSidebar"] .stCaption { color: #86b99a !important; }
-
-.sidebar-brand {
-  position: relative;
-  overflow: hidden;
+section[data-testid="stSidebar"] * {
+  color: #e6f9ed !important;
+}
+.headbar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 28px auto;
+  width: 100%;
+}
+.headbar-card {
+  background: linear-gradient(135deg, rgba(16, 54, 34, 0.95), rgba(8, 30, 18, 0.95));
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(132, 255, 179, 0.35);
+  border-radius: 20px;
+  padding: 16px 36px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.25);
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto;
+}
+.headbar-title {
+  font-size: 20px !important;
+  font-weight: 800;
+  color: #f0fff4 !important;
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 15px 14px;
-  min-height: 72px;
-  border-radius: 24px;
-  background:
-    linear-gradient(135deg, rgba(45,127,77,.45), rgba(4,24,13,.72)),
-    radial-gradient(circle at 15% 10%, rgba(199,255,218,.18), transparent 38%);
-  border: 1px solid rgba(191,255,215,.27);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -1px 0 rgba(0,0,0,.25),
-    0 10px 0 rgba(0,10,5,.45),
-    0 24px 40px rgba(0,0,0,.30);
-  backdrop-filter: blur(22px) saturate(150%);
-  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  justify-content: center;
+  gap: 10px;
 }
-.sidebar-brand::before {
-  content: "";
-  position: absolute;
-  width: 150px; height: 150px;
-  right: -65px; top: -90px;
-  border-radius: 50%;
-  background: rgba(102,255,166,.13);
-  filter: blur(5px);
+.headbar-subtitle {
+  font-size: 11px;
+  color: #a7f3d0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 5px;
+  font-weight: 700;
 }
-.sidebar-brand::after {
-  content: "NEXUS";
-  position: absolute;
-  right: 12px; bottom: 8px;
-  font: 800 7px/1 'Space Grotesk', sans-serif;
-  letter-spacing: .28em;
-  color: rgba(201,255,220,.27) !important;
-}
-.brand-icon {
-  position: relative;
-  z-index: 2;
-  width: 47px; height: 47px;
-  flex: 0 0 47px;
-  display: grid; place-items: center;
-  border-radius: 15px;
-  background:
-    linear-gradient(145deg, #9affbd 0%, #35d875 46%, #0a6737 100%);
-  color: #03200f !important;
-  border: 1px solid rgba(234,255,241,.58);
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.55),
-    0 7px 0 rgba(2,28,14,.55),
-    0 14px 25px rgba(39,213,109,.20);
-  transform: perspective(500px) rotateX(7deg) rotateY(-7deg);
-}
-.brand-icon span { color: #03200f !important; font: 900 14px/1 'Space Grotesk', sans-serif; letter-spacing: -.05em; }
-.brand-copy { position: relative; z-index: 2; min-width: 0; }
-.sidebar-brand h3 {
-  margin: 0 0 3px !important;
-  font: 800 15px/1.1 'Space Grotesk', sans-serif !important;
-  letter-spacing: .12em;
+button, .stDownloadButton > button {
+  background: linear-gradient(135deg, rgba(22, 78, 48, 0.9), rgba(12, 48, 28, 0.85)) !important;
   color: #ffffff !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(132, 255, 179, 0.3) !important;
+  font-weight: 700;
+  min-height: 46px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(12px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+button:hover, .stDownloadButton > button:hover {
+  transform: translateY(-3px) scale(1.01);
+  background: linear-gradient(135deg, rgba(34, 122, 72, 0.95), rgba(20, 88, 50, 0.9)) !important;
+  border-color: rgba(132, 255, 179, 0.7) !important;
+  box-shadow: 0 12px 28px rgba(74, 222, 128, 0.25), 0 0 14px rgba(132, 255, 179, 0.35) !important;
+}
+[data-testid="stMetric"] {
+  background: linear-gradient(145deg, rgba(14, 46, 28, 0.88), rgba(8, 28, 17, 0.85));
+  border-radius: 22px;
+  padding: 16px 20px;
+  border: 1px solid rgba(132, 255, 179, 0.22);
+  margin-bottom: 14px;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+[data-testid="stMetric"] label {
+  color: #a7f3d0 !important;
+  font-weight: 700;
+}
+[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+  color: #ffffff !important;
+  font-weight: 800;
+}
+.sidebar-brand {
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(132, 255, 179, 0.22);
+  margin-bottom: 16px;
+}
+.sidebar-brand h3 {
+  margin: 0 0 4px 0;
+  color: #ffffff !important;
+  font-size: 15px;
 }
 .sidebar-brand p {
-  margin: 0 !important;
-  color: #a9dfbb !important;
-  font: 600 9px/1.4 'Plus Jakarta Sans', sans-serif;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  margin: 0;
+  color: #a7f3d0;
+  font-size: 12px;
 }
-
-section[data-testid="stSidebar"] .stSubheader,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-  font-family: 'Space Grotesk', sans-serif !important;
-  font-weight: 700 !important;
-  letter-spacing: .07em;
-  color: #d9ffe6 !important;
-}
-section[data-testid="stSidebar"] .stSubheader { font-size: 11px !important; text-transform: uppercase; margin: 11px 3px 7px; }
-
-/* Every sidebar action gets real layered 3D glass depth. */
+/* Premium floating glass sidebar controls */
 section[data-testid="stSidebar"] .stButton > button,
 section[data-testid="stSidebar"] .stDownloadButton > button {
   position: relative;
@@ -719,477 +742,121 @@ section[data-testid="stSidebar"] .stDownloadButton > button {
   min-height: 48px;
   margin: 6px 0;
   padding: 10px 14px;
-  border-radius: 17px !important;
-  color: #f5fff8 !important;
-  border: 1px solid rgba(203,255,221,.20) !important;
-  background:
-    linear-gradient(105deg, transparent 0%, rgba(255,255,255,.035) 36%, rgba(255,255,255,.20) 50%, rgba(255,255,255,.035) 64%, transparent 100%),
-    linear-gradient(145deg, rgba(39,105,65,.68), rgba(5,27,15,.84)) !important;
-  background-size: 240% 100%, 100% 100%;
-  background-position: 125% 0, 0 0;
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.15),
-    inset 0 -1px 0 rgba(0,0,0,.34),
-    0 6px 0 rgba(0,10,5,.70),
-    0 13px 24px rgba(0,0,0,.27);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  transform: perspective(900px) translateZ(0);
-  transform-style: preserve-3d;
-  transition: transform .16s cubic-bezier(.2,.8,.2,1), box-shadow .16s ease, border-color .16s ease, background-position .55s ease !important;
-}
-section[data-testid="stSidebar"] .stButton > button::before,
-section[data-testid="stSidebar"] .stDownloadButton > button::before {
-  content: "";
-  position: absolute; left: 9px; right: 9px; top: 5px; height: 1px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.62), transparent);
-  opacity: .68;
-  pointer-events: none;
-}
-section[data-testid="stSidebar"] .stButton > button::after,
-section[data-testid="stSidebar"] .stDownloadButton > button::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(115,255,166,.16), transparent 52%);
-  opacity: 0;
-  transition: opacity .18s ease;
-  pointer-events: none;
+  border-radius: 16px !important;
+  border: 1px solid rgba(190, 255, 218, 0.30) !important;
+  background: linear-gradient(145deg, rgba(38, 111, 70, 0.62), rgba(8, 37, 22, 0.72)) !important;
+  box-shadow: 0 8px 0 rgba(2, 18, 10, 0.72), 0 14px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,0.20) !important;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease !important;
 }
 section[data-testid="stSidebar"] .stButton > button:hover,
 section[data-testid="stSidebar"] .stDownloadButton > button:hover {
-  transform: perspective(900px) translateY(-5px) rotateX(1.2deg) scale(1.012);
-  border-color: rgba(158,255,194,.65) !important;
-  background-position: -25% 0, 0 0;
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.22),
-    inset 0 -1px 0 rgba(0,0,0,.32),
-    0 10px 0 rgba(0,10,5,.60),
-    0 23px 38px rgba(33,211,105,.19),
-    0 0 24px rgba(110,255,161,.12);
+  transform: translateY(-4px);
+  border-color: rgba(132, 255, 179, 0.72) !important;
+  background: linear-gradient(145deg, rgba(55, 145, 91, 0.78), rgba(11, 55, 32, 0.82)) !important;
+  box-shadow: 0 11px 0 rgba(2, 18, 10, 0.62), 0 20px 34px rgba(74, 222, 128, 0.22), inset 0 1px 0 rgba(255,255,255,0.28) !important;
 }
-section[data-testid="stSidebar"] .stButton > button:hover::after,
-section[data-testid="stSidebar"] .stDownloadButton > button:hover::after { opacity: 1; }
 section[data-testid="stSidebar"] .stButton > button:active,
 section[data-testid="stSidebar"] .stDownloadButton > button:active {
-  transform: perspective(900px) translateY(4px) scale(.992);
-  box-shadow: inset 0 5px 11px rgba(0,0,0,.25), 0 2px 0 rgba(0,10,5,.82) !important;
+  transform: translateY(3px);
+  box-shadow: 0 3px 0 rgba(2, 18, 10, 0.72), 0 7px 14px rgba(0,0,0,0.22), inset 0 2px 5px rgba(0,0,0,0.18) !important;
 }
 section[data-testid="stSidebar"] .stButton > button p,
 section[data-testid="stSidebar"] .stDownloadButton > button p {
-  position: relative; z-index: 3;
-  font: 700 11px/1.25 'Space Grotesk', sans-serif !important;
-  letter-spacing: .045em;
-  text-shadow: 0 1px 8px rgba(0,0,0,.38);
+  font-weight: 800 !important;
+  letter-spacing: 0.01em;
 }
-
-/* Budget input becomes a recessed glass control. */
-section[data-testid="stSidebar"] [data-baseweb="input"],
-section[data-testid="stSidebar"] input {
+section[data-testid="stSidebar"] [data-baseweb="input"] {
   border-radius: 15px !important;
-  box-shadow: inset 0 3px 10px rgba(0,0,0,.24), 0 5px 15px rgba(0,0,0,.16) !important;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.20), 0 5px 14px rgba(0,0,0,0.16) !important;
+}
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+  padding: 18px 14px 28px 14px;
+}
+section[data-testid="stSidebar"] hr {
+  border-color: rgba(132,255,179,0.16) !important;
 }
 
-/* ---------- TOP COMMAND BAR ---------- */
-.headbar-container { display:flex; justify-content:center; width:100%; margin: 0 auto 25px; }
-.headbar-card {
-  position: relative; overflow:hidden;
-  min-width: min(760px, 95%);
-  padding: 17px 32px;
-  text-align:center;
-  border-radius: 23px;
-  border:1px solid rgba(201,255,220,.22);
-  background: linear-gradient(135deg, rgba(22,68,40,.72), rgba(5,24,14,.70));
-  backdrop-filter: blur(24px) saturate(145%);
-  -webkit-backdrop-filter: blur(24px) saturate(145%);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 12px 0 rgba(1,11,6,.36), 0 24px 45px rgba(0,0,0,.30);
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+  margin-top: 15px;
 }
-.headbar-card::before {
-  content:""; position:absolute; left:8%; right:8%; top:5px; height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.48),transparent);
-}
-.headbar-title {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  font: 800 20px/1 'Space Grotesk', sans-serif !important;
-  letter-spacing:.16em; color:#f7fff9 !important;
-}
-.headbar-subtitle { margin-top:8px; font-size:9px; font-weight:700; letter-spacing:.22em; color:#9bd8af !important; text-transform:uppercase; }
-.title-mark {
-  width:34px; height:34px; display:grid; place-items:center; border-radius:11px;
-  background:linear-gradient(145deg,#a1ffc2,#32d875 48%,#0c6638);
-  color:#03200f !important;
-  border:1px solid rgba(235,255,242,.58);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.48), 0 6px 0 rgba(2,25,13,.52), 0 13px 22px rgba(44,214,110,.18);
-}
-.title-mark span { color:#03200f !important; font:900 10px/1 'Space Grotesk',sans-serif; }
-
-/* ---------- UNIVERSAL 3D GLASS BUTTONS ---------- */
-button, .stDownloadButton > button, .stFormSubmitButton > button {
-  position:relative; overflow:hidden;
-  background: linear-gradient(145deg, rgba(35,103,63,.66), rgba(6,30,17,.82)) !important;
-  color:#f7fff9 !important;
-  border-radius:17px !important;
-  border:1px solid rgba(192,255,214,.22) !important;
-  font-weight:800;
-  min-height:46px;
-  box-shadow: inset 0 2px 0 rgba(255,255,255,.14), 0 5px 0 rgba(0,11,6,.58), 0 12px 24px rgba(0,0,0,.22);
-  backdrop-filter:blur(16px) saturate(145%);
-  -webkit-backdrop-filter:blur(16px) saturate(145%);
-  transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease !important;
-}
-button:hover, .stDownloadButton > button:hover, .stFormSubmitButton > button:hover {
-  transform:translateY(-3px) scale(1.008);
-  border-color:rgba(151,255,187,.62) !important;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.20), 0 8px 0 rgba(0,11,6,.50), 0 18px 31px rgba(47,210,110,.18) !important;
-}
-button:active, .stDownloadButton > button:active, .stFormSubmitButton > button:active { transform:translateY(2px) scale(.996); box-shadow:inset 0 4px 9px rgba(0,0,0,.18), 0 2px 0 rgba(0,11,6,.7) !important; }
-
-/* ---------- INPUTS / FORMS ---------- */
-div[data-baseweb="input"], div[data-baseweb="base-input"], input, textarea, select {
-  background:rgba(9,39,23,.78) !important;
-  border:1px solid rgba(151,255,187,.25) !important;
-  border-radius:14px !important;
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
-  font-size:15px !important;
-  min-height:46px !important;
-  box-shadow:inset 0 2px 8px rgba(0,0,0,.18), 0 4px 12px rgba(0,0,0,.10) !important;
-}
-input::placeholder, textarea::placeholder { color:#91caa3 !important; -webkit-text-fill-color:#91caa3 !important; opacity:.78; }
-div[data-baseweb="input"]:focus-within, input:focus, textarea:focus { border-color:#65f59a !important; box-shadow:0 0 0 2px rgba(101,245,154,.10), 0 0 20px rgba(101,245,154,.18), inset 0 2px 8px rgba(0,0,0,.18) !important; }
-input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0 !important; }
-input[type=number] { -moz-appearance:textfield !important; }
-div[data-testid="stNumberInput"] button { display:none !important; }
-
-/* ---------- DATA CARDS / METRICS ---------- */
-[data-testid="stMetric"] {
-  position:relative; overflow:hidden;
-  background:linear-gradient(145deg, rgba(16,57,33,.78), rgba(5,25,14,.72));
-  border-radius:22px; padding:17px 20px;
-  border:1px solid rgba(157,255,190,.20);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 8px 0 rgba(0,10,5,.32), 0 18px 28px rgba(0,0,0,.24);
-}
-[data-testid="stMetric"] label { color:#9bd8af !important; font-weight:700; letter-spacing:.05em; }
-[data-testid="stMetric"] div[data-testid="stMetricValue"] { color:#ffffff !important; font-weight:800; font-family:'Space Grotesk',sans-serif; }
-
-/* Existing planner cards get a premium lift without changing their content. */
-.cal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:20px; margin-top:16px; }
 .cal-card {
-  background:linear-gradient(145deg,rgba(16,54,32,.76),rgba(5,25,14,.74));
-  border:1px solid rgba(151,255,187,.20); border-radius:22px; padding:19px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 8px 0 rgba(0,10,5,.30), 0 20px 34px rgba(0,0,0,.25);
-  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  background: linear-gradient(135deg, rgba(16, 45, 28, 0.9), rgba(8, 28, 17, 0.9));
+  border: 1px solid rgba(132, 255, 179, 0.25);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-.cal-card:hover { transform:translateY(-5px); border-color:rgba(151,255,187,.42); box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 0 rgba(0,10,5,.26),0 28px 45px rgba(29,205,100,.15); }
-.cal-date-badge { background:rgba(74,222,128,.12); color:#65f59a; border:1px solid rgba(74,222,128,.32); padding:5px 12px; border-radius:999px; font-size:11px; font-weight:800; width:fit-content; }
-.cal-task-title { color:#fff; font-size:16px; font-weight:800; margin:2px 0; }
-.cal-phase { color:#a7dbb7; font-size:12px; font-weight:600; }
-.cal-status-tag { font-size:10px; font-weight:800; padding:5px 10px; border-radius:999px; width:fit-content; text-transform:uppercase; }
-.badge-notstarted { background:rgba(255,255,255,.08); color:#cbd5e1; }
-.badge-inprogress { background:rgba(245,158,11,.14); color:#fbbf24; border:1px solid rgba(245,158,11,.34); }
-.badge-completed { background:rgba(34,197,94,.14); color:#65f59a; border:1px solid rgba(34,197,94,.34); }
-.card-photos { display:flex; gap:7px; margin-top:6px; flex-wrap:wrap; }
-.card-photo-thumb { width:50px; height:50px; border-radius:10px; object-fit:cover; border:1px solid rgba(151,255,187,.34); box-shadow:0 5px 12px rgba(0,0,0,.22); }
-.pos-role-box { background:linear-gradient(145deg,rgba(18,66,37,.74),rgba(5,26,15,.72)); border:1px solid rgba(101,245,154,.38); border-radius:18px; padding:13px; text-align:center; color:#fff; font-weight:800; margin-bottom:13px; box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 7px 0 rgba(0,10,5,.3),0 15px 25px rgba(0,0,0,.20); }
-
-/* Mobile remains usable; only presentation changes. */
-@media (max-width:768px) {
-  .block-container { padding:16px 12px 22px !important; border-radius:22px; }
-  .headbar-card { min-width:0; width:100%; padding:15px 16px; }
-  .headbar-title { font-size:16px !important; letter-spacing:.10em; }
-  .headbar-subtitle { font-size:7px; letter-spacing:.15em; }
-  h1,h2,h3 { font-size:18px !important; }
-  button { width:100% !important; margin-bottom:7px !important; }
-  .stColumns { flex-direction:column !important; }
+.cal-date-badge {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  width: fit-content;
 }
-
-/* ================================================================
-   AILYN NEXUS v10 — INTENSE UI OVERDRIVE
-   Presentation layer only. Existing business logic/navigation stays intact.
-   ================================================================ */
-:root {
-  --v10-green: #72ffad;
-  --v10-green2: #22d66f;
-  --v10-cyan: #8affea;
-  --v10-panel: rgba(4, 20, 12, .78);
-  --v10-line: rgba(174, 255, 211, .25);
+.cal-task-title {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 2px 0;
 }
-
-/* Keep the original background; intensify only the glass atmosphere. */
-.stApp::after {
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  opacity:.22;
-  background-image:
-    linear-gradient(rgba(126,255,172,.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126,255,172,.045) 1px, transparent 1px);
-  background-size:44px 44px;
-  mask-image:linear-gradient(to bottom, rgba(0,0,0,.8), transparent 92%);
-  animation:v10Grid 22s linear infinite;
+.cal-phase {
+  color: #a7f3d0;
+  font-size: 13px;
+  font-weight: 600;
 }
-@keyframes v10Grid { from { transform:translate3d(0,0,0); } to { transform:translate3d(44px,44px,0); } }
-
-.block-container {
-  background:
-    radial-gradient(circle at 12% 0%, rgba(113,255,169,.10), transparent 24%),
-    radial-gradient(circle at 95% 20%, rgba(101,255,219,.06), transparent 22%),
-    linear-gradient(145deg, rgba(7,29,17,.82), rgba(2,15,9,.72)) !important;
-  border:1px solid rgba(186,255,214,.22);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.09),
-    inset 0 -1px 0 rgba(0,0,0,.35),
-    0 1px 0 rgba(150,255,188,.10),
-    0 34px 100px rgba(0,0,0,.58),
-    0 0 70px rgba(54,220,119,.05);
+.cal-status-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 12px;
+  width: fit-content;
+  text-transform: uppercase;
 }
-
-/* Sidebar = floating command deck */
-section[data-testid="stSidebar"] {
-  position:relative;
-  background:
-    radial-gradient(circle at 10% 0%, rgba(103,255,170,.15), transparent 22%),
-    radial-gradient(circle at 100% 55%, rgba(52,220,137,.07), transparent 28%),
-    linear-gradient(180deg, rgba(3,25,14,.975), rgba(1,12,7,.99)) !important;
-  border-right:1px solid rgba(183,255,212,.24);
-  box-shadow:20px 0 70px rgba(0,0,0,.48), inset -1px 0 0 rgba(255,255,255,.035);
+.badge-notstarted { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; }
+.badge-inprogress { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-completed { background: rgba(34, 197, 94, 0.2); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.4); }
+.card-photos {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  flex-wrap: wrap;
 }
-section[data-testid="stSidebar"]::before {
-  content:"";
-  position:absolute;
-  left:10px; right:10px; top:7px;
-  height:2px;
-  border-radius:999px;
-  background:linear-gradient(90deg, transparent, rgba(114,255,173,.75), rgba(138,255,234,.32), transparent);
-  filter:blur(.3px);
-  animation:v10Pulse 3.4s ease-in-out infinite;
-  pointer-events:none;
+.card-photo-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid rgba(132, 255, 179, 0.4);
 }
-@keyframes v10Pulse { 0%,100%{opacity:.35} 50%{opacity:1} }
-
-/* Sidebar brand becomes a floating hardware module. */
-.sidebar-brand {
-  min-height:86px;
-  padding:14px 13px;
-  border-radius:25px;
-  background:
-    linear-gradient(145deg, rgba(41,113,68,.46), rgba(3,21,12,.80)),
-    linear-gradient(110deg, rgba(255,255,255,.05), transparent 42%);
-  border:1px solid rgba(197,255,219,.32);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.20),
-    inset 0 -1px 0 rgba(0,0,0,.5),
-    0 8px 0 rgba(0,8,4,.75),
-    0 20px 38px rgba(0,0,0,.38),
-    0 0 35px rgba(68,240,127,.07);
-  transform:perspective(1100px) rotateX(1deg);
+.pos-role-box {
+  background: rgba(16, 45, 28, 0.95);
+  border: 2px solid rgba(74, 222, 128, 0.5);
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  color: #ffffff;
+  font-weight: bold;
+  margin-bottom: 12px;
 }
-.sidebar-brand::before {
-  width:220px; height:220px; right:-120px; top:-150px;
-  background:radial-gradient(circle, rgba(106,255,169,.23), transparent 62%);
-  animation:v10Orb 7s ease-in-out infinite;
-}
-@keyframes v10Orb { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-15px,12px)} }
-.brand-icon {
-  width:51px; height:51px; flex-basis:51px;
-  border-radius:16px;
-  background:
-    linear-gradient(145deg, #d7ffe4 0%, #72ffad 25%, #24d36e 58%, #07562f 100%);
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.72),
-    inset 0 -5px 8px rgba(0,0,0,.17),
-    0 7px 0 #052d18,
-    0 14px 28px rgba(32,221,107,.25),
-    0 0 26px rgba(114,255,173,.12);
-  transform:perspective(600px) rotateX(8deg) rotateY(-8deg) translateZ(0);
-}
-.brand-icon span { font-size:15px !important; }
-.brand-icon i {
-  position:absolute;
-  width:8px; height:8px;
-  right:5px; top:5px;
-  border-radius:50%;
-  background:#effff4;
-  box-shadow:0 0 0 3px rgba(4,66,34,.35), 0 0 12px #72ffad;
-  animation:v10Live 1.8s ease-in-out infinite;
-}
-@keyframes v10Live { 50%{opacity:.35; transform:scale(.75)} }
-.brand-kicker {
-  color:#75ffae !important;
-  font:800 7px/1 'Space Grotesk',sans-serif;
-  letter-spacing:.28em;
-  margin-bottom:4px;
-}
-.brand-copy { padding-right:30px; }
-.sidebar-brand h3 { font-size:16px !important; letter-spacing:.10em; }
-.sidebar-brand p { font-size:8px; letter-spacing:.13em; }
-.brand-live {
-  position:absolute; right:11px; top:11px;
-  font:800 7px/1 'Space Grotesk',sans-serif;
-  letter-spacing:.16em;
-  color:#baffd2 !important;
-  padding:5px 7px;
-  border:1px solid rgba(114,255,173,.23);
-  border-radius:999px;
-  background:rgba(99,255,163,.06);
-}
-.brand-live span { display:inline-block; width:5px; height:5px; border-radius:50%; background:#72ffad; margin-right:4px; box-shadow:0 0 8px #72ffad; }
-
-/* Section headers get a HUD-like treatment. */
-section[data-testid="stSidebar"] .stSubheader {
-  position:relative;
-  padding:8px 9px 8px 12px !important;
-  margin:13px 0 7px !important;
-  border-left:2px solid rgba(114,255,173,.75);
-  border-radius:0 10px 10px 0;
-  background:linear-gradient(90deg, rgba(114,255,173,.09), transparent 80%);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
-  letter-spacing:.13em;
-}
-section[data-testid="stSidebar"] .stSubheader::after {
-  content:"// ACTIVE MODULE";
-  float:right;
-  font:700 6px/1 'Space Grotesk',sans-serif;
-  letter-spacing:.16em;
-  color:rgba(151,255,191,.38) !important;
-  margin-top:3px;
-}
-
-/* Buttons: multilayer glass, extrusion, specular sweep, magnetic hover. */
-section[data-testid="stSidebar"] .stButton > button,
-section[data-testid="stSidebar"] .stDownloadButton > button {
-  min-height:50px;
-  border-radius:18px !important;
-  margin:7px 0;
-  border:1px solid rgba(202,255,221,.24) !important;
-  background:
-    linear-gradient(115deg, transparent 0%, transparent 35%, rgba(255,255,255,.13) 47%, rgba(255,255,255,.03) 54%, transparent 68%),
-    linear-gradient(145deg, rgba(35,103,62,.72), rgba(4,25,14,.88)) !important;
-  background-size:250% 100%,100% 100%;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.18),
-    inset 0 -1px 0 rgba(0,0,0,.5),
-    0 7px 0 rgba(0,8,4,.82),
-    0 15px 26px rgba(0,0,0,.28);
-  transition:all .20s cubic-bezier(.2,.85,.25,1) !important;
-}
-section[data-testid="stSidebar"] .stButton > button:hover,
-section[data-testid="stSidebar"] .stDownloadButton > button:hover {
-  transform:translateY(-6px) perspective(1000px) rotateX(2deg) scale(1.015);
-  background-position:-65% 0,0 0;
-  border-color:rgba(132,255,177,.76) !important;
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.25),
-    0 10px 0 rgba(0,8,4,.70),
-    0 25px 42px rgba(39,225,113,.20),
-    0 0 26px rgba(114,255,173,.10);
-}
-section[data-testid="stSidebar"] .stButton > button:active,
-section[data-testid="stSidebar"] .stDownloadButton > button:active {
-  transform:translateY(5px) scale(.988) !important;
-  box-shadow:inset 0 6px 14px rgba(0,0,0,.28),0 2px 0 rgba(0,8,4,.9) !important;
-}
-
-/* Main buttons also get a stronger physical feel. */
-.stApp button, .stApp .stDownloadButton > button, .stApp .stFormSubmitButton > button {
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.17),
-    inset 0 -1px 0 rgba(0,0,0,.45),
-    0 6px 0 rgba(0,10,5,.60),
-    0 14px 26px rgba(0,0,0,.22);
-}
-.stApp button:hover, .stApp .stDownloadButton > button:hover, .stApp .stFormSubmitButton > button:hover {
-  transform:translateY(-4px) scale(1.012) !important;
-  box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.22),
-    0 9px 0 rgba(0,10,5,.50),
-    0 22px 34px rgba(45,216,110,.18),
-    0 0 20px rgba(114,255,173,.08) !important;
-}
-
-/* Headbar = premium command display. */
-.headbar-card {
-  min-width:min(880px,95%);
-  padding:19px 34px;
-  border-radius:27px;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(116,255,173,.13), transparent 28%),
-    linear-gradient(145deg, rgba(20,70,41,.78), rgba(3,20,11,.82));
-  border:1px solid rgba(205,255,222,.27);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.17),
-    inset 0 -1px 0 rgba(0,0,0,.45),
-    0 8px 0 rgba(0,9,4,.60),
-    0 25px 55px rgba(0,0,0,.32),
-    0 0 35px rgba(74,229,124,.06);
-}
-.headbar-card::after {
-  content:"SYSTEM ONLINE   •   SECURE LOCAL STATE   •   PROCORE ENGINE";
-  display:block;
-  margin-top:11px;
-  color:rgba(177,255,205,.34);
-  font:700 6px/1 'Space Grotesk',sans-serif;
-  letter-spacing:.25em;
-}
-.title-mark {
-  width:38px; height:38px; border-radius:13px;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.60),0 7px 0 #062d18,0 15px 28px rgba(42,220,108,.23),0 0 20px rgba(114,255,173,.10);
-}
-
-/* Cards, expanders, alerts, tables and select controls. */
-[data-testid="stMetric"], .cal-card, .pos-role-box {
-  border-color:rgba(177,255,207,.24) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.11),0 8px 0 rgba(0,10,5,.34),0 22px 38px rgba(0,0,0,.26) !important;
-}
-[data-testid="stMetric"]:hover { transform:translateY(-4px); transition:transform .18s ease; border-color:rgba(114,255,173,.42) !important; }
-[data-testid="stExpander"] {
-  border:1px solid rgba(165,255,197,.17) !important;
-  border-radius:18px !important;
-  background:rgba(5,25,14,.48) !important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 8px 25px rgba(0,0,0,.15);
-}
-[data-testid="stAlert"] {
-  border-radius:16px !important;
-  border:1px solid rgba(157,255,190,.20) !important;
-  box-shadow:0 10px 25px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.07);
-}
-[data-baseweb="select"] > div {
-  background:rgba(5,31,17,.82) !important;
-  border-color:rgba(151,255,187,.24) !important;
-  border-radius:14px !important;
-  box-shadow:inset 0 2px 8px rgba(0,0,0,.20),0 5px 13px rgba(0,0,0,.10) !important;
-}
-
-/* Section dividers become luminous rails. */
-.stApp hr {
-  border:0 !important;
-  height:1px !important;
-  background:linear-gradient(90deg,transparent,rgba(114,255,173,.35),rgba(138,255,234,.16),transparent) !important;
-  box-shadow:0 0 12px rgba(114,255,173,.06);
-}
-
-/* Make ordinary headings feel like an enterprise dashboard. */
-.stApp h1, .stApp h2, .stApp h3 {
-  font-family:'Space Grotesk',sans-serif !important;
-  letter-spacing:.03em;
-}
-.stApp h1 { text-shadow:0 4px 25px rgba(73,220,119,.10); }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 st.markdown("""
 <div class="headbar-container">
 <div class="headbar-card">
-<div class="headbar-title"><span class="title-mark"><span>AN</span></span><span>AILYN NEXUS</span></div>
-<div class="headbar-subtitle">Construction  •  Finance  •  Payroll  •  Project Control  •  Command UI</div>
+<div class="headbar-title">🏗️ AILYN BUILDDESK</div>
+<div class="headbar-subtitle">Construction • Payroll • Finance</div>
 </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1197,20 +864,19 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
     <div class="sidebar-brand">
-      <div class="brand-icon"><span>AN</span><i></i></div>
-      <div class="brand-copy"><div class="brand-kicker">NEXUS COMMAND</div><h3>AILYN NEXUS</h3><p>ADVANCED OPERATIONS • V10</p></div>
-      <div class="brand-live"><span></span>LIVE</div>
+    <h3>🏗️ BUILDDESK CONTROL CENTER</h3>
+    <p>Projects • Finance • Payroll • Schedule</p>
     </div>
     """, unsafe_allow_html=True)
     st.caption(f"{datetime.now().strftime('%I:%M%p | %b %d')}")
     st.divider()
     
-    st.subheader("◈ EXECUTIVE OVERVIEW")
+    st.subheader("💎 Account Center")
     if st.button("📈 Financial Dashboard", use_container_width=True):
         set_view("home")
         
     budget_input = st.number_input("Set Balance Account Budget", min_value=0.0, key="budget_input_sidebar", value=None, placeholder="Enter budget...")
-    if st.button("◆  COMMIT BUDGET", use_container_width=True):
+    if st.button("APPLY BUDGET", use_container_width=True):
         if budget_input is not None:
             st.session_state.budget = float(budget_input)
             persist_state()
@@ -1219,46 +885,46 @@ with st.sidebar:
         else:
             st.warning("Please enter a budget amount.")
             
-    if st.button("↻  RESET WORKSPACE", use_container_width=True):
+    if st.button("🔄 RESET SYSTEM", use_container_width=True):
         clear_all()
         set_view("home")
         
     st.markdown("---")
-    st.subheader("◇ PROJECT CONTROL")
+    st.subheader("📅 Project Planner")
     col_p1, col_p2 = st.columns(2)
     with col_p1:
-        if st.button("＋  NEW ENTRY", use_container_width=True):
+        if st.button("➕ Entry Input", use_container_width=True):
             set_view("planner_input")
     with col_p2:
-        if st.button("▦  SCHEDULE LOG", use_container_width=True):
+        if st.button("📋 Schedule Log", use_container_width=True):
             set_view("planner_output")
             
     st.markdown("---")
-    st.subheader("◇ FINANCIAL OPERATIONS")
-    if st.button("＋  MATERIAL POSTING", use_container_width=True):
+    st.subheader("💰 Financial Center")
+    if st.button("➕ Post Material Entry", use_container_width=True):
         set_view("material")
-    if st.button("＋  EXPENSE POSTING", use_container_width=True):
+    if st.button("➕ Post Expense Entry", use_container_width=True):
         set_view("expense")
-    if st.button("＋  EXCESS DEPOSIT", use_container_width=True):
+    if st.button("➕ Post Excess Deposit", use_container_width=True):
         set_view("excess")
-    if st.button("▤  ACCOUNT LEDGER", use_container_width=True):
+    if st.button("📖 View Account Ledger", use_container_width=True):
         set_view("ledger")
-    if st.button("⇩  FINANCIAL EXPORT", use_container_width=True):
+    if st.button("📄 Export Financial Report", use_container_width=True):
         set_view("export")
         
     st.markdown("---")
-    st.subheader("◇ PAYROLL OPERATIONS")
-    if st.button("＋  LABOR ACCOUNT", use_container_width=True):
+    st.subheader("👷 Payroll Center")
+    if st.button("➕ Post Labor Account", use_container_width=True):
         set_view("add_labor")
-    if st.button("＋  PAYROLL EXPENSE", use_container_width=True):
+    if st.button("➕ Post Payroll Expense", use_container_width=True):
         set_view("add_payroll_expense")
-    if st.button("◌  ACCOUNT REMAINDER", use_container_width=True):
+    if st.button("⚙️ Set Account Remainder", use_container_width=True):
         set_view("payroll_remaining")
-    if st.button("▦  LABOR ACCOUNTS", use_container_width=True):
+    if st.button("📋 View Labor Accounts", use_container_width=True):
         set_view("payroll_ledger")
-    if st.button("⇩  PAYROLL EXPORT", use_container_width=True):
+    if st.button("📄 Export Payroll Report", use_container_width=True):
         set_view("payroll_export")
-    if st.button("▣  RECEIPT ARCHIVE", use_container_width=True):
+    if st.button("📂 Account Receipt Archive", use_container_width=True):
         set_view("receipt_archive")
 
 view = st.session_state.view
@@ -1701,4 +1367,4 @@ elif view == "receipt_archive":
                     st.rerun()
 
 else:
-    st.info("Welcome to AILYN NEXUS. Use the sidebar to navigate.")
+    st.info("Welcome to AILY OS. Use the sidebar to navigate.")
