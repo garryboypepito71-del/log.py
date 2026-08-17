@@ -95,7 +95,7 @@ SENDER_PASSWORD = "fhyv cimp gync wjmj"
 
 st.set_page_config(
     page_title="Ailyn Project Management System",
-    page_icon="🅰️",
+    page_icon="A",
     layout="wide",
 )
 
@@ -555,7 +555,7 @@ function saveAsImage() {{
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Manrope:wght@500;600;700;800&display=swap');
 
 :root{
  --mint:#72f7b0; --mint2:#c8ffe0; --deep:#06170f;
@@ -592,50 +592,45 @@ html,body,[class*="css"]{font-family:'Manrope',sans-serif}
 /* top command deck */
 .headbar-container{display:flex;justify-content:center;margin:0 auto 28px}
 .headbar-card{
- position:relative;overflow:hidden;width:100%;min-height:92px;
- padding:18px 24px;display:flex;flex-direction:column;
- align-items:center;justify-content:center;text-align:center;gap:7px;
- border-radius:26px;background:linear-gradient(135deg,rgba(20,91,55,.88),rgba(8,48,30,.82));
- border:1px solid rgba(184,255,211,.28);
- box-shadow:0 18px 42px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.18);
+ width:100%;position:relative;overflow:hidden;padding:24px 22px 21px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;
+ border-radius:26px;background:linear-gradient(105deg,rgba(10,55,32,.90),rgba(4,25,16,.78));
+ border:1px solid rgba(166,255,197,.25);
+ box-shadow:0 18px 42px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.15);
 }
 .headbar-card:before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 0%,rgba(255,255,255,.08) 42%,transparent 54%);transform:translateX(-120%);animation:scan 8s linear infinite}
-.headbar-title{
- position:relative;display:flex;align-items:center;justify-content:center;
- gap:12px;width:100%;text-align:center;color:#fff!important;
- font-family:'Outfit';font-size:22px!important;font-weight:800;
- letter-spacing:.025em;line-height:1.15;
+.headbar-title{position:relative;display:flex;align-items:center;justify-content:center;gap:14px;color:#fff!important;font-family:'Sora';font-size:22px!important;font-weight:800;letter-spacing:.015em;text-align:center;width:100%}
+.headbar-subtitle{position:relative;color:#aeeec3;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;text-align:center;width:100%}
+.logo-mark,.brand-icon{
+ display:grid;place-items:center;font-family:'Sora';font-weight:800;
+ color:#062613!important;background:linear-gradient(145deg,#d6ffe5 0%,#65efa0 45%,#20a963 100%);
+ border:1px solid rgba(255,255,255,.65);
+ box-shadow:0 5px 0 #0b4a2b,0 13px 28px rgba(58,220,125,.30),inset 0 2px 0 rgba(255,255,255,.8);
 }
 .logo-mark{width:40px;height:40px;border-radius:13px;font-size:16px}
 
 /* sidebar: floating command rail */
 section[data-testid="stSidebar"]{
- background:linear-gradient(180deg,rgba(12,48,31,.96),rgba(8,39,25,.96))!important;
- border-right:1px solid rgba(184,255,211,.24)!important;
- box-shadow:12px 0 45px rgba(0,0,0,.28)!important;
+ background:linear-gradient(180deg,rgba(8,38,24,.96),rgba(7,31,21,.95))!important;
+ border-right:1px solid rgba(170,255,198,.17)!important;
+ box-shadow:18px 0 60px rgba(0,0,0,.30)!important;
 }
 section[data-testid="stSidebar"]>div{padding:16px 13px 24px!important}
-section[data-testid="stSidebar"] *{
- color:#effff5!important;
- font-family:'Manrope','Segoe UI',sans-serif!important;
-}
+section[data-testid="stSidebar"] *{color:#f1fff6!important}
 .sidebar-brand{
  position:relative;overflow:hidden;padding:15px;border-radius:24px;margin-bottom:12px;
- background:linear-gradient(145deg,rgba(35,116,70,.90),rgba(11,57,35,.88));
+ background:linear-gradient(145deg,rgba(24,89,52,.92),rgba(5,30,18,.82));
  border:1px solid rgba(163,255,194,.25);
  box-shadow:0 16px 34px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.16);
 }
 .sidebar-brand:after{content:"";position:absolute;inset:-80% 35%;background:rgba(255,255,255,.09);transform:rotate(25deg);animation:scan 7s linear infinite}
 .brand-row{position:relative;z-index:1;display:flex;align-items:center;gap:12px}
 .brand-icon{width:48px;height:48px;border-radius:16px;font-size:18px}
-.brand-title{font-family:'Outfit';font-size:14px;font-weight:900;letter-spacing:.075em}
+.brand-title{font-family:'Sora';font-size:13px;font-weight:800;letter-spacing:.075em}
 .brand-sub{font-size:9px;color:#a8eac0!important;letter-spacing:.13em;text-transform:uppercase;margin-top:4px}
 section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
- font-family:'Outfit','Manrope',sans-serif!important;
- font-size:9px!important;line-height:1.2!important;
- letter-spacing:.15em;text-transform:uppercase;
- color:#a8edc1!important;margin:18px 5px 8px!important;
- font-weight:800!important;
+ font-family:'Sora';font-size:9px!important;letter-spacing:.20em;text-transform:uppercase;
+ color:#76e9a3!important;margin:18px 5px 7px!important;
 }
 section[data-testid="stSidebar"] hr{border-color:rgba(170,255,198,.10)!important;margin:10px 4px!important}
 
@@ -652,17 +647,16 @@ section[data-testid="stSidebar"] button{
  transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,border-color .18s,background .18s!important;
 }
 section[data-testid="stSidebar"] button:hover{
- transform:translate3d(5px,-3px,0)!important;
- background:linear-gradient(145deg,rgba(34,111,65,.94),rgba(7,45,25,.96))!important;
+ transform:translate3d(6px,-4px,0) scale(1.015)!important;
+ background:linear-gradient(145deg,rgba(55,143,88,.96),rgba(13,66,39,.98))!important;
  border-color:rgba(114,247,176,.55)!important;
  box-shadow:0 8px 0 rgba(1,12,7,.92),0 18px 32px rgba(0,0,0,.40),0 0 25px rgba(70,230,132,.14),inset 0 1px 0 rgba(255,255,255,.20)!important;
 }
 section[data-testid="stSidebar"] button:active{transform:translate3d(2px,4px,0)!important;box-shadow:0 2px 0 rgba(1,12,7,.9),0 6px 12px rgba(0,0,0,.3)!important}
-section[data-testid="stSidebar"] button p{
- font-family:'Manrope','Segoe UI',sans-serif!important;
- font-weight:650!important;font-size:11px!important;
- letter-spacing:.015em;line-height:1.2;
-}
+section[data-testid="stSidebar"] button p{font-family:'Sora'!important;font-weight:600!important;font-size:11.5px!important;letter-spacing:.025em}
+section[data-testid="stSidebar"] button p:before{content:'›';display:inline-block;margin-right:10px;color:#9fffc3;font-size:16px;font-weight:800;transform:translateY(1px);transition:.18s ease}
+section[data-testid="stSidebar"] button:hover p:before{content:'→';color:#e4fff0;transform:translate(2px,1px)}
+
 
 /* general controls */
 button,.stDownloadButton>button,.stFormSubmitButton>button{
@@ -721,13 +715,17 @@ label{font-weight:700!important;color:#c8e8d2!important}
 [data-testid="stExpander"]{background:rgba(5,29,17,.58)!important;border:1px solid rgba(163,255,194,.15)!important;border-radius:20px!important;box-shadow:0 10px 25px rgba(0,0,0,.18)!important}
 .stAlert{border-radius:17px!important;background:rgba(8,42,24,.65)!important;border:1px solid rgba(163,255,194,.18)!important}
 
+/* advanced polish */
+section[data-testid="stSidebar"]::-webkit-scrollbar{width:7px}
+section[data-testid="stSidebar"]::-webkit-scrollbar-track{background:rgba(255,255,255,.03)}
+section[data-testid="stSidebar"]::-webkit-scrollbar-thumb{background:linear-gradient(#5bdc95,#238451);border-radius:99px}
+[data-testid="stAppViewContainer"]{scroll-behavior:smooth}
+.stButton{position:relative}
 @keyframes scan{0%,55%{transform:translateX(-130%)}80%,100%{transform:translateX(180%)}}
 @media(max-width:768px){
  .block-container{padding:18px 12px 24px!important;margin:8px!important;border-radius:24px}
- .headbar-card{display:block;text-align:center}.headbar-title{justify-content:center;font-size:16px!important}.headbar-subtitle{
- position:relative;width:100%;text-align:center;color:#b9e9c9;
- font-family:'Manrope';font-size:9px;letter-spacing:.18em;
- text-transform:uppercase;font-weight:700;
+ .headbar-card{display:flex;text-align:center}.headbar-title{justify-content:center;font-size:17px!important}.headbar-subtitle{text-align:center;margin-top:3px}
+ .cal-grid{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 </style>
@@ -754,14 +752,14 @@ with st.sidebar:
       </div>
     </div>
     """, unsafe_allow_html=True)
-    st.caption(f"● LIVE SYSTEM  •  {datetime.now().strftime('%I:%M %p  |  %b %d')}")
+    st.caption(f"LIVE  /  {datetime.now().strftime('%I:%M %p  •  %b %d')}")
     st.divider()
 
-    st.subheader("Executive Overview")
-    if st.button("01   Dashboard", use_container_width=True):
+    st.subheader("EXECUTIVE")
+    if st.button("Dashboard", use_container_width=True):
         set_view("home")
     budget_input = st.number_input("Set Account Budget", min_value=0.0, key="budget_input_sidebar", value=None, placeholder="Enter budget...")
-    if st.button("02   Apply Budget", use_container_width=True):
+    if st.button("Apply Budget", use_container_width=True):
         if budget_input is not None:
             st.session_state.budget = float(budget_input)
             persist_state()
@@ -769,43 +767,43 @@ with st.sidebar:
             st.rerun()
         else:
             st.warning("Please enter a budget amount.")
-    if st.button("03   Reset System", use_container_width=True):
+    if st.button("Reset System", use_container_width=True):
         clear_all()
         set_view("home")
 
     st.markdown("---")
-    st.subheader("Project Control")
-    if st.button("01   New Work Entry", use_container_width=True):
+    st.subheader("PROJECT CONTROL")
+    if st.button("New Work Entry", use_container_width=True):
         set_view("planner_input")
-    if st.button("02   Schedule & Progress", use_container_width=True):
+    if st.button("Schedule & Progress", use_container_width=True):
         set_view("planner_output")
 
     st.markdown("---")
-    st.subheader("Financial Operations")
-    if st.button("01   Material Entry", use_container_width=True):
+    st.subheader("FINANCE")
+    if st.button("Material Entry", use_container_width=True):
         set_view("material")
-    if st.button("02   Expense Entry", use_container_width=True):
+    if st.button("Expense Entry", use_container_width=True):
         set_view("expense")
-    if st.button("03   Excess Deposit", use_container_width=True):
+    if st.button("Excess Deposit", use_container_width=True):
         set_view("excess")
-    if st.button("04   Financial Ledger", use_container_width=True):
+    if st.button("Financial Ledger", use_container_width=True):
         set_view("ledger")
-    if st.button("05   Financial Report", use_container_width=True):
+    if st.button("Financial Report", use_container_width=True):
         set_view("export")
 
     st.markdown("---")
-    st.subheader("Payroll Operations")
-    if st.button("01   Labor Account", use_container_width=True):
+    st.subheader("PAYROLL")
+    if st.button("Labor Account", use_container_width=True):
         set_view("add_labor")
-    if st.button("02   Payroll Expense", use_container_width=True):
+    if st.button("Payroll Expense", use_container_width=True):
         set_view("add_payroll_expense")
-    if st.button("03   Account Remainder", use_container_width=True):
+    if st.button("Account Remainder", use_container_width=True):
         set_view("payroll_remaining")
-    if st.button("04   Labor Accounts", use_container_width=True):
+    if st.button("Labor Accounts", use_container_width=True):
         set_view("payroll_ledger")
-    if st.button("05   Payroll Report", use_container_width=True):
+    if st.button("Payroll Report", use_container_width=True):
         set_view("payroll_export")
-    if st.button("06   Receipt Archive", use_container_width=True):
+    if st.button("Receipt Archive", use_container_width=True):
         set_view("receipt_archive")
 
 view = st.session_state.view
@@ -831,7 +829,7 @@ if view == "home":
             """)
 
 elif view == "planner_input":
-    st.subheader("📅 PLANNER INPUT - ADD NEW WORK TASK")
+    st.subheader("PLANNER INPUT — ADD NEW WORK TASK")
     st.caption("Select date details, work description, and optional photo proofs.")
     with st.form(key="planner_input_form", clear_on_submit=True):
         selected_date = st.date_input("Select Day, Month, and Year", value=datetime.now())
@@ -866,11 +864,11 @@ elif view == "planner_input":
             else:
                 st.warning("Please fill in the work description.")
     st.divider()
-    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+    if st.button("RETURN TO HOME", use_container_width=True):
         set_view("home")
 
 elif view == "planner_output":
-    st.subheader("📋 PLANNER OUTPUT - WORK SCHEDULE CALENDAR")
+    st.subheader("PLANNER OUTPUT — WORK SCHEDULE CALENDAR")
     tasks = st.session_state.planner_tasks
     if not tasks:
         st.info("No work scheduled yet.")
@@ -897,7 +895,7 @@ elif view == "planner_output":
         cards_html += '</div>'
         st.markdown(cards_html, unsafe_allow_html=True)
         st.markdown("---")
-        st.subheader("⚙️ Task Management & Photo Inspector")
+        st.subheader("TASK MANAGEMENT & PHOTO INSPECTOR")
         
         for t in list(sorted_tasks):
             with st.expander(f"📌 {t.get('month')} {t.get('day')}, {t.get('year')} - {t['name']} ({t['status']})", expanded=False):
@@ -909,7 +907,7 @@ elif view == "planner_output":
                         persist_state()
                         st.rerun()
                 with col2:
-                    if st.button("❌ Delete Task", key=f"del_{t['id']}", use_container_width=True):
+                    if st.button("Delete Task", key=f"del_{t['id']}", use_container_width=True):
                         st.session_state.planner_tasks = [x for x in st.session_state.planner_tasks if x["id"] != t["id"]]
                         persist_state()
                         st.rerun()
@@ -920,7 +918,7 @@ elif view == "planner_output":
                     for idx, photo_b64 in enumerate(list(t["photos"])):
                         with img_cols[idx % 4]:
                             st.image(photo_b64, use_container_width=True)
-                            if st.button("🗑️ Remove Photo", key=f"del_img_{t['id']}_{idx}", use_container_width=True):
+                            if st.button("Remove Photo", key=f"del_img_{t['id']}_{idx}", use_container_width=True):
                                 t["photos"].pop(idx)
                                 persist_state()
                                 st.rerun()
@@ -956,11 +954,11 @@ elif view == "planner_output":
         use_container_width=True
     )
     st.divider()
-    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+    if st.button("RETURN TO HOME", use_container_width=True):
         set_view("home")
 
 elif view == "material":
-    st.subheader("➕ ADD MATERIAL")
+    st.subheader("ADD MATERIAL")
     with st.form(key="material_form", clear_on_submit=True):
         name = st.text_input("Material Name")
         price = st.number_input("Price", min_value=0.01, value=None, placeholder="0.00")
@@ -976,11 +974,11 @@ elif view == "material":
             else:
                 st.warning("Invalid data, please fill out Price and Qty.")
     st.divider()
-    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+    if st.button("RETURN TO HOME", use_container_width=True):
         set_view("home")
 
 elif view == "expense":
-    st.subheader("➕ ADD CONSTRUCTION EXPENSE")
+    st.subheader("ADD CONSTRUCTION EXPENSE")
     with st.form(key="expense_form", clear_on_submit=True):
         name = st.text_input("Expense Name")
         amount = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
@@ -994,11 +992,11 @@ elif view == "expense":
             else:
                 st.warning("Please enter an amount greater than zero.")
     st.divider()
-    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+    if st.button("RETURN TO HOME", use_container_width=True):
         set_view("home")
 
 elif view == "excess":
-    st.subheader("➕ ADD EXCESS MONEY")
+    st.subheader("ADD EXCESS MONEY")
     with st.form(key="excess_form", clear_on_submit=True):
         name = st.text_input("Reason")
         amount = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
@@ -1023,11 +1021,11 @@ elif view == "excess":
             else:
                 st.warning("Please enter a valid amount.")
     st.divider()
-    if st.button("🏠 RETURN TO HOME", use_container_width=True):
+    if st.button("RETURN TO HOME", use_container_width=True):
         set_view("home")
 
 elif view == "ledger":
-    st.subheader("📖 CONSTRUCTION LEDGER")
+    st.subheader("CONSTRUCTION LEDGER")
     if not st.session_state.records:
         st.info("No transaction records found in ledger.")
     else:
@@ -1037,17 +1035,17 @@ elif view == "ledger":
             **{r['name']}** • PHP {float(r['amount']):,.2f}  
             👤 {r['sender']} | 🏷️ {r['type']} | 📅 {r['date']}
             """)
-            if st.button("❌ DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
+            if st.button("DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
                 st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
                 persist_state()
                 st.rerun()
 
 elif view == "export":
-    st.subheader("📄 EXPORT CONSTRUCTION REPORT")
+    st.subheader("EXPORT CONSTRUCTION REPORT")
     receipt_title = st.text_input("Receipt Title", value="Construction Receipt", placeholder="Enter a title for this receipt")
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
     st.components.v1.html(html, height=650, scrolling=True)
-    if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
+    if st.button("SAVE RECEIPT TO ARCHIVE", use_container_width=True):
         if receipt_title.strip():
             archive_path = save_report_html("construction", html, title=receipt_title)
             st.success(f"Saved to archive: {archive_path}")
@@ -1060,11 +1058,11 @@ elif view == "export":
         mime="text/html",
         use_container_width=True
     )
-    if st.button("📂 OPEN RECEIPT ARCHIVE", use_container_width=True):
+    if st.button("OPEN RECEIPT ARCHIVE", use_container_width=True):
         set_view("receipt_archive")
 
 elif view == "add_labor":
-    st.subheader("👷 ADD LABOR ACCOUNT")
+    st.subheader("ADD LABOR ACCOUNT")
     st.caption("Click a role button below (Cashier POS Style) to select the work role quickly:")
     
     col_r1, col_r2, col_r3 = st.columns(3)
@@ -1114,7 +1112,7 @@ elif view == "add_labor":
                 st.warning("Please enter a worker name and valid worked days/points.")
 
 elif view == "add_payroll_expense":
-    st.subheader("➕ ADD PAYROLL EXPENSE")
+    st.subheader("ADD PAYROLL EXPENSE")
     with st.form(key="payroll_expense_form", clear_on_submit=True):
         desc = st.text_input("Expense Description")
         amt = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
@@ -1132,7 +1130,7 @@ elif view == "add_payroll_expense":
                 st.warning("Please enter a valid amount.")
 
 elif view == "payroll_remaining":
-    st.subheader("⚙️ SET REMAINING MONEY")
+    st.subheader("SET REMAINING MONEY")
     res = st.number_input("Leftover/Remaining money to subtract from total", min_value=0.0, value=None, placeholder="0.00")
     if st.button("APPLY REMAINING MONEY", use_container_width=True):
         if res is not None:
@@ -1144,7 +1142,7 @@ elif view == "payroll_remaining":
             st.warning("Please enter an amount.")
 
 elif view == "payroll_ledger":
-    st.subheader("📋 LABOR & PAYROLL LEDGER")
+    st.subheader("LABOR & PAYROLL LEDGER")
     st.markdown("### Labor Records")
     if not st.session_state.labor_records:
         st.info("No labor records.")
@@ -1159,7 +1157,7 @@ elif view == "payroll_ledger":
             • C.A.: PHP {r['ca']:,.2f}  
             • **Net Pay: PHP {r['net']:,.2f}**
             """)
-            if st.button("❌ DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
+            if st.button("DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
                 st.session_state.labor_records.pop(i)
                 persist_state()
                 st.rerun()
@@ -1171,13 +1169,13 @@ elif view == "payroll_ledger":
     else:
         for i, e in enumerate(list(st.session_state.payroll_expenses)):
             st.markdown(f"- **{e['item']}**: PHP {e['price']:,.2f}")
-            if st.button("❌ DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
+            if st.button("DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
                 st.session_state.payroll_expenses.pop(i)
                 persist_state()
                 st.rerun()
 
 elif view == "payroll_export":
-    st.subheader("📄 EXPORT PAYROLL REPORT")
+    st.subheader("EXPORT PAYROLL REPORT")
     receipt_title = st.text_input("Receipt Title", value="Payroll Receipt", placeholder="Enter a title for this receipt")
     html, total = generate_payroll_html(
         st.session_state.labor_records,
@@ -1186,7 +1184,7 @@ elif view == "payroll_export":
         custom_title=receipt_title
     )
     st.components.v1.html(html, height=650, scrolling=True)
-    if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
+    if st.button("SAVE RECEIPT TO ARCHIVE", use_container_width=True):
         if receipt_title.strip():
             archive_path = save_report_html("payroll", html, title=receipt_title)
             st.success(f"Saved to archive: {archive_path}")
@@ -1199,9 +1197,9 @@ elif view == "payroll_export":
         mime="text/html",
         use_container_width=True
     )
-    if st.button("📂 OPEN RECEIPT ARCHIVE", use_container_width=True):
+    if st.button("OPEN RECEIPT ARCHIVE", use_container_width=True):
         set_view("receipt_archive")
-    if st.button("📧 EMAIL PAYROLL REPORT", use_container_width=True):
+    if st.button("EMAIL PAYROLL REPORT", use_container_width=True):
         try:
             msg = EmailMessage()
             msg['Subject'] = f"Construction Report: PHP {total:,.2f} - {datetime.now().strftime('%Y-%m-%d')}"
@@ -1216,11 +1214,11 @@ elif view == "payroll_export":
             st.error(f"❌ EMAIL FAILED: {e}")
 
 elif view == "receipt_archive":
-    st.subheader("📂 RECEIPT ARCHIVE")
+    st.subheader("RECEIPT ARCHIVE")
     st.caption("Browse saved receipts in neat construction and payroll folders.")
-    if st.button("⬅️ BACK TO CONSTRUCTION EXPORT", use_container_width=True):
+    if st.button("BACK TO CONSTRUCTION EXPORT", use_container_width=True):
         set_view("export")
-    if st.button("⬅️ BACK TO PAYROLL EXPORT", use_container_width=True):
+    if st.button("BACK TO PAYROLL EXPORT", use_container_width=True):
         set_view("payroll_export")
         
     for title, report_type in [("🏗️ Construction Receipts", "construction"), ("👷 Payroll Receipts", "payroll")]:
@@ -1242,7 +1240,7 @@ elif view == "receipt_archive":
                     use_container_width=True,
                     key=f"download_{report_type}_{report_path.name}"
                 )
-                if st.button("❌ DELETE THIS RECEIPT", key=f"delete_{report_type}_{report_path.name}", use_container_width=True):
+                if st.button("DELETE THIS RECEIPT", key=f"delete_{report_type}_{report_path.name}", use_container_width=True):
                     delete_report_file(report_path)
                     st.success(f"Deleted: {report_path.name}")
                     st.rerun()
