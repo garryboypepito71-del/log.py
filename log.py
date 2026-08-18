@@ -366,7 +366,8 @@ body {{
 }}
 
 .receipt-page {{
-  width: min(100%, 1500px);
+  width: 1500px;
+  max-width: none;
   margin: 0 auto;
   background: #fff;
   overflow: hidden;
@@ -724,186 +725,6 @@ body {{
   font-weight: 900;
 }}
 
-@media (max-width: 850px) {{
-  .header {{
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }}
-
-  .receipt-meta {{
-    border-left: 0;
-    border-top: 1px solid #d7ddd7;
-    padding: 18px 0 0;
-    align-items: flex-start;
-    text-align: left;
-  }}
-
-  .date-line {{
-    justify-content: flex-start;
-  }}
-
-  .bottom-grid {{
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }}
-
-  .thank-you {{
-    max-width: none;
-  }}
-}}
-
-@media (max-width: 600px) {{
-  body {{
-    padding: 6px;
-  }}
-
-  .save-img-btn {{
-    width: 100%;
-    min-height: 44px;
-  }}
-
-  .receipt-page {{
-    border-top-width: 4px;
-    border-radius: 0;
-  }}
-
-  .receipt-inner {{
-    padding: 14px;
-  }}
-
-  .brand {{
-    align-items: flex-start;
-    gap: 10px;
-  }}
-
-  .house-logo {{
-    width: 64px;
-    height: 64px;
-  }}
-
-  .company-name {{
-    font-size: 24px;
-  }}
-
-  .company-sub {{
-    font-size: 10px;
-  }}
-
-  .receipt-meta h2 {{
-    font-size: 20px;
-  }}
-
-  .table-wrap {{
-    border: 0;
-    overflow: visible;
-  }}
-
-  .receipt-table {{
-    min-width: 0;
-    display: block;
-    font-size: 12px;
-  }}
-
-  .receipt-table thead {{
-    display: none;
-  }}
-
-  .receipt-table tbody,
-  .receipt-table tr,
-  .receipt-table td {{
-    display: block;
-    width: 100%;
-  }}
-
-  .receipt-table tr {{
-    margin-bottom: 12px;
-    border: 1px solid #d7ddd7;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 3px 10px rgba(0,0,0,.04);
-  }}
-
-  .receipt-table td {{
-    min-height: 38px;
-    padding: 9px 12px 9px 43%;
-    position: relative;
-    border-right: 0;
-    border-bottom: 1px solid #edf0ed;
-    text-align: right !important;
-    white-space: normal;
-  }}
-
-  .receipt-table td:last-child {{
-    border-bottom: 0;
-  }}
-
-  .receipt-table td::before {{
-    content: attr(data-label);
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #667169;
-    font-size: 9px;
-    font-weight: 900;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    text-align: left;
-  }}
-
-  .receipt-table .description {{
-    color: var(--green);
-  }}
-
-  .receipt-table .money {{
-    white-space: normal;
-  }}
-
-  .empty-row td {{
-    padding: 24px 15px;
-    text-align: center !important;
-  }}
-
-  .empty-row td::before {{
-    display: none;
-  }}
-
-  .summary {{
-    padding: 20px 18px;
-    border-radius: 13px;
-  }}
-
-  .summary-row {{
-    font-size: 12px;
-  }}
-
-  .summary-main {{
-    font-size: 18px;
-  }}
-
-  .summary-row.status-row {{
-    font-size: 17px;
-  }}
-
-  .final-balance {{
-    font-size: 18px;
-  }}
-
-  .thank-you {{
-    padding: 17px;
-  }}
-
-  .thank-you h3 {{
-    font-size: 16px;
-  }}
-
-  .footer {{
-    font-size: 8px;
-    line-height: 1.6;
-  }}
-}}
-
 @media print {{
   body {{
     background: white;
@@ -1014,66 +835,67 @@ body {{
 </div>
 
 <script>
+function fitReceiptToScreen() {{
+  const element = document.getElementById('receiptContent');
+  if (!element) return;
+  const baseWidth = 1500;
+  const scale = Math.min(1, Math.max(0.35, (window.innerWidth - 20) / baseWidth));
+  element.style.transformOrigin = 'top center';
+  element.style.transform = `scale(${{scale}})`;
+  element.style.marginLeft = 'auto';
+  element.style.marginRight = 'auto';
+  element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
+  document.body.style.overflowX = 'hidden';
+}}
+window.addEventListener('load', fitReceiptToScreen);
+window.addEventListener('resize', fitReceiptToScreen);
+
 function saveAsImage() {{
   const element = document.getElementById('receiptContent');
-
-  if (typeof html2canvas === 'undefined') {{
-    window.print();
-    return;
-  }}
-
-  const rect = element.getBoundingClientRect();
+  if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+  const wasTransform = element.style.transform;
+  const wasOrigin = element.style.transformOrigin;
+  const wasMarginBottom = element.style.marginBottom;
+  element.style.transform = 'none';
+  element.style.transformOrigin = 'top left';
+  element.style.marginBottom = '0';
   const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  // Keep the receipt aligned to the device orientation:
-  // laptop/desktop = 16:9 UHD, phone = 9:16 UHD.
   const frameWidth = isPhone ? 2160 : 3840;
   const frameHeight = isPhone ? 3840 : 2160;
-  const safeName = {json.dumps(custom_title)}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-
+  const safeName = {{json.dumps(custom_title)}}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+  const rect = element.getBoundingClientRect();
   html2canvas(element, {{
-    scale: Math.max(1, Math.min(6, frameWidth / Math.max(rect.width, 1))),
+    scale: Math.max(1, Math.min(4, 3840 / Math.max(rect.width, 1))),
     useCORS: true,
     allowTaint: false,
     backgroundColor: '#ffffff',
     logging: false,
-    imageTimeout: 30000,
-    scrollX: 0,
-    scrollY: 0,
     width: Math.ceil(rect.width),
     height: Math.ceil(rect.height),
-    windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
-    windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
+    windowWidth: 1600,
+    windowHeight: Math.max(1200, Math.ceil(rect.height))
   }}).then(canvas => {{
-    // Fit the actual responsive receipt inside the device-ratio frame without distortion.
     const out = document.createElement('canvas');
-    out.width = frameWidth;
-    out.height = frameHeight;
+    out.width = frameWidth; out.height = frameHeight;
     const ctx = out.getContext('2d', {{ alpha: false }});
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, frameWidth, frameHeight);
-
-    const fitScale = Math.min(frameWidth / canvas.width, frameHeight / canvas.height);
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, out.width, out.height);
+    const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
     const drawWidth = Math.round(canvas.width * fitScale);
     const drawHeight = Math.round(canvas.height * fitScale);
-    const offsetX = Math.round((frameWidth - drawWidth) / 2);
-    const offsetY = Math.round((frameHeight - drawHeight) / 2);
-    ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
-
+    ctx.drawImage(canvas, Math.round((out.width-drawWidth)/2), Math.round((out.height-drawHeight)/2), drawWidth, drawHeight);
     out.toBlob(blob => {{
-      if (!blob) throw new Error('Responsive image export failed');
-      const ratioName = isPhone ? 'Phone_9x16' : 'Laptop_16x9';
+      if (!blob) throw new Error('Receipt export failed');
       const link = document.createElement('a');
-      link.download = safeName + '_Receipt_' + ratioName + '.png';
-      link.href = URL.createObjectURL(blob);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      link.download = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16' : 'Laptop_16x9') + '.png';
+      link.href = URL.createObjectURL(blob); link.click();
       setTimeout(() => URL.revokeObjectURL(link.href), 1500);
     }}, 'image/png');
-  }}).catch(() => {{
-    window.print();
+  }}).catch(() => {{ window.print(); }}).finally(() => {{
+    element.style.transform = wasTransform;
+    element.style.transformOrigin = wasOrigin;
+    element.style.marginBottom = wasMarginBottom;
+    fitReceiptToScreen();
   }});
 }}
 </script>
@@ -1118,7 +940,8 @@ body {{
 .top-line {{ height: 10px; background: #075d2c; width: 100%; }}
 .gold-line {{ height: 2px; background: #c79a2b; width: 52%; margin: 42px 0 0 38px; }}
 .receipt {{
-    width: min(1460px, calc(100% - 72px));
+    width: 1460px;
+    max-width: none;
     margin: 0 auto;
     padding: 28px 0 34px;
     position: relative;
@@ -1194,50 +1017,6 @@ table.payroll .net {{ color: #075d2c; font-weight: 800; }}
 .save-img-btn {{ background: #075d2c; color: white; border: 0; padding: 13px 24px; font-size: 14px; font-weight: 800; border-radius: 8px; cursor: pointer; }}
 .save-img-btn:hover {{ background: #0a7137; }}
 @media print {{ .save-btn-container {{ display: none; }} body {{ background: white; }} .receipt {{ width: calc(100% - 30px); }} }}
-@media (max-width: 900px) {{
-    .receipt {{ width: calc(100% - 28px); padding-top: 18px; }}
-    .header {{ grid-template-columns: 1fr; gap: 18px; }}
-    .meta {{ border-left: 0; border-top: 1px solid #d8ded9; padding: 20px 0 0; text-align: left; }}
-    .meta h2 {{ margin-bottom: 14px; }}
-    .meta .date-line {{ min-width: 0; }}
-    .lower {{ grid-template-columns: 1fr; gap: 22px; }}
-    .summary {{ min-height: 230px; }}
-}}
-@media (max-width: 600px) {{
-    .gold-line {{ margin: 18px 0 0 18px; width: 65%; }}
-    .receipt {{ width: calc(100% - 18px); padding: 12px 0 20px; }}
-    .brand {{ gap: 12px; align-items: flex-start; }}
-    .logo {{ width: 74px; height: 72px; flex-basis: 74px; }}
-    .brand h1 {{ font-size: 31px; letter-spacing: -1px; }}
-    .brand .subtitle {{ font-size: 14px; margin-top: 6px; }}
-    .brand .system, .brand .account {{ font-size: 12px; margin-top: 6px; }}
-    .meta h2 {{ font-size: 25px; }}
-    .meta .row {{ font-size: 13px; white-space: normal; }}
-    .table-wrap {{ border: 0; overflow: visible; }}
-    table.payroll {{ min-width: 0; display: block; }}
-    table.payroll thead {{ display: none; }}
-    table.payroll tbody, table.payroll tr, table.payroll td {{ display: block; width: 100%; }}
-    table.payroll tr {{ border: 1px solid #c7d0ca; border-radius: 14px; margin-bottom: 12px; overflow: hidden; background: #fff; }}
-    table.payroll td {{ height: auto; min-height: 0; padding: 9px 14px 9px 48%; text-align: right; border-right: 0; border-bottom: 1px solid #edf0ee; position: relative; font-size: 13px; }}
-    table.payroll td::before {{ content: attr(data-label); position: absolute; left: 14px; top: 9px; width: 42%; text-align: left; font-weight: 800; color: #075d2c; text-transform: uppercase; font-size: 10px; }}
-    table.payroll .center, table.payroll .money {{ text-align: right; }}
-    .empty-row {{ display: none !important; }}
-    .lower {{ margin-top: 25px; }}
-    .thanks {{ padding: 20px; gap: 14px; }}
-    .check {{ width: 56px; height: 56px; flex-basis: 56px; font-size: 34px; }}
-    .thanks h3 {{ font-size: 20px; }}
-    .thanks p {{ font-size: 14px; }}
-    .summary {{ padding: 22px 20px; border-radius: 16px; }}
-    .sum-row {{ font-size: 15px; padding-bottom: 12px; }}
-    .final .label {{ font-size: 21px; }}
-    .final .value {{ font-size: 29px; }}
-    .footer {{ margin-top: 28px; padding: 18px 8px; font-size: 9px; letter-spacing: 1px; }}
-    .receipt {{ width: calc(100% - 18px); }}
-    .header, .lower {{ min-width: 0; }}
-    .brand > div, .meta {{ min-width: 0; }}
-    .brand h1 {{ overflow-wrap: anywhere; }}
-    .meta .row {{ overflow-wrap: anywhere; }}
-}}
 </style>
 </head>
 <body>
@@ -1347,61 +1126,68 @@ table.payroll .net {{ color: #075d2c; font-weight: 800; }}
 </div>
 </div>
 <script>
+function fitReceiptToScreen() {{
+  const element = document.getElementById('receiptContent');
+  if (!element) return;
+  const baseWidth = 1460;
+  const scale = Math.min(1, Math.max(0.35, (window.innerWidth - 20) / baseWidth));
+  element.style.transformOrigin = 'top center';
+  element.style.transform = `scale(${{scale}})`;
+  element.style.marginLeft = 'auto';
+  element.style.marginRight = 'auto';
+  element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
+  document.body.style.overflowX = 'hidden';
+}}
+window.addEventListener('load', fitReceiptToScreen);
+window.addEventListener('resize', fitReceiptToScreen);
+
 function saveAsImage() {{
-    const element = document.getElementById('receiptContent');
-    if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
-
-    const rect = element.getBoundingClientRect();
-    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    // Laptop/desktop export is 16:9 UHD; phone export is 9:16 UHD.
-    const frameWidth = isPhone ? 2160 : 3840;
-    const frameHeight = isPhone ? 3840 : 2160;
-    const safeName = {json.dumps(custom_title)}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-
-    html2canvas(element, {{
-        scale: Math.max(1, Math.min(6, frameWidth / Math.max(rect.width, 1))),
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        imageTimeout: 30000,
-        scrollX: 0,
-        scrollY: 0,
-        width: Math.ceil(rect.width),
-        height: Math.ceil(rect.height),
-        windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
-        windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
-    }}).then(canvas => {{
-        const out = document.createElement('canvas');
-        out.width = frameWidth;
-        out.height = frameHeight;
-        const ctx = out.getContext('2d', {{ alpha: false }});
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, out.width, out.height);
-
-        // Preserve the receipt's responsive layout and proportions.
-        const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
-        const drawWidth = Math.round(canvas.width * fitScale);
-        const drawHeight = Math.round(canvas.height * fitScale);
-        const offsetX = Math.round((out.width - drawWidth) / 2);
-        const offsetY = Math.round((out.height - drawHeight) / 2);
-        ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
-
-        out.toBlob(blob => {{
-            if (!blob) throw new Error('Responsive image export failed');
-            const ratioName = isPhone ? 'Phone_9x16' : 'Laptop_16x9';
-            const link = document.createElement('a');
-            link.download = safeName + '_Receipt_' + ratioName + '.png';
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(link.href), 1500);
-        }}, 'image/png');
-    }}).catch(() => {{
-        window.print();
-    }});
+  const element = document.getElementById('receiptContent');
+  if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+  const wasTransform = element.style.transform;
+  const wasOrigin = element.style.transformOrigin;
+  const wasMarginBottom = element.style.marginBottom;
+  element.style.transform = 'none';
+  element.style.transformOrigin = 'top left';
+  element.style.marginBottom = '0';
+  const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const frameWidth = isPhone ? 2160 : 3840;
+  const frameHeight = isPhone ? 3840 : 2160;
+  const safeName = {{json.dumps(custom_title)}}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+  const rect = element.getBoundingClientRect();
+  html2canvas(element, {{
+    scale: Math.max(1, Math.min(4, 3840 / Math.max(rect.width, 1))),
+    useCORS: true,
+    allowTaint: false,
+    backgroundColor: '#ffffff',
+    logging: false,
+    width: Math.ceil(rect.width),
+    height: Math.ceil(rect.height),
+    windowWidth: 1600,
+    windowHeight: Math.max(1200, Math.ceil(rect.height))
+  }}).then(canvas => {{
+    const out = document.createElement('canvas');
+    out.width = frameWidth; out.height = frameHeight;
+    const ctx = out.getContext('2d', {{ alpha: false }});
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, out.width, out.height);
+    const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
+    const drawWidth = Math.round(canvas.width * fitScale);
+    const drawHeight = Math.round(canvas.height * fitScale);
+    ctx.drawImage(canvas, Math.round((out.width-drawWidth)/2), Math.round((out.height-drawHeight)/2), drawWidth, drawHeight);
+    out.toBlob(blob => {{
+      if (!blob) throw new Error('Receipt export failed');
+      const link = document.createElement('a');
+      link.download = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16' : 'Laptop_16x9') + '.png';
+      link.href = URL.createObjectURL(blob); link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+    }}, 'image/png');
+  }}).catch(() => {{ window.print(); }}).finally(() => {{
+    element.style.transform = wasTransform;
+    element.style.transformOrigin = wasOrigin;
+    element.style.marginBottom = wasMarginBottom;
+    fitReceiptToScreen();
+  }});
 }}
 </script>
 </body>
