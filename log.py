@@ -1323,12 +1323,16 @@ function fitReceiptToScreen() {{
     el.style.position='relative';
     el.style.left='0';
   }} else {{
+    // DESKTOP PREVIEW: scale the complete 1500x844 receipt to the
+    // available iframe width so the client never has to scroll sideways.
     const baseW=1500;
+    const availableW=Math.max(320, window.innerWidth - 18);
+    const scale=Math.min(1, availableW / baseW);
     el.style.transformOrigin='top center';
-    el.style.transform='none';
+    el.style.transform=`scale(${{scale}})`;
     el.style.marginLeft='auto';
     el.style.marginRight='auto';
-    el.style.marginBottom='0';
+    el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
     el.style.position='relative';
     el.style.left='0';
   }}
@@ -2124,7 +2128,7 @@ elif view == "planner_output":
     custom_receipt_title = st.text_input("Receipt Title", value="Construction Schedule Receipt", placeholder="Enter a custom title...")
     html_report = generate_planner_html(sorted_tasks, custom_title=custom_receipt_title)
     st.markdown("### 🖼️ SEE PHOTO & DOWNLOAD SCHEDULE RECEIPT")
-    st.components.v1.html(html_report, height=650, scrolling=True)
+    st.components.v1.html(html_report, height=760, scrolling=False)
     st.download_button(
         label="📥 DOWNLOAD SCHEDULE RECEIPT HTML",
         data=html_report,
