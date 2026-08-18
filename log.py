@@ -739,6 +739,52 @@ body {{
   .receipt-inner {{ padding: 28px 62px 18px; }}
 }}
 
+/* PHONE EXPORT: exact narrow receipt composition used for the downloaded 9:16 image */
+.export-phone {{
+  width: 337.5px !important;
+  min-height: 600px !important;
+  height: 600px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-top-width: 3px !important;
+  box-shadow: none !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}}
+.export-phone .receipt-inner {{ padding: 11px 10px 8px !important; }}
+.export-phone .top-gold-line {{ height: 1px !important; margin: -5px 0 7px !important; }}
+.export-phone .header {{ grid-template-columns: 1fr !important; gap: 5px !important; padding-bottom: 8px !important; align-items: start !important; }}
+.export-phone .brand {{ gap: 7px !important; align-items: center !important; }}
+.export-phone .house-logo {{ width: 43px !important; height: 43px !important; flex: 0 0 43px !important; }}
+.export-phone .company-name {{ font-size: 20px !important; letter-spacing: -.5px !important; line-height: 1 !important; }}
+.export-phone .company-sub {{ font-size: 7.2px !important; line-height: 1.25 !important; margin-top: 2px !important; }}
+.export-phone .backup {{ margin-top: 2px !important; }}
+.export-phone .receipt-meta {{ min-height: 0 !important; border-left: 0 !important; border-top: 1px solid #d7ddd7 !important; padding: 6px 0 0 !important; align-items: flex-start !important; text-align: left !important; }}
+.export-phone .receipt-meta h2 {{ font-size: 12px !important; margin: 0 0 4px !important; }}
+.export-phone .date-line {{ justify-content: flex-start !important; gap: 4px !important; font-size: 8px !important; }}
+.export-phone .calendar-icon {{ font-size: 10px !important; }}
+.export-phone .receipt-meta .company-sub {{ font-size: 6.5px !important; margin-top: 3px !important; }}
+.export-phone .table-wrap {{ border-radius: 7px !important; overflow: hidden !important; }}
+.export-phone .receipt-table {{ font-size: 6.2px !important; }}
+.export-phone .receipt-table thead th {{ padding: 6px 3px !important; font-size: 5.5px !important; line-height: 1.05 !important; white-space: normal !important; }}
+.export-phone .receipt-table td {{ padding: 7px 3px !important; height: 31px !important; font-size: 6px !important; line-height: 1.05 !important; overflow: hidden !important; }}
+.export-phone .receipt-table .description {{ word-break: break-word !important; }}
+.export-phone .empty-row td {{ padding: 7px 3px !important; height: 31px !important; }}
+.export-phone .bottom-grid {{ grid-template-columns: 1fr !important; gap: 9px !important; margin-top: 10px !important; padding: 0 !important; align-items: stretch !important; }}
+.export-phone .thank-you {{ max-width: none !important; padding: 9px 10px !important; border-radius: 9px !important; }}
+.export-phone .thank-row {{ gap: 7px !important; }}
+.export-phone .check {{ width: 27px !important; height: 27px !important; flex-basis: 27px !important; font-size: 13px !important; }}
+.export-phone .thank-you h3 {{ font-size: 9px !important; margin-bottom: 2px !important; }}
+.export-phone .thank-you p {{ font-size: 6.5px !important; line-height: 1.3 !important; }}
+.export-phone .summary {{ min-height: 0 !important; padding: 10px 11px !important; border-radius: 8px !important; box-shadow: none !important; }}
+.export-phone .summary-row {{ gap: 8px !important; padding: 4px 0 !important; font-size: 7px !important; }}
+.export-phone .summary-main {{ font-size: 9px !important; }}
+.export-phone .summary-main span:last-child {{ font-size: 8px !important; }}
+.export-phone .summary-row.status-row {{ padding-top: 6px !important; font-size: 8px !important; }}
+.export-phone .final-balance {{ padding-top: 6px !important; font-size: 8.5px !important; }}
+.export-phone .footer {{ margin-top: 8px !important; padding: 7px 8px 6px !important; font-size: 5.2px !important; letter-spacing: .05em !important; }}
+.export-phone .footer::before {{ width: 10px !important; height: 10px !important; margin-right: 4px !important; font-size: 7px !important; }}
+.export-phone::after {{ width: 130px !important; height: 45px !important; }}
 @media print {{
   body {{
     background: white;
@@ -930,6 +976,7 @@ async function saveAsImage() {{
   const originalText = button ? button.innerHTML : '';
   if (button) {{ button.disabled = true; button.innerHTML = '⏳ PREPARING IMAGE…'; }}
 
+  const wasClass = element.className;
   const wasTransform = element.style.transform;
   const wasOrigin = element.style.transformOrigin;
   const wasMarginBottom = element.style.marginBottom;
@@ -938,20 +985,25 @@ async function saveAsImage() {{
 
   try {{
     await loadHtml2Canvas();
-    element.style.transform = 'none';
-    element.style.transformOrigin = 'top left';
-    element.style.marginBottom = '0';
-    element.style.width = element.classList.contains('receipt') ? '1460px' : '1500px';
-    element.style.height = 'auto';
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
     const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const targetW = isPhone ? 2160 : 3840;
     const targetH = isPhone ? 3840 : 2160;
-    const rect = element.getBoundingClientRect();
-    const sourceW = Math.max(1, Math.ceil(rect.width));
-    const sourceH = Math.max(1, Math.ceil(rect.height));
-    const captureScale = Math.min(3, Math.max(1.5, targetW / sourceW));
+
+    // Desktop export uses the approved 16:9 receipt. Phone export uses a
+    // dedicated narrow composition so the downloaded PNG looks like the
+    // supplied phone reference instead of a squeezed desktop receipt.
+    element.className = wasClass + (isPhone ? ' export-phone' : '');
+    element.style.transform = 'none';
+    element.style.transformOrigin = 'top left';
+    element.style.marginBottom = '0';
+    element.style.width = isPhone ? '337.5px' : '1500px';
+    element.style.height = isPhone ? '600px' : '844px';
+
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const sourceW = isPhone ? 338 : 1500;
+    const sourceH = isPhone ? 600 : 844;
+    const captureScale = isPhone ? 4 : 2.56;
 
     const canvas = await html2canvas(element, {{
       scale: captureScale,
@@ -964,8 +1016,8 @@ async function saveAsImage() {{
       scrollY: 0,
       width: sourceW,
       height: sourceH,
-      windowWidth: Math.max(1600, sourceW),
-      windowHeight: Math.max(1200, sourceH)
+      windowWidth: sourceW,
+      windowHeight: sourceH
     }});
 
     const out = document.createElement('canvas');
@@ -979,15 +1031,15 @@ async function saveAsImage() {{
     ctx.fillRect(0, 0, targetW, targetH);
 
     const fit = Math.min(targetW / canvas.width, targetH / canvas.height);
-    const drawW = Math.max(1, Math.round(canvas.width * fit));
-    const drawH = Math.max(1, Math.round(canvas.height * fit));
+    const drawW = Math.round(canvas.width * fit);
+    const drawH = Math.round(canvas.height * fit);
     const x = Math.round((targetW - drawW) / 2);
     const y = Math.round((targetH - drawH) / 2);
     ctx.drawImage(canvas, x, y, drawW, drawH);
 
-    const titleSource = document.title || 'Receipt';
-    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-    const filename = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
+    const titleSource = document.title || 'Ailyn_House_Project';
+    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Ailyn_House_Project';
+    const filename = safeName + '_Construction_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
     await downloadCanvasPng(out, filename);
     if (button) button.innerHTML = '✓ IMAGE DOWNLOADED';
     setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 1800);
@@ -995,8 +1047,9 @@ async function saveAsImage() {{
     console.error('Receipt image export failed:', err);
     if (button) button.innerHTML = '⚠ DOWNLOAD FAILED — TRY AGAIN';
     setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 2500);
-    alert('The receipt image could not be created. Please try the download button again or check your internet connection.');
+    alert('The receipt image could not be created. Please try again.');
   }} finally {{
+    element.className = wasClass;
     element.style.transform = wasTransform;
     element.style.transformOrigin = wasOrigin;
     element.style.marginBottom = wasMarginBottom;
