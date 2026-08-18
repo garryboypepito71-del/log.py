@@ -1,13 +1,13 @@
 {
   "records": [
     {
-      "id": "1787050636.8357937",
+      "id": "1787049978.8766928",
       "date": "Aug 18, 2026",
-      "name": "1000`",
-      "price": 616.0,
-      "qty": 66,
+      "name": "CEMENT",
+      "price": 1.0,
+      "qty": 1,
       "delivery": 0.0,
-      "amount": 40656.0,
+      "amount": 1.0,
       "type": "material",
       "sender": "Garr"
     }
