@@ -13,7 +13,6 @@ PERSISTENT_KEYS = [
     "payroll_expenses",
     "planner_tasks",
     "budget",
-    "budget_entries",
     "remaining_money",
     "view"
 ]
@@ -117,11 +116,6 @@ if "planner_tasks" not in st.session_state:
     st.session_state.planner_tasks = []
 if "budget" not in st.session_state:
     st.session_state.budget = 0.0
-if "budget_entries" not in st.session_state:
-    # Backward-compatible migration: preserve an existing single budget as the first entry.
-    old_budget = float(st.session_state.get("budget", 0.0) or 0.0)
-    st.session_state.budget_entries = [old_budget] if old_budget > 0 else []
-    st.session_state.budget = sum(st.session_state.budget_entries)
 if "remaining_money" not in st.session_state:
     st.session_state.remaining_money = 0.0
 if "view" not in st.session_state:
@@ -147,7 +141,7 @@ def get_total():
     return total_materials() + total_expenses()
 
 def get_balance():
-    return float(sum(st.session_state.get("budget_entries", []) or [0.0])) + total_excess() - get_total()
+    return float(st.session_state.budget) + total_excess() - get_total()
 
 def clear_all():
     st.session_state.records = []
@@ -155,7 +149,6 @@ def clear_all():
     st.session_state.payroll_expenses = []
     st.session_state.planner_tasks = []
     st.session_state.budget = 0.0
-    st.session_state.budget_entries = []
     st.session_state.remaining_money = 0.0
     st.session_state.view = "home"
     st.session_state.selected_role = "Labor"
@@ -164,85 +157,49 @@ def clear_all():
 def persist_state():
     save_state(st.session_state)
 
-def add_tx(name, price, qty, delivery, ttype, sender):
-    p = float(price or 0.0)
-    q = int(qty or 0)
-    d = float(delivery or 0.0)
-    if p <= 0 or q <= 0:
-        return False
-    amount = (p * q) + d if ttype == "material" else p
-    st.session_state.records.append({
-        "id": str(time.time()),
-        "date": datetime.now().strftime("%b %d, %Y"),
-        "name": name.upper(),
-        "price": p,
-        "qty": q,
-        "delivery": d,
-        "amount": float(amount),
-        "type": ttype,
-        "sender": sender
-    })
-    persist_state()
-    return True
+def add_tx(name, price, qty, delivery=0.0, ttype="material", sender="Aily"):
+    """Safely add a material/expense transaction.
 
+    Kept as a top-level function before any Streamlit view code so the
+    Material page can never raise NameError when SAVE MATERIAL is pressed.
+    """
+    try:
+        # Always guarantee the storage list exists, even after a fresh session
+        # or a partially written/old persisted state.
+        if "records" not in st.session_state or not isinstance(st.session_state.records, list):
+            st.session_state.records = []
 
-def update_material_record(index, name, price, qty, delivery, sender):
-    """Edit a construction material/expense ledger record without creating a duplicate."""
-    if index < 0 or index >= len(st.session_state.records):
-        return False
-    r = st.session_state.records[index]
-    p = float(price or 0.0)
-    q = int(qty or 0)
-    d = float(delivery or 0.0)
-    if not str(name).strip() or p <= 0 or q <= 0:
-        return False
-    r["name"] = str(name).strip().upper()
-    r["price"] = p
-    r["qty"] = q
-    r["delivery"] = d
-    r["sender"] = sender
-    r["amount"] = (p * q) + d if r.get("type") == "material" else p
-    persist_state()
-    return True
+        clean_name = str(name or "").strip()
+        p = float(price or 0.0)
+        q = int(float(qty or 0))
+        d = float(delivery or 0.0)
 
+        if not clean_name or p <= 0 or q <= 0 or d < 0:
+            return False
 
-def update_labor_record(index, name, role, days, ca):
-    """Edit a labor ledger record and recalculate gross/net pay from the selected role and days."""
-    if index < 0 or index >= len(st.session_state.labor_records):
-        return False
-    d = float(days or 0.0)
-    c = float(ca or 0.0)
-    if not str(name).strip() or d <= 0 or role not in FULL_DAY_RATES:
-        return False
-    gross_pay, full_pay, partial_pay = calculate_labor_pay(d, role)
-    rate = FULL_DAY_RATES[role]
-    r = st.session_state.labor_records[index]
-    r.update({
-        "name": str(name).strip().upper(),
-        "role": role,
-        "days": d,
-        "rate": rate,
-        "gross_pay": gross_pay,
-        "ca": c,
-        "net": gross_pay - c,
-    })
-    persist_state()
-    return True
+        if ttype not in {"material", "expense", "excess"}:
+            ttype = "material"
 
+        amount = (p * q) + d if ttype == "material" else p
+        record = {
+            "id": str(time.time_ns()),
+            "date": datetime.now().strftime("%b %d, %Y"),
+            "name": clean_name.upper(),
+            "price": p,
+            "qty": q,
+            "delivery": d,
+            "amount": float(amount),
+            "type": ttype,
+            "sender": str(sender or "Aily")
+        }
+        st.session_state.records.append(record)
+        persist_state()
+        return True
+    except (TypeError, ValueError, OverflowError):
+        return False
 
-def update_payroll_expense(index, item, price):
-    """Edit a payroll expense ledger record."""
-    if index < 0 or index >= len(st.session_state.payroll_expenses):
-        return False
-    p = float(price or 0.0)
-    if not str(item).strip() or p <= 0:
-        return False
-    st.session_state.payroll_expenses[index].update({
-        "item": str(item).strip().upper(),
-        "price": p,
-    })
-    persist_state()
-    return True
+# Backward-compatible alias for older saved/deployed page code.
+save_transaction = add_tx
 
 def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
     """Build a responsive construction receipt matching the supplied Ailyn House design."""
@@ -968,7 +925,7 @@ body {{
 
 <body>
 <div class="save-btn-container">
-  <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD IMAGE • UHD 4K</button>
+  <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button>
 </div>
 
 <div class="receipt-page" id="receiptContent">
@@ -1064,18 +1021,56 @@ function saveAsImage() {{
     return;
   }}
 
+  const rect = element.getBoundingClientRect();
+  const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  // Keep the receipt aligned to the device orientation:
+  // laptop/desktop = 16:9 UHD, phone = 9:16 UHD.
+  const frameWidth = isPhone ? 2160 : 3840;
+  const frameHeight = isPhone ? 3840 : 2160;
+  const safeName = {json.dumps(custom_title)}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+
   html2canvas(element, {{
-    scale: Math.min(4, Math.max(2, 3840 / Math.max(element.getBoundingClientRect().width, 1))), windowWidth: element.scrollWidth, windowHeight: element.scrollHeight,
+    scale: Math.max(1, Math.min(6, frameWidth / Math.max(rect.width, 1))),
     useCORS: true,
+    allowTaint: false,
     backgroundColor: '#ffffff',
     logging: false,
+    imageTimeout: 30000,
     scrollX: 0,
-    scrollY: 0
+    scrollY: 0,
+    width: Math.ceil(rect.width),
+    height: Math.ceil(rect.height),
+    windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
+    windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
   }}).then(canvas => {{
-    const link = document.createElement('a');
-    link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    // Fit the actual responsive receipt inside the device-ratio frame without distortion.
+    const out = document.createElement('canvas');
+    out.width = frameWidth;
+    out.height = frameHeight;
+    const ctx = out.getContext('2d', {{ alpha: false }});
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, frameWidth, frameHeight);
+
+    const fitScale = Math.min(frameWidth / canvas.width, frameHeight / canvas.height);
+    const drawWidth = Math.round(canvas.width * fitScale);
+    const drawHeight = Math.round(canvas.height * fitScale);
+    const offsetX = Math.round((frameWidth - drawWidth) / 2);
+    const offsetY = Math.round((frameHeight - drawHeight) / 2);
+    ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
+
+    out.toBlob(blob => {{
+      if (!blob) throw new Error('Responsive image export failed');
+      const ratioName = isPhone ? 'Phone_9x16' : 'Laptop_16x9';
+      const link = document.createElement('a');
+      link.download = safeName + '_Receipt_' + ratioName + '.png';
+      link.href = URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+    }}, 'image/png');
   }}).catch(() => {{
     window.print();
   }});
@@ -1236,6 +1231,11 @@ table.payroll .net {{ color: #075d2c; font-weight: 800; }}
     .final .label {{ font-size: 21px; }}
     .final .value {{ font-size: 29px; }}
     .footer {{ margin-top: 28px; padding: 18px 8px; font-size: 9px; letter-spacing: 1px; }}
+    .receipt {{ width: calc(100% - 18px); }}
+    .header, .lower {{ min-width: 0; }}
+    .brand > div, .meta {{ min-width: 0; }}
+    .brand h1 {{ overflow-wrap: anywhere; }}
+    .meta .row {{ overflow-wrap: anywhere; }}
 }}
 </style>
 </head>
@@ -1244,7 +1244,7 @@ table.payroll .net {{ color: #075d2c; font-weight: 800; }}
 <div class="top-line"></div>
 <div class="gold-line"></div>
 <div class="save-btn-container">
-    <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD IMAGE • UHD 4K</button>
+    <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button>
 </div>
 <div class="receipt" id="receiptContent">
     <div class="header">
@@ -1348,11 +1348,56 @@ table.payroll .net {{ color: #075d2c; font-weight: 800; }}
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
-    html2canvas(element, {{ scale: Math.min(4, Math.max(2, 3840 / Math.max(element.getBoundingClientRect().width, 1))), windowWidth: element.scrollWidth, windowHeight: element.scrollHeight, useCORS: true, backgroundColor: '#ffffff', imageTimeout: 30000 }}).then(canvas => {{
-        const link = document.createElement('a');
-        link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+
+    const rect = element.getBoundingClientRect();
+    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // Laptop/desktop export is 16:9 UHD; phone export is 9:16 UHD.
+    const frameWidth = isPhone ? 2160 : 3840;
+    const frameHeight = isPhone ? 3840 : 2160;
+    const safeName = {json.dumps(custom_title)}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+
+    html2canvas(element, {{
+        scale: Math.max(1, Math.min(6, frameWidth / Math.max(rect.width, 1))),
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        imageTimeout: 30000,
+        scrollX: 0,
+        scrollY: 0,
+        width: Math.ceil(rect.width),
+        height: Math.ceil(rect.height),
+        windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
+        windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
+    }}).then(canvas => {{
+        const out = document.createElement('canvas');
+        out.width = frameWidth;
+        out.height = frameHeight;
+        const ctx = out.getContext('2d', {{ alpha: false }});
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, out.width, out.height);
+
+        // Preserve the receipt's responsive layout and proportions.
+        const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
+        const drawWidth = Math.round(canvas.width * fitScale);
+        const drawHeight = Math.round(canvas.height * fitScale);
+        const offsetX = Math.round((out.width - drawWidth) / 2);
+        const offsetY = Math.round((out.height - drawHeight) / 2);
+        ctx.drawImage(canvas, offsetX, offsetY, drawWidth, drawHeight);
+
+        out.toBlob(blob => {{
+            if (!blob) throw new Error('Responsive image export failed');
+            const ratioName = isPhone ? 'Phone_9x16' : 'Laptop_16x9';
+            const link = document.createElement('a');
+            link.download = safeName + '_Receipt_' + ratioName + '.png';
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+        }}, 'image/png');
     }}).catch(() => {{
         window.print();
     }});
@@ -1401,7 +1446,7 @@ body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0;
 </head>
 <body>
 <div class="save-btn-container">
-<button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO & DOWNLOAD IMAGE • UHD 4K</button>
+<button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO & DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button>
 </div>
 <div class="receipt-card" id="receiptContent">
 <div class="header">
@@ -1442,11 +1487,47 @@ Official Construction Task Schedule Document Electronically Generated
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
-    html2canvas(element, {{ scale: Math.min(4, Math.max(2, 3840 / Math.max(element.getBoundingClientRect().width, 1))), windowWidth: element.scrollWidth, windowHeight: element.scrollHeight, useCORS: true, imageTimeout: 30000 }}).then(canvas => {{
-        const link = document.createElement('a');
-        link.download = 'Schedule_Receipt.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
+    if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+
+    const rect = element.getBoundingClientRect();
+    const targetWidth = 3840;
+    const scale = Math.max(1, Math.min(6, targetWidth / Math.max(rect.width, 1)));
+
+    html2canvas(element, {{
+        scale: scale,
+        useCORS: true,
+        allowTaint: false,
+        backgroundColor: '#ffffff',
+        imageTimeout: 30000,
+        scrollX: 0,
+        scrollY: 0,
+        width: Math.ceil(rect.width),
+        height: Math.ceil(rect.height),
+        windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
+        windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
+    }}).then(canvas => {{
+        const out = document.createElement('canvas');
+        out.width = targetWidth;
+        out.height = Math.round(canvas.height * (targetWidth / canvas.width));
+        const ctx = out.getContext('2d', {{ alpha: false }});
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, out.width, out.height);
+        ctx.drawImage(canvas, 0, 0, out.width, out.height);
+
+        out.toBlob(blob => {{
+            if (!blob) throw new Error('UHD image export failed');
+            const link = document.createElement('a');
+            link.download = 'Schedule_Receipt_UHD_4K_3840px.png';
+            link.href = URL.createObjectURL(blob);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+        }}, 'image/png');
+    }}).catch(() => {{
+        window.print();
     }});
 }}
 </script>
@@ -1464,9 +1545,7 @@ st.markdown("""
   --green:#0b6b2d; --glass:rgba(6,27,18,.58);
 }
 *{box-sizing:border-box}
-html,body,[class*="css"]{font-family:'Manrope',sans-serif;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:geometricPrecision}
-img,svg,canvas{image-rendering:auto}
-.stApp,.block-container{transform:translateZ(0)}
+html,body,[class*="css"]{font-family:'Manrope',sans-serif}
 .stApp{
   background:url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c") no-repeat center center fixed;
   background-size:cover;background-position:center;
@@ -1541,100 +1620,7 @@ input,textarea{color:#fff!important;-webkit-text-fill-color:#fff!important}input
 .donut-wrap{display:flex;align-items:center;gap:25px}.donut{width:190px;height:190px;border-radius:50%;background:conic-gradient(#72f7b0 0deg var(--p1),#55b978 var(--p1) var(--p2),#d8b64c var(--p2) var(--p3),#e46f5c var(--p3) 360deg);position:relative;flex:0 0 190px;box-shadow:0 14px 32px rgba(0,0,0,.28),inset 0 2px 4px rgba(255,255,255,.15)}.donut:before{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 8px rgba(255,255,255,.035),inset 0 -8px 18px rgba(0,0,0,.20)}.donut:after{content:"";position:absolute;inset:47px;background:rgba(4,27,16,.92);border:1px solid rgba(191,255,216,.14);border-radius:50%;box-shadow:inset 0 4px 15px rgba(0,0,0,.28),0 2px 10px rgba(0,0,0,.20)}.donut-center{position:absolute;z-index:2;inset:0;display:grid;place-content:center;text-align:center;font-family:'Outfit';font-weight:900;color:#fff}.donut-center small{font:500 11px Manrope;color:#91b8a0}.legend{flex:1}.legend-row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;font-size:12px;color:#d7eee0}.legend-row b{color:#fff}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:8px;box-shadow:0 0 9px rgba(114,247,176,.25)}
 .schedule{display:flex;align-items:center;gap:20px}.schedule-icon{width:64px;height:64px;border-radius:18px;background:rgba(114,247,176,.10);border:1px solid rgba(114,247,176,.22);display:grid;place-items:center;color:#72f7b0;font-size:28px;box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 9px 20px rgba(0,0,0,.20)}.schedule-title{font-family:'Outfit';font-size:17px;color:#fff;font-weight:900}.schedule-muted{font-size:12px;color:#91b8a0;margin-top:4px}.open-planner{margin-left:auto;background:linear-gradient(145deg,rgba(25,92,54,.88),rgba(5,33,19,.94));color:#fff;padding:12px 20px;border-radius:14px;font-weight:800;border:1px solid rgba(173,255,201,.22);box-shadow:0 6px 0 rgba(2,17,10,.65),0 12px 24px rgba(0,0,0,.25);transition:.18s ease}.open-planner:hover{transform:translateY(-3px);box-shadow:0 9px 0 rgba(2,17,10,.65),0 18px 30px rgba(0,0,0,.34);border-color:rgba(114,247,176,.55)}
 /* planner cards keep the same glass language */
-.cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:18px}.cal-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(16,69,40,.80),rgba(4,27,16,.85));border:1px solid rgba(165,255,195,.18);border-radius:24px;padding:20px;box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);transition:.22s cubic-bezier(.2,.8,.2,1);backdrop-filter:blur(14px)}.cal-card:hover{transform:translateY(-7px) scale(1.012);border-color:rgba(114,247,176,.45);box-shadow:0 24px 50px rgba(0,0,0,.40),0 0 30px rgba(114,247,176,.11)}.cal-date-badge{background:rgba(114,247,176,.10);color:#72f7b0;border:1px solid rgba(114,247,176,.28);padding:5px 11px;border-radius:999px;font-size:10px;font-weight:900}.cal-task-title{color:#fff;font-family:'Outfit';font-size:17px;font-weight:800}.cal-phase{color:#a8dcb8;font-size:12px}.cal-status-tag{font-size:9px;font-weight:900;padding:5px 10px;border-radius:999px;text-transform:uppercase}
-
-/* sidebar reference polish: glass depth, touch lift, directional light */
-section[data-testid="stSidebar"] button{backdrop-filter:blur(18px) saturate(150%);-webkit-backdrop-filter:blur(18px) saturate(150%);box-shadow:0 10px 24px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.09),inset 0 -10px 22px rgba(0,0,0,.12)!important}
-section[data-testid="stSidebar"] button::before{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 8%,rgba(255,255,255,.075) 43%,transparent 57%);transform:translateX(-125%);transition:transform .65s ease;pointer-events:none}
-section[data-testid="stSidebar"] button:hover::before{transform:translateX(125%)}
-section[data-testid="stSidebar"] button:hover{transform:translate3d(5px,-3px,0) scale(1.005)!important;box-shadow:0 15px 32px rgba(0,0,0,.40),0 0 24px rgba(57,233,130,.12),inset 0 1px 0 rgba(255,255,255,.16),inset 0 -10px 24px rgba(0,0,0,.10)!important}
-section[data-testid="stSidebar"] button:active{transform:translate3d(2px,2px,0) scale(.995)!important}
-section[data-testid="stSidebar"] .brand-logo{transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .28s ease;filter:drop-shadow(0 9px 15px rgba(0,0,0,.30))}
-section[data-testid="stSidebar"] .sidebar-brand:hover .brand-logo{transform:translateY(-3px) scale(1.035);filter:drop-shadow(0 13px 24px rgba(57,233,130,.24))}
-
-/* ===== SIDEBAR V2 — reference-inspired glass command rail ===== */
-section[data-testid="stSidebar"]{
-  background:
-    radial-gradient(circle at 55% 7%, rgba(24,132,74,.18), transparent 27%),
-    radial-gradient(circle at 20% 58%, rgba(19,103,59,.13), transparent 32%),
-    linear-gradient(180deg, rgba(1,18,11,.985), rgba(2,28,17,.975) 48%, rgba(1,14,9,.99)) !important;
-  border-right:1px solid rgba(91,236,153,.18)!important;
-  box-shadow: 20px 0 70px rgba(0,0,0,.48), inset -1px 0 0 rgba(255,255,255,.035)!important;
-}
-section[data-testid="stSidebar"] > div{padding:18px 14px 30px!important}
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"]{color:#ecfff4!important}
-section[data-testid="stSidebar"] .sidebar-brand{
-  background:linear-gradient(145deg,rgba(8,67,38,.62),rgba(1,22,13,.45))!important;
-  border:1px solid rgba(61,221,128,.20)!important;
-  border-radius:24px!important;
-  box-shadow:0 22px 50px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.08),inset 0 0 30px rgba(52,222,122,.035)!important;
-  backdrop-filter:blur(24px) saturate(145%);-webkit-backdrop-filter:blur(24px) saturate(145%);
-}
-section[data-testid="stSidebar"] .brand-icon{
-  background:linear-gradient(145deg,rgba(42,171,98,.35),rgba(7,79,43,.18))!important;
-  border:1px solid rgba(96,255,165,.30)!important;
-  box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 28px rgba(58,225,125,.12),inset 0 1px 0 rgba(255,255,255,.18)!important;
-}
-section[data-testid="stSidebar"] .brand-title{font-size:15px!important;letter-spacing:.08em!important;color:#f3fff7!important}
-section[data-testid="stSidebar"] .brand-sub{color:#7df0ab!important}
-section[data-testid="stSidebar"] .sidebar-live{
-  margin:10px 2px 0!important;padding:8px 10px!important;border-radius:12px!important;
-  color:#73f2a6!important;font-size:9px!important;font-weight:900!important;letter-spacing:.13em!important;
-  background:rgba(45,209,112,.055)!important;border:1px solid rgba(77,237,145,.09)!important;
-  text-align:center!important;
-}
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
-  display:flex;align-items:center;gap:10px;font-family:'Outfit'!important;font-size:10px!important;
-  letter-spacing:.18em!important;color:#71efa4!important;margin:19px 5px 9px!important;
-  text-transform:uppercase!important;white-space:nowrap;
-}
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3::before{
-  content:"";width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:#39e982;
-  box-shadow:0 0 12px #39e982,0 0 24px rgba(57,233,130,.5);
-}
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3::after{
-  content:"";height:1px;flex:1;background:linear-gradient(90deg,rgba(64,222,128,.45),rgba(64,222,128,.05));
-}
-section[data-testid="stSidebar"] .sidebar-gap{height:7px!important}
-section[data-testid="stSidebar"] button{
-  min-height:66px!important;margin:6px 0!important;padding:0 18px!important;border-radius:18px!important;
-  text-align:left!important;position:relative!important;overflow:hidden!important;
-  color:#effff5!important;
-  background:linear-gradient(135deg,rgba(9,73,43,.52),rgba(2,31,19,.34))!important;
-  border:1px solid rgba(58,224,128,.18)!important;
-  box-shadow:0 13px 25px rgba(0,0,0,.30), inset 0 1px 0 rgba(255,255,255,.07), inset 0 0 24px rgba(44,211,114,.025)!important;
-  backdrop-filter:blur(22px) saturate(150%)!important;-webkit-backdrop-filter:blur(22px) saturate(150%)!important;
-  transition:transform .20s cubic-bezier(.2,.8,.2,1),box-shadow .20s,border-color .20s,background .20s!important;
-}
-section[data-testid="stSidebar"] button::before{
-  content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,transparent 15%,rgba(129,255,181,.10) 44%,transparent 58%);
-  transform:translateX(-125%);transition:transform .65s ease;
-}
-section[data-testid="stSidebar"] button:hover{
-  transform:translate3d(4px,-3px,0)!important;
-  border-color:rgba(67,238,139,.58)!important;
-  background:linear-gradient(135deg,rgba(12,91,52,.68),rgba(3,41,24,.46))!important;
-  box-shadow:0 18px 34px rgba(0,0,0,.42),0 0 28px rgba(45,224,121,.12),inset 0 1px 0 rgba(255,255,255,.13)!important;
-}
-section[data-testid="stSidebar"] button:hover::before{transform:translateX(125%)}
-section[data-testid="stSidebar"] button:active{transform:translate3d(2px,2px,0)!important;box-shadow:0 7px 16px rgba(0,0,0,.32)!important}
-section[data-testid="stSidebar"] button p{font-family:'Manrope'!important;font-size:14px!important;font-weight:800!important;letter-spacing:.01em!important}
-section[data-testid="stSidebar"] .stNumberInput > div{
-  background:linear-gradient(145deg,rgba(4,40,24,.55),rgba(1,22,13,.35))!important;
-  border:1px solid rgba(60,223,127,.18)!important;border-radius:17px!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 10px 25px rgba(0,0,0,.25)!important;
-  backdrop-filter:blur(20px)!important;
-}
-section[data-testid="stSidebar"] .stNumberInput input{font-size:14px!important;font-weight:700!important}
-section[data-testid="stSidebar"] .stNumberInput button{min-height:38px!important;height:38px!important;width:38px!important;border-radius:12px!important;margin:0 4px!important}
-section[data-testid="stSidebar"] hr{border-color:rgba(69,227,131,.09)!important;margin:12px 4px!important}
-@media(max-width:700px){
-  section[data-testid="stSidebar"] > div{padding:12px 10px 22px!important}
-  section[data-testid="stSidebar"] button{min-height:58px!important;border-radius:16px!important}
-  section[data-testid="stSidebar"] button p{font-size:13px!important}
-}
-.badge-notstarted{background:rgba(255,255,255,.07);color:#d1d5db}.badge-inprogress{background:rgba(245,158,11,.14);color:#fbbf24}.badge-completed{background:rgba(34,197,94,.14);color:#65f394}
+.cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px;margin-top:18px}.cal-card{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(16,69,40,.80),rgba(4,27,16,.85));border:1px solid rgba(165,255,195,.18);border-radius:24px;padding:20px;box-shadow:0 14px 34px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.08);transition:.22s cubic-bezier(.2,.8,.2,1);backdrop-filter:blur(14px)}.cal-card:hover{transform:translateY(-7px) scale(1.012);border-color:rgba(114,247,176,.45);box-shadow:0 24px 50px rgba(0,0,0,.40),0 0 30px rgba(114,247,176,.11)}.cal-date-badge{background:rgba(114,247,176,.10);color:#72f7b0;border:1px solid rgba(114,247,176,.28);padding:5px 11px;border-radius:999px;font-size:10px;font-weight:900}.cal-task-title{color:#fff;font-family:'Outfit';font-size:17px;font-weight:800}.cal-phase{color:#a8dcb8;font-size:12px}.cal-status-tag{font-size:9px;font-weight:900;padding:5px 10px;border-radius:999px;text-transform:uppercase}.badge-notstarted{background:rgba(255,255,255,.07);color:#d1d5db}.badge-inprogress{background:rgba(245,158,11,.14);color:#fbbf24}.badge-completed{background:rgba(34,197,94,.14);color:#65f394}
 [data-testid="stExpander"]{background:rgba(5,29,17,.58)!important;border:1px solid rgba(163,255,194,.15)!important;border-radius:20px!important;box-shadow:0 10px 25px rgba(0,0,0,.18)!important}.stAlert{border-radius:17px!important;background:rgba(8,42,24,.65)!important;border:1px solid rgba(163,255,194,.18)!important}
 @keyframes scan{0%,55%{transform:translateX(-130%)}80%,100%{transform:translateX(180%)}}
 @media(max-width:900px){.block-container{padding:18px 14px 30px!important;margin:10px!important}.headbar-card{padding:16px}.headbar-title{font-size:24px!important}.headbar-subtitle{margin-left:92px}.hero-title{font-size:32px}.donut-wrap{flex-direction:column;align-items:flex-start}.donut{width:170px;height:170px;flex-basis:170px}.donut:after{inset:42px}.schedule{align-items:flex-start;flex-wrap:wrap}.open-planner{margin-left:0}}
@@ -1642,23 +1628,159 @@ section[data-testid="stSidebar"] hr{border-color:rgba(69,227,131,.09)!important;
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}}
 /* UHD 4K rendering helpers */
 img{image-rendering:auto;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
-/* UHD display rendering: keep the interface crisp on high-DPI / 4K screens */
-html, body, [class*="css"] { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: geometricPrecision; }
-.stApp, .block-container, section[data-testid="stSidebar"] { image-rendering: auto; }
-
+html,body,[class*="css"],button,input,textarea,select{ -webkit-font-smoothing:antialiased!important; -moz-osx-font-smoothing:grayscale!important; text-rendering:geometricPrecision!important; }
+.stApp,.block-container,section[data-testid="stSidebar"],section[data-testid="stSidebar"] *{ text-rendering:geometricPrecision!important; }
+section[data-testid="stSidebar"]{width:330px!important;min-width:330px!important;}
+section[data-testid="stSidebar"]>div{padding:18px 12px 28px!important;}
+.sidebar-budget-card{margin-top:2px;padding:15px 14px 8px;border:1px solid rgba(114,247,176,.12);border-radius:20px 20px 0 0;background:linear-gradient(145deg,rgba(6,38,23,.72),rgba(2,20,12,.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
+.budget-title{font-family:'Outfit';font-size:12px;font-weight:900;color:#f5fff8;letter-spacing:.02em;}
+.sidebar-budget-card + div{margin-top:-1px;}
+.sidebar-budget-card + div div[data-baseweb="input"]{border-radius:0 0 15px 15px!important;border-top-color:rgba(114,247,176,.08)!important;}
+section[data-testid="stSidebar"] button{font-size:13px!important;letter-spacing:.01em!important;}
+section[data-testid="stSidebar"] button p{font-size:13px!important;white-space:nowrap!important;}
+@media (min-width:1920px){
+  .block-container{max-width:1700px!important;}
+  section[data-testid="stSidebar"]{width:350px!important;min-width:350px!important;}
+  .headbar-title{font-size:31px!important;}
+  section[data-testid="stSidebar"] button{min-height:58px!important;}
+  section[data-testid="stSidebar"] button p{font-size:14px!important;}
+}
 .save-img-btn{font-weight:900!important;letter-spacing:.02em!important}
+
+/* FINAL SIDEBAR + DASHBOARD MATCH OVERRIDES */
+section[data-testid="stSidebar"]{
+  width:clamp(280px,22vw,420px)!important;
+  min-width:280px!important;max-width:420px!important;
+  position:relative!important;resize:horizontal;overflow:auto;
+}
+section[data-testid="stSidebar"]>div{padding:22px 22px 30px!important;}
+.sidebar-resizer{
+  position:absolute;right:0;top:0;width:10px;height:100%;z-index:9999;
+  cursor:ew-resize;background:linear-gradient(90deg,transparent,rgba(114,247,176,.18),transparent);
+  opacity:.25;transition:opacity .2s ease;
+}
+.sidebar-resizer:hover,.sidebar-resizer.dragging{opacity:1;background:linear-gradient(90deg,transparent,rgba(114,247,176,.48),transparent);}
+.sidebar-resizer::after{
+  content:"⋮";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  color:#72f7b0;font-size:18px;font-weight:900;text-shadow:0 0 12px rgba(114,247,176,.7);
+}
+section[data-testid="stSidebar"] button{
+  min-height:54px!important; height:54px!important; margin:7px 0!important;
+  padding:0 18px!important; border-radius:18px!important;
+  display:flex!important; align-items:center!important; justify-content:flex-start!important;
+  text-align:left!important;
+  background:linear-gradient(145deg,rgba(9,59,35,.72),rgba(2,30,18,.68))!important;
+  border:1px solid rgba(83,236,151,.22)!important;
+  box-shadow:0 10px 24px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.07)!important;
+}
+section[data-testid="stSidebar"] button p{
+  width:100%!important; font-family:'Manrope',sans-serif!important;
+  font-size:12px!important; font-weight:800!important; letter-spacing:.01em!important;
+  white-space:nowrap!important; text-align:left!important;
+}
+section[data-testid="stSidebar"] button:hover{
+  transform:translateY(-2px)!important;
+  background:linear-gradient(145deg,rgba(13,87,50,.86),rgba(3,38,22,.76))!important;
+  border-color:rgba(114,247,176,.55)!important;
+}
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
+  margin:24px 5px 10px!important; font-size:10px!important;
+  letter-spacing:.18em!important;
+}
+.sidebar-brand{margin-bottom:12px!important;}
+.sidebar-live{margin:0 0 10px!important;}
+.sidebar-budget-card{border-radius:18px 18px 0 0!important;}
+.sidebar-budget-card + div div[data-baseweb="input"]{border-radius:0 0 15px 15px!important;}
+
+/* Remove the old duplicate title-bar language. */
+.headbar-container,.headbar-card,.dash-hero{display:none!important;}
+
+/* Main dashboard title: centered inside a dedicated container with generous top spacing. */
+.dashboard-title-container{
+  width:100%;
+  max-width:1500px;
+  width:100%;
+  margin:92px auto 34px;
+  padding:42px 40px 34px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  border:1px solid rgba(114,247,176,.18);
+  border-radius:24px;
+  background:linear-gradient(145deg,rgba(8,35,22,.92),rgba(3,20,13,.82));
+  box-shadow:0 18px 50px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.dashboard-heading{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  margin:0 auto;
+  text-align:center;
+}
+.dashboard-heading img{
+  width:68px;
+  height:68px;
+  flex:0 0 auto;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.30));
+}
+.dashboard-heading > div{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dashboard-heading-title{
+  font-family:'Outfit',sans-serif;
+  color:#fff;
+  font-size:32px;
+  font-weight:900;
+  letter-spacing:.025em;
+  line-height:1.05;
+  text-align:center;
+}
+.dashboard-heading-sub{
+  margin-top:7px;
+  color:#9fe5b8;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.22em;
+  text-align:center;
+  text-transform:uppercase;
+}
+.dashboard-welcome{
+  max-width:1000px;
+  margin:16px auto 0;
+  text-align:center;
+  color:#b9d9c5;
+  font-size:13px;
+  font-weight:600;
+  line-height:1.6;
+}
+.dashboard-welcome b{color:#72f7b0;}
+
+/* Give the dashboard breathing room above the title and keep everything centered. */
+.block-container{max-width:1500px!important;padding-top:10px!important;}
+@media (min-width:1920px){
+  section[data-testid="stSidebar"]{width:340px!important;min-width:280px!important;max-width:520px!important;}
+  .block-container{max-width:1500px!important;padding-top:10px!important;}
+  .dashboard-title-container{margin-top:96px;}
+  .dashboard-heading-title{font-size:35px;}
+}
+@media(max-width:900px){
+  section[data-testid="stSidebar"]{width:clamp(280px,30vw,380px)!important;min-width:280px!important;max-width:380px!important;}
+  .dashboard-title-container{margin-top:58px;padding:32px 22px 26px;border-radius:20px;}
+  .dashboard-heading-title{font-size:27px;}
+  .dashboard-heading img{width:58px;height:58px;}
+}
+@media(max-width:600px){
+  .dashboard-title-container{margin-top:34px;padding:26px 14px 22px;border-radius:18px;}
+  .dashboard-heading{gap:10px;}
+  .dashboard-heading-title{font-size:22px;}
+  .dashboard-heading-sub{font-size:8px;letter-spacing:.16em;}
+  .dashboard-heading img{width:48px;height:48px;}
+  .dashboard-welcome{font-size:11px;margin-top:12px;}
+}
 </style>
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-
-""", unsafe_allow_html=True)
-
-st.markdown(f"""
-
-""", unsafe_allow_html=True)
-st.markdown(f"""
-
 """, unsafe_allow_html=True)
 
 with st.sidebar:
@@ -1673,81 +1795,117 @@ with st.sidebar:
       </div>
     </div>
     """, unsafe_allow_html=True)
-    st.markdown(f"<div class='sidebar-live'>● &nbsp; LIVE SYSTEM &nbsp; • &nbsp; {datetime.now().strftime('%I:%M %p  |  %b %d')}</div>", unsafe_allow_html=True)
-    st.divider()
+    st.markdown(
+        f"<div class='sidebar-live'><span>●</span> &nbsp; LIVE SYSTEM &nbsp; • &nbsp; "
+        f"{datetime.now().strftime('%I:%M %p  |  %b %d')}</div>",
+        unsafe_allow_html=True
+    )
 
     st.subheader("Executive Overview")
-    if st.button("▣  Dashboard                                      ›", use_container_width=True, key="side_dashboard"):
+    if st.button("▣   Dashboard   ›", use_container_width=True, key="side_dashboard"):
         set_view("home")
 
-    st.markdown("<div class='sidebar-budget-card'><div class='budget-card-title'>Set Account Budget</div><div class='budget-card-note'>PLEASE ENTER A VALID BUDGET AMOUNT.</div></div>", unsafe_allow_html=True)
-    budget_input = st.number_input("", min_value=0.01, key="budget_input_sidebar", value=None, placeholder="Enter budget amount...", label_visibility="collapsed")
-    b1, b2 = st.columns([1.35, .85])
-    with b1:
-        if st.button("＋  Add Budget", use_container_width=True, key="side_add_budget"):
-            if budget_input is not None and float(budget_input) > 0:
-                st.session_state.budget_entries.append(float(budget_input))
-                st.session_state.budget = float(sum(st.session_state.budget_entries))
-                persist_state()
-                st.success(f"Added PHP {float(budget_input):,.2f} to budget.")
-                st.rerun()
-            else:
-                st.warning("Please enter a budget amount.")
-    with b2:
-        if st.button("↻  Total", use_container_width=True, key="side_budget_current"):
-            st.info(f"Budget: PHP {float(sum(st.session_state.budget_entries or [0])):,.2f}")
-    if st.session_state.budget_entries:
-        total_b = float(sum(st.session_state.budget_entries))
-        st.markdown(f"<div class='sidebar-budget-total'><span>TOTAL BUDGET</span><strong>PHP {total_b:,.2f}</strong><small>{len(st.session_state.budget_entries)} amount(s) added</small></div>", unsafe_allow_html=True)
-        if st.button("↺  Reset Budget Entries", use_container_width=True, key="side_reset_budget"):
-            st.session_state.budget_entries = []
-            st.session_state.budget = 0.0
+    st.markdown("<div class='sidebar-budget-card'><div class='budget-title'>Set Account Budget</div></div>", unsafe_allow_html=True)
+    budget_input = st.number_input(
+        "Set Account Budget",
+        min_value=0.0,
+        key="budget_input_sidebar",
+        value=None,
+        placeholder="Enter budget...",
+        label_visibility="collapsed",
+    )
+    if st.button("＋   Apply Budget", use_container_width=True, key="side_apply_budget"):
+        if budget_input is not None:
+            st.session_state.budget = float(budget_input)
             persist_state()
+            st.success("Budget applied!")
             st.rerun()
+        else:
+            st.warning("Please enter a budget amount.")
 
-    if st.button("⚙  Restart System                              ›", use_container_width=True, key="side_restart"):
+    if st.button("⚙   Restart System   ›", use_container_width=True, key="side_restart"):
         clear_all()
         set_view("home")
 
-    st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     st.subheader("Project Control")
-    if st.button("▣  New Work Entry                              ›", use_container_width=True, key="side_new_work"):
+    if st.button("▣   New Work Entry   ›", use_container_width=True, key="side_new_work"):
         set_view("planner_input")
-    if st.button("☷  Schedule & Progress                      ›", use_container_width=True, key="side_schedule"):
+    if st.button("☷   Schedule & Progress   ›", use_container_width=True, key="side_schedule"):
         set_view("planner_output")
 
-    st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     st.subheader("Financial Operations")
-    if st.button("◇  Material Entry                              ›", use_container_width=True, key="side_material"):
+    if st.button("◇   Material Entry   ›", use_container_width=True, key="side_material"):
         set_view("material")
-    if st.button("▤  Expense Entry                              ›", use_container_width=True, key="side_expense"):
+    if st.button("▤   Expense Entry   ›", use_container_width=True, key="side_expense"):
         set_view("expense")
-    if st.button("♨  Encash Deposit                              ›", use_container_width=True, key="side_excess"):
+    if st.button("♨   Encash Deposit   ›", use_container_width=True, key="side_excess"):
         set_view("excess")
-    if st.button("▣  Financial Ledger                            ›", use_container_width=True, key="side_ledger"):
+    if st.button("▣   Financial Ledger   ›", use_container_width=True, key="side_ledger"):
         set_view("ledger")
-    if st.button("▥  Financial Report                            ›", use_container_width=True, key="side_report"):
+    if st.button("▥   Financial Report   ›", use_container_width=True, key="side_financial_report"):
         set_view("export")
 
-    st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     st.subheader("Payroll Operations")
-    if st.button("●  Labor Account                               ›", use_container_width=True, key="side_labor"):
+    if st.button("●   Labor Account   ›", use_container_width=True, key="side_labor"):
         set_view("add_labor")
-    if st.button("▣  Payroll Expense                              ›", use_container_width=True, key="side_pay_exp"):
+    if st.button("▣   Payroll Expense   ›", use_container_width=True, key="side_payroll_expense"):
         set_view("add_payroll_expense")
-    if st.button("♟  Account Remainder                            ›", use_container_width=True, key="side_pay_rem"):
+    if st.button("♟   Account Remainder   ›", use_container_width=True, key="side_payroll_remaining"):
         set_view("payroll_remaining")
-    if st.button("♟  Labor Accounts                              ›", use_container_width=True, key="side_pay_ledger"):
+    if st.button("♟   Labor Accounts   ›", use_container_width=True, key="side_payroll_ledger"):
         set_view("payroll_ledger")
-    if st.button("▤  Payroll Report                               ›", use_container_width=True, key="side_pay_report"):
+    if st.button("▤   Payroll Report   ›", use_container_width=True, key="side_payroll_report"):
         set_view("payroll_export")
-    if st.button("▣  Receipts Archive                             ›", use_container_width=True, key="side_archive"):
+    if st.button("▣   Receipts Archive   ›", use_container_width=True, key="side_archive"):
         set_view("receipt_archive")
+
+    st.markdown("<div class='sidebar-resizer' id='sidebarResizer' title='Drag to resize sidebar'></div>", unsafe_allow_html=True)
+
+# Small client-side helper: drag the right edge of the sidebar to stretch/shrink it.
+st.sidebar.markdown("""
+<script>
+(function(){
+  const boot=()=>{
+    const sidebar=document.querySelector('section[data-testid="stSidebar"]');
+    const handle=document.getElementById('sidebarResizer');
+    if(!sidebar || !handle || handle.dataset.ready==='1') return;
+    handle.dataset.ready='1';
+    let dragging=false;
+    const min=280, max=520;
+    const setWidth=(w)=>{
+      const width=Math.max(min,Math.min(max,w));
+      sidebar.style.setProperty('width',width+'px','important');
+      sidebar.style.setProperty('min-width',width+'px','important');
+      sidebar.style.setProperty('max-width',width+'px','important');
+      document.documentElement.style.setProperty('--sidebar-width',width+'px');
+    };
+    handle.addEventListener('pointerdown',(e)=>{
+      dragging=true; handle.classList.add('dragging');
+      handle.setPointerCapture?.(e.pointerId);
+      document.body.style.cursor='ew-resize';
+      document.body.style.userSelect='none';
+    });
+    handle.addEventListener('pointermove',(e)=>{
+      if(!dragging) return;
+      setWidth(e.clientX);
+    });
+    const stop=()=>{
+      dragging=false; handle.classList.remove('dragging');
+      document.body.style.cursor=''; document.body.style.userSelect='';
+    };
+    handle.addEventListener('pointerup',stop);
+    handle.addEventListener('pointercancel',stop);
+  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+  new MutationObserver(boot).observe(document.body,{childList:true,subtree:true});
+})();
+</script>
+""", unsafe_allow_html=True)
 
 view = st.session_state.view
 
 if view == "home":
-    budget = float(sum(st.session_state.get("budget_entries", []) or [0.0]))
+    budget = float(st.session_state.budget or 0)
     used = float(get_total() or 0)
     balance = float(get_balance() or 0)
     workers = len(st.session_state.labor_records)
@@ -1764,16 +1922,15 @@ if view == "home":
     upcoming_tasks = [t for t in st.session_state.planner_tasks if t.get("date_obj", "") >= today_key]
 
     st.markdown(f"""
-    <div class="dash-hero">
-      <div class="hero-row">
-        <img class="hero-logo" src="{AILYN_LOGO_DATA}" alt="Ailyn Construction Logo">
+    <div class="dashboard-title-container">
+      <div class="dashboard-heading">
+        <img src="{AILYN_LOGO_DATA}" alt="Ailyn Construction Logo">
         <div>
-          <div class="hero-title">AILYN CONSTRUCTION</div>
-          <div class="hero-sub">PROJECT MANAGEMENT SYSTEM</div>
+          <div class="dashboard-heading-title">AILYN CONSTRUCTION</div>
+          <div class="dashboard-heading-sub">PROJECT MANAGEMENT SYSTEM</div>
         </div>
       </div>
-      <div class="hero-rule"></div>
-      <div class="welcome">🛡️ &nbsp; Welcome back, <b>Ailyn Project!</b> &nbsp;&nbsp;|&nbsp;&nbsp; Manage your construction project efficiently.</div>
+      <div class="dashboard-welcome">🛡️ &nbsp; Welcome back, <b>Ailyn Project!</b> &nbsp;|&nbsp; Manage your construction project efficiently.</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -1962,14 +2119,19 @@ elif view == "material":
         price = st.number_input("Price", min_value=0.01, value=None, placeholder="0.00")
         qty = st.number_input("Qty", min_value=1, value=None, placeholder="1")
         delivery = st.number_input("Delivery", min_value=0.0, value=None, placeholder="0.00")
+        sender = st.selectbox("Sender", ["Garr", "Aily"])
         submitted = st.form_submit_button(label="SAVE MATERIAL")
         if submitted:
-            ok = add_tx(name, price, qty, delivery or 0.0, "material", sender)
-            if ok:
-                st.success("Saved! Ready for next order.")
-                st.rerun()
-            else:
-                st.warning("Invalid data, please fill out Price and Qty.")
+            try:
+                ok = add_tx(name, price, qty, delivery or 0.0, "material", sender)
+                if ok:
+                    st.success("Saved! Ready for next order.")
+                    st.rerun()
+                else:
+                    st.warning("Please enter a material name, Price, and Qty. Delivery cannot be negative.")
+            except Exception:
+                # Never expose a raw traceback to users from a form action.
+                st.error("Unable to save this material. Please check the fields and try again.")
     st.divider()
     if st.button("🏠 RETURN TO HOME", use_container_width=True):
         set_view("home")
@@ -1982,12 +2144,17 @@ elif view == "expense":
         sender = st.selectbox("Sender", ["Garr", "Aily"])
         submitted = st.form_submit_button(label="SAVE EXPENSE")
         if submitted:
-            if amount and amount > 0:
-                add_tx(name, amount, 1, 0, "expense", sender)
-                st.success("Expense Added → Ledger Updated")
-                st.rerun()
-            else:
-                st.warning("Please enter an amount greater than zero.")
+            try:
+                if amount and amount > 0 and str(name or "").strip():
+                    if add_tx(name, amount, 1, 0, "expense", sender):
+                        st.success("Expense Added → Ledger Updated")
+                        st.rerun()
+                    else:
+                        st.warning("Please enter a valid expense name and amount.")
+                else:
+                    st.warning("Please enter an expense name and an amount greater than zero.")
+            except Exception:
+                st.error("Unable to save this expense. Please try again.")
     st.divider()
     if st.button("🏠 RETURN TO HOME", use_container_width=True):
         set_view("home")
@@ -2023,38 +2190,19 @@ elif view == "excess":
 
 elif view == "ledger":
     st.subheader("📖 CONSTRUCTION LEDGER")
-    st.caption("Edit material names, quantities, prices, delivery, sender, or expense details before exporting the receipt.")
     if not st.session_state.records:
         st.info("No transaction records found in ledger.")
     else:
-        for i, r in enumerate(list(st.session_state.records)):
-            rtype = r.get("type", "material")
-            with st.expander(f"{'📦' if rtype == 'material' else '▤' if rtype == 'expense' else '♨'}  {r.get('name','ENTRY')}  •  PHP {float(r.get('amount',0)):,.2f}", expanded=False):
-                with st.form(key=f"edit_construction_{r.get('id', i)}"):
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        edit_name = st.text_input("Material / Entry Name", value=str(r.get("name", "")), key=f"edit_name_{i}")
-                        edit_price = st.number_input("Unit Price / Amount", min_value=0.01, value=float(r.get("price", r.get("amount", 0)) or 0.01), step=0.01, key=f"edit_price_{i}")
-                    with c2:
-                        edit_qty = st.number_input("Quantity", min_value=1, value=int(r.get("qty", 1) or 1), step=1, key=f"edit_qty_{i}")
-                        edit_delivery = st.number_input("Delivery", min_value=0.0, value=float(r.get("delivery", 0) or 0), step=0.01, key=f"edit_delivery_{i}")
-                    edit_sender = st.selectbox("Sender", ["Garr", "Aily"], index=0 if r.get("sender", "Garr") == "Garr" else 1, key=f"edit_sender_{i}")
-                    save_col, delete_col = st.columns(2)
-                    with save_col:
-                        save_edit = st.form_submit_button("💾 SAVE CHANGES", use_container_width=True)
-                    with delete_col:
-                        delete_edit = st.form_submit_button("❌ DELETE ENTRY", use_container_width=True)
-                    if save_edit:
-                        if update_material_record(i, edit_name, edit_price, edit_qty, edit_delivery, edit_sender):
-                            st.success("Ledger entry updated. Export will use the new values.")
-                            st.rerun()
-                        else:
-                            st.error("Please enter a valid name, price, and quantity.")
-                    if delete_edit:
-                        st.session_state.records.pop(i)
-                        persist_state()
-                        st.rerun()
-
+        for r in list(st.session_state.records):
+            st.markdown(f"""
+            ---
+            **{r['name']}** • PHP {float(r['amount']):,.2f}  
+            👤 {r['sender']} | 🏷️ {r['type']} | 📅 {r['date']}
+            """)
+            if st.button("❌ DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
+                st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
+                persist_state()
+                st.rerun()
 
 elif view == "export":
     st.subheader("📄 EXPORT CONSTRUCTION REPORT")
@@ -2083,21 +2231,19 @@ elif view == "add_labor":
     
     col_r1, col_r2, col_r3 = st.columns(3)
     with col_r1:
-            if st.button("FORMAN\n₱800 / day", use_container_width=True):
-                st.session_state.selected_role = "Forman"
+        if st.button("LABOR\n₱500 / day", use_container_width=True):
+            st.session_state.selected_role = "Labor"
     with col_r2:
         if st.button("SKILL\n₱650 / day", use_container_width=True):
             st.session_state.selected_role = "Skill"
-    
     with col_r3:
-        if st.button("LABOR\n₱500 / day", use_container_width=True):
-            st.session_state.selected_role = "Labor"
-    
+        if st.button("FORMAN\n₱800 / day", use_container_width=True):
+            st.session_state.selected_role = "Forman"
             
     active_role = st.session_state.selected_role
     st.markdown(f"""
     <div class="pos-role-box">
-      "CURRENTLY SELECTED ROLE: <span style="color:#4ade80; font-size:20px;">{active_role.upper()}</span> (₱{FULL_DAY_RATES[active_role]:,.2f}/day)
+      CURRENTLY SELECTED ROLE: <span style="color:#4ade80; font-size:20px;">{active_role.upper()}</span> (₱{FULL_DAY_RATES[active_role]:,.2f}/day)
     </div>
     """, unsafe_allow_html=True)
     
@@ -2161,67 +2307,36 @@ elif view == "payroll_remaining":
 
 elif view == "payroll_ledger":
     st.subheader("📋 LABOR & PAYROLL LEDGER")
-    st.caption("You can now re-edit worker names, roles, days/points, cash advances, and payroll expenses before exporting.")
     st.markdown("### Labor Records")
     if not st.session_state.labor_records:
         st.info("No labor records.")
     else:
         for i, r in enumerate(list(st.session_state.labor_records)):
             role_disp = r.get('role', 'Labor')
-            gross_disp = float(r.get('gross_pay', float(r.get('days', 0) or 0) * float(r.get('rate', 0) or 0)))
-            with st.expander(f"👷  {r.get('name','WORKER')}  •  {role_disp}  •  {float(r.get('days',0) or 0):.1f} day(s)  •  PHP {float(r.get('net',0) or 0):,.2f}", expanded=False):
-                with st.form(key=f"edit_labor_{i}"):
-                    l1, l2 = st.columns(2)
-                    with l1:
-                        edit_labor_name = st.text_input("Worker Name", value=str(r.get("name", "")), key=f"edit_labor_name_{i}")
-                        edit_role = st.selectbox("Role", ["Labor", "Skill", "Forman"], index=["Labor", "Skill", "Forman"].index(role_disp) if role_disp in ["Labor", "Skill", "Forman"] else 0, key=f"edit_role_{i}")
-                    with l2:
-                        edit_days = st.number_input("Worked Days / Point", min_value=0.1, value=float(r.get("days", 0.1) or 0.1), step=0.1, key=f"edit_days_{i}")
-                        edit_ca = st.number_input("Cash Advance (C.A.)", min_value=0.0, value=float(r.get("ca", 0) or 0), step=0.01, key=f"edit_ca_{i}")
-                    preview_gross, _, _ = calculate_labor_pay(float(edit_days), edit_role)
-                    st.info(f"Preview → Gross: PHP {preview_gross:,.2f}  |  C.A.: PHP {float(edit_ca):,.2f}  |  Net: PHP {preview_gross-float(edit_ca):,.2f}")
-                    save_col, delete_col = st.columns(2)
-                    with save_col:
-                        save_labor = st.form_submit_button("💾 SAVE LABOR CHANGES", use_container_width=True)
-                    with delete_col:
-                        delete_labor = st.form_submit_button("❌ DELETE LABOR ENTRY", use_container_width=True)
-                    if save_labor:
-                        if update_labor_record(i, edit_labor_name, edit_role, edit_days, edit_ca):
-                            st.success("Labor record updated. Payroll receipt will use the new values.")
-                            st.rerun()
-                        else:
-                            st.error("Please enter a valid worker name and days.")
-                    if delete_labor:
-                        st.session_state.labor_records.pop(i)
-                        persist_state()
-                        st.rerun()
-
+            gross_disp = r.get('gross_pay', r['days'] * r['rate'])
+            st.markdown(f"""
+            ---
+            **{r['name']}** ({role_disp}) • Worked: {r['days']:.1f} Day(s)  
+            • Gross Pay: PHP {gross_disp:,.2f}  
+            • C.A.: PHP {r['ca']:,.2f}  
+            • **Net Pay: PHP {r['net']:,.2f}**
+            """)
+            if st.button("❌ DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
+                st.session_state.labor_records.pop(i)
+                persist_state()
+                st.rerun()
+                
     st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     st.markdown("### Payroll Expenses")
     if not st.session_state.payroll_expenses:
         st.info("No payroll expenses.")
     else:
         for i, e in enumerate(list(st.session_state.payroll_expenses)):
-            with st.expander(f"▤  {e.get('item','EXPENSE')}  •  PHP {float(e.get('price',0) or 0):,.2f}", expanded=False):
-                with st.form(key=f"edit_pay_exp_{i}"):
-                    edit_item = st.text_input("Expense Description", value=str(e.get("item", "")), key=f"edit_pay_item_{i}")
-                    edit_pay_price = st.number_input("Amount", min_value=0.01, value=float(e.get("price", 0.01) or 0.01), step=0.01, key=f"edit_pay_price_{i}")
-                    save_col, delete_col = st.columns(2)
-                    with save_col:
-                        save_pay_exp = st.form_submit_button("💾 SAVE EXPENSE CHANGES", use_container_width=True)
-                    with delete_col:
-                        delete_pay_exp = st.form_submit_button("❌ DELETE PAYROLL EXPENSE", use_container_width=True)
-                    if save_pay_exp:
-                        if update_payroll_expense(i, edit_item, edit_pay_price):
-                            st.success("Payroll expense updated.")
-                            st.rerun()
-                        else:
-                            st.error("Please enter a valid description and amount.")
-                    if delete_pay_exp:
-                        st.session_state.payroll_expenses.pop(i)
-                        persist_state()
-                        st.rerun()
-
+            st.markdown(f"- **{e['item']}**: PHP {e['price']:,.2f}")
+            if st.button("❌ DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
+                st.session_state.payroll_expenses.pop(i)
+                persist_state()
+                st.rerun()
 
 elif view == "payroll_export":
     st.subheader("📄 EXPORT PAYROLL REPORT")
