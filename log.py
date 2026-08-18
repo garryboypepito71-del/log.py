@@ -1147,9 +1147,101 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 .save-img-btn {{ background:#075d2c; color:#fff; border:0; padding:12px 22px; font-size:14px; font-weight:800; border-radius:8px; cursor:pointer; }}
 .save-img-btn:hover {{ background:#0a7137; }}
 @media (max-width:600px) {{
-  html,body {{ background:#fff; }} .page {{ padding:0; background:#fff; }} .save-btn-container {{ padding:8px; }}
-  .receipt {{ width:1500px; min-height:844px; margin:0; box-shadow:none; transform-origin:top left; }}
+  html,body {{ background:#fff; }}
+  .page {{ padding:0; background:#fff; width:100%; overflow:hidden; }}
+  .save-btn-container {{ padding:8px; }}
+  .receipt {{
+    width:1500px;
+    min-height:844px;
+    margin:0;
+    box-shadow:none;
+    transform-origin:top left;
+  }}
 }}
+
+/* PHONE PREVIEW: keep the complete receipt visible without horizontal scrolling. */
+.receipt.phone-preview {{
+  width:540px !important;
+  min-height:960px !important;
+  margin:0 auto !important;
+  padding:18px 12px 12px !important;
+  box-shadow:none !important;
+}}
+.receipt.phone-preview:before {{ height:12px !important; }}
+.receipt.phone-preview:after {{ height:36px !important; }}
+.receipt.phone-preview .header {{
+  display:block !important;
+  padding:18px 0 10px !important;
+}}
+.receipt.phone-preview .brand {{ gap:10px !important; align-items:center !important; }}
+.receipt.phone-preview .logo {{ width:66px !important; height:62px !important; flex:0 0 66px !important; }}
+.receipt.phone-preview .brand h1 {{ font-size:22px !important; letter-spacing:-.7px !important; }}
+.receipt.phone-preview .brand .subtitle {{ font-size:9px !important; margin-top:5px !important; }}
+.receipt.phone-preview .brand .system {{ font-size:7.5px !important; margin-top:3px !important; }}
+.receipt.phone-preview .brand .account {{ font-size:7.5px !important; margin-top:3px !important; }}
+.receipt.phone-preview .meta {{
+  border-left:0 !important;
+  border-top:1px solid #d7ddd9 !important;
+  margin-top:9px !important;
+  padding:8px 0 0 !important;
+  text-align:left !important;
+}}
+.receipt.phone-preview .meta h2 {{ font-size:16px !important; margin:0 0 6px !important; }}
+.receipt.phone-preview .meta .row {{ font-size:8px !important; margin:0 0 4px !important; }}
+.receipt.phone-preview .meta .date-line {{ min-width:0 !important; padding-bottom:2px !important; }}
+.receipt.phone-preview .table-wrap {{ border-radius:8px !important; }}
+.receipt.phone-preview table.payroll {{ font-size:7px !important; }}
+.receipt.phone-preview table.payroll th {{ padding:6px 3px !important; height:30px !important; font-size:6px !important; line-height:1.05 !important; white-space:normal !important; }}
+.receipt.phone-preview table.payroll td {{ padding:6px 3px !important; height:34px !important; font-size:6.8px !important; line-height:1.08 !important; overflow:hidden !important; }}
+.receipt.phone-preview .lower {{ display:block !important; margin-top:12px !important; }}
+.receipt.phone-preview .thanks {{ max-width:none !important; padding:11px 12px !important; gap:10px !important; border-radius:10px !important; }}
+.receipt.phone-preview .check {{ width:32px !important; height:32px !important; flex:0 0 32px !important; font-size:17px !important; }}
+.receipt.phone-preview .thanks h3 {{ font-size:11px !important; margin-bottom:3px !important; }}
+.receipt.phone-preview .thanks p {{ font-size:7px !important; line-height:1.35 !important; }}
+.receipt.phone-preview .summary {{ margin-top:10px !important; min-height:178px !important; padding:14px 14px !important; border-radius:10px !important; }}
+.receipt.phone-preview .summary-title {{ font-size:14px !important; margin-bottom:6px !important; }}
+.receipt.phone-preview .sum-row {{ font-size:8px !important; padding:5px 0 6px !important; }}
+.receipt.phone-preview .final {{ padding-top:9px !important; }}
+.receipt.phone-preview .final .label {{ font-size:13px !important; }}
+.receipt.phone-preview .final .value {{ font-size:15px !important; }}
+.receipt.phone-preview .footer {{ margin-top:10px !important; padding:9px 10px !important; font-size:6px !important; letter-spacing:.55px !important; }}
+.receipt.phone-preview .footer .shield {{ font-size:11px !important; margin-right:5px !important; }}
+
+/* PHONE EXPORT: the actual 9:16 composition is rendered inside a 540x960 canvas source,
+   then upscaled exactly to 2160x3840. No letterboxing from a desktop 16:9 receipt. */
+.receipt.export-phone {{
+  width:540px !important;
+  min-height:960px !important;
+  height:960px !important;
+  margin:0 !important;
+  padding:18px 12px 12px !important;
+  box-shadow:none !important;
+}}
+.receipt.export-phone .header {{ display:block !important; padding:18px 0 10px !important; }}
+.receipt.export-phone .brand {{ gap:10px !important; }}
+.receipt.export-phone .logo {{ width:66px !important; height:62px !important; flex:0 0 66px !important; }}
+.receipt.export-phone .brand h1 {{ font-size:22px !important; letter-spacing:-.7px !important; }}
+.receipt.export-phone .brand .subtitle {{ font-size:9px !important; margin-top:5px !important; }}
+.receipt.export-phone .brand .system,.receipt.export-phone .brand .account {{ font-size:7.5px !important; margin-top:3px !important; }}
+.receipt.export-phone .meta {{ border-left:0 !important; border-top:1px solid #d7ddd9 !important; margin-top:9px !important; padding:8px 0 0 !important; text-align:left !important; }}
+.receipt.export-phone .meta h2 {{ font-size:16px !important; margin:0 0 6px !important; }}
+.receipt.export-phone .meta .row {{ font-size:8px !important; margin:0 0 4px !important; }}
+.receipt.export-phone .meta .date-line {{ min-width:0 !important; }}
+.receipt.export-phone .table-wrap {{ border-radius:8px !important; }}
+.receipt.export-phone table.payroll th {{ padding:6px 3px !important; height:30px !important; font-size:6px !important; line-height:1.05 !important; white-space:normal !important; }}
+.receipt.export-phone table.payroll td {{ padding:6px 3px !important; height:34px !important; font-size:6.8px !important; line-height:1.08 !important; overflow:hidden !important; }}
+.receipt.export-phone .lower {{ display:block !important; margin-top:12px !important; }}
+.receipt.export-phone .thanks {{ max-width:none !important; padding:11px 12px !important; gap:10px !important; }}
+.receipt.export-phone .check {{ width:32px !important; height:32px !important; flex:0 0 32px !important; font-size:17px !important; }}
+.receipt.export-phone .thanks h3 {{ font-size:11px !important; margin-bottom:3px !important; }}
+.receipt.export-phone .thanks p {{ font-size:7px !important; line-height:1.35 !important; }}
+.receipt.export-phone .summary {{ margin-top:10px !important; min-height:178px !important; padding:14px !important; border-radius:10px !important; }}
+.receipt.export-phone .summary-title {{ font-size:14px !important; margin-bottom:6px !important; }}
+.receipt.export-phone .sum-row {{ font-size:8px !important; padding:5px 0 6px !important; }}
+.receipt.export-phone .final {{ padding-top:9px !important; }}
+.receipt.export-phone .final .label {{ font-size:13px !important; }}
+.receipt.export-phone .final .value {{ font-size:15px !important; }}
+.receipt.export-phone .footer {{ margin-top:10px !important; padding:9px 10px !important; font-size:6px !important; letter-spacing:.55px !important; }}
 @media print {{ .save-btn-container {{ display:none; }} html,body,.page {{ background:#fff; }} .receipt {{ box-shadow:none; }} }}
 </style>
 </head>
@@ -1218,17 +1310,28 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 <script>
 function fitReceiptToScreen() {{
   const el=document.getElementById('receiptContent'); if(!el) return;
-  const baseWidth=1500;
-  const viewportWidth=Math.max(1, window.innerWidth-20);
-  const scale=Math.min(1, Math.max(0.22, viewportWidth/baseWidth));
-  const scaledWidth=baseWidth*scale;
-  el.style.transformOrigin='top left';
-  el.style.transform=`scale(${{scale}})`;
-  el.style.marginLeft=`${{Math.max(0,(viewportWidth-scaledWidth)/2)}}px`;
-  el.style.marginRight='0';
-  el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
-  el.style.position='relative';
-  el.style.left='0';
+  const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  el.classList.toggle('phone-preview', phone);
+  if(phone) {{
+    const baseW=540;
+    const scale=Math.min(1, Math.max(0.48, (window.innerWidth-12)/baseW));
+    el.style.transformOrigin='top center';
+    el.style.transform=`scale(${{scale}})`;
+    el.style.marginLeft='auto';
+    el.style.marginRight='auto';
+    el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
+    el.style.position='relative';
+    el.style.left='0';
+  }} else {{
+    const baseW=1500;
+    el.style.transformOrigin='top center';
+    el.style.transform='none';
+    el.style.marginLeft='auto';
+    el.style.marginRight='auto';
+    el.style.marginBottom='0';
+    el.style.position='relative';
+    el.style.left='0';
+  }}
   document.body.style.overflowX='hidden';
   document.documentElement.style.overflowX='hidden';
 }}
@@ -1240,16 +1343,51 @@ function loadHtml2Canvas() {{
 }}
 function downloadCanvasPng(canvas,filename) {{ return new Promise((resolve,reject)=>{{ const finish=blob=>{{ if(!blob||!blob.size)return reject(new Error('PNG creation failed.')); const url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';document.body.appendChild(a);try{{a.click();}}finally{{a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}}resolve();}}; if(canvas.toBlob)canvas.toBlob(finish,'image/png',1); else {{ try{{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=filename;a.click();resolve();}}catch(e){{reject(e);}} }} }}); }}
 async function saveAsImage() {{
-  const btn=document.querySelector('.save-img-btn'),el=document.getElementById('receiptContent'); if(!el)return; const old=btn?btn.innerHTML:''; if(btn){{btn.disabled=true;btn.innerHTML='⏳ PREPARING IMAGE…';}}
-  const oldTransform=el.style.transform,oldOrigin=el.style.transformOrigin,oldMargin=el.style.marginBottom,oldPosition=el.style.position,oldLeft=el.style.left;
-  try {{ await loadHtml2Canvas(); el.style.transform='none';el.style.transformOrigin='top left';el.style.marginBottom='0'; await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-    const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); const targetW=phone?2160:3840,targetH=phone?3840:2160;
-    const rect=el.getBoundingClientRect(),sourceW=Math.max(1,Math.ceil(rect.width)),sourceH=Math.max(1,Math.ceil(rect.height)); const scale=Math.min(3,Math.max(1.5,targetW/sourceW));
-    const shot=await html2canvas(el,{{scale:scale,useCORS:true,allowTaint:false,backgroundColor:'#fff',logging:false,imageTimeout:30000,scrollX:0,scrollY:0,width:sourceW,height:sourceH,windowWidth:Math.max(1600,sourceW),windowHeight:Math.max(1200,sourceH)}});
-    const out=document.createElement('canvas');out.width=targetW;out.height=targetH;const ctx=out.getContext('2d',{{alpha:false}});ctx.fillStyle='#fff';ctx.fillRect(0,0,targetW,targetH);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';const fit=Math.min(targetW/shot.width,targetH/shot.height),w=Math.round(shot.width*fit),h=Math.round(shot.height*fit);ctx.drawImage(shot,Math.round((targetW-w)/2),Math.round((targetH-h)/2),w,h);
-    await downloadCanvasPng(out,'Payroll_Receipt_'+(phone?'Phone_9x16_2160x3840':'Laptop_16x9_3840x2160')+'.png'); if(btn)btn.innerHTML='✓ IMAGE DOWNLOADED'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},1800);
-  }} catch(err) {{ console.error(err); if(btn)btn.innerHTML='⚠ DOWNLOAD FAILED — TRY AGAIN'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},2500); }}
-  finally {{el.style.transform=oldTransform;el.style.transformOrigin=oldOrigin;el.style.marginBottom=oldMargin;el.style.position=oldPosition;el.style.left=oldLeft;fitReceiptToScreen();}}
+  const btn=document.querySelector('.save-img-btn'),el=document.getElementById('receiptContent'); if(!el)return;
+  const old=btn?btn.innerHTML:''; if(btn){{btn.disabled=true;btn.innerHTML='⏳ PREPARING IMAGE…';}}
+  const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const oldClass=el.className, oldTransform=el.style.transform, oldOrigin=el.style.transformOrigin, oldMargin=el.style.marginBottom, oldWidth=el.style.width, oldHeight=el.style.height, oldPosition=el.style.position, oldLeft=el.style.left;
+  try {{
+    await loadHtml2Canvas();
+    if(phone) {{
+      // Build the phone receipt at its native 9:16 source ratio: 540x960.
+      el.classList.add('export-phone');
+      el.classList.remove('phone-preview');
+      el.style.transform='none';
+      el.style.transformOrigin='top left';
+      el.style.margin='0';
+      el.style.marginBottom='0';
+      el.style.position='relative';
+      el.style.left='0';
+      el.style.width='540px';
+      el.style.height='960px';
+    }} else {{
+      el.classList.remove('phone-preview','export-phone');
+      el.style.transform='none';
+      el.style.transformOrigin='top left';
+      el.style.margin='0';
+      el.style.marginBottom='0';
+      el.style.width='1500px';
+      el.style.height='844px';
+    }}
+    await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const targetW=phone?2160:3840, targetH=phone?3840:2160;
+    const sourceW=phone?540:1500, sourceH=phone?960:844;
+    const captureScale=phone?4:Math.min(3,Math.max(1.5,targetW/sourceW));
+    const shot=await html2canvas(el,{{scale:captureScale,useCORS:true,allowTaint:false,backgroundColor:'#fff',logging:false,imageTimeout:30000,scrollX:0,scrollY:0,width:sourceW,height:sourceH,windowWidth:sourceW,windowHeight:sourceH}});
+    const out=document.createElement('canvas'); out.width=targetW; out.height=targetH;
+    const ctx=out.getContext('2d',{{alpha:false}}); if(!ctx) throw new Error('Canvas is unavailable in this browser.');
+    ctx.fillStyle='#fff'; ctx.fillRect(0,0,targetW,targetH); ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+    // Source and output have the exact same ratio, so there is NO letterboxing.
+    ctx.drawImage(shot,0,0,targetW,targetH);
+    await downloadCanvasPng(out,'Payroll_Receipt_'+(phone?'Phone_9x16_2160x3840':'Laptop_16x9_3840x2160')+'.png');
+    if(btn)btn.innerHTML='✓ IMAGE DOWNLOADED'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},1800);
+  }} catch(err) {{
+    console.error('Payroll receipt image export failed:',err);
+    if(btn)btn.innerHTML='⚠ DOWNLOAD FAILED — TRY AGAIN'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},2500);
+  }} finally {{
+    el.className=oldClass; el.style.transform=oldTransform; el.style.transformOrigin=oldOrigin; el.style.marginBottom=oldMargin; el.style.width=oldWidth; el.style.height=oldHeight; el.style.position=oldPosition; el.style.left=oldLeft; fitReceiptToScreen();
+  }}
 }}
 </script>
 </body></html>"""
