@@ -785,6 +785,40 @@ body {{
 .export-phone .footer {{ margin-top: 8px !important; padding: 7px 8px 6px !important; font-size: 5.2px !important; letter-spacing: .05em !important; }}
 .export-phone .footer::before {{ width: 10px !important; height: 10px !important; margin-right: 4px !important; font-size: 7px !important; }}
 .export-phone::after {{ width: 130px !important; height: 45px !important; }}
+/* REFERENCE DESIGN V2 — construction receipt desktop composition */
+.receipt-page.reference-v2 {{
+  width: 1500px !important;
+  min-height: 844px !important;
+  height: 844px !important;
+  margin: 0 auto !important;
+  background: #fff !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}}
+.receipt-page.reference-v2 .receipt-inner {{ padding: 24px 62px 0 !important; }}
+.receipt-page.reference-v2 .top-gold-line {{ height: 2px !important; margin: -7px 0 18px !important; }}
+.receipt-page.reference-v2 .header {{ grid-template-columns: 1.42fr .58fr !important; gap: 34px !important; padding-bottom: 27px !important; align-items: center !important; }}
+.receipt-page.reference-v2 .brand {{ gap: 18px !important; }}
+.receipt-page.reference-v2 .house-logo {{ width: 98px !important; height: 98px !important; }}
+.receipt-page.reference-v2 .company-name {{ font-size: 43px !important; letter-spacing: -.9px !important; }}
+.receipt-page.reference-v2 .company-sub {{ font-size: 14px !important; line-height: 1.42 !important; margin-top: 6px !important; }}
+.receipt-page.reference-v2 .receipt-meta {{ min-height: 112px !important; padding-left: 34px !important; align-items: flex-end !important; text-align: right !important; }}
+.receipt-page.reference-v2 .receipt-meta h2 {{ font-size: 27px !important; margin-bottom: 14px !important; }}
+.receipt-page.reference-v2 .date-line {{ font-size: 15px !important; }}
+.receipt-page.reference-v2 .calendar-icon {{ font-size: 19px !important; }}
+.receipt-page.reference-v2 .table-wrap {{ margin-top: 0 !important; border-radius: 15px !important; overflow: hidden !important; }}
+.receipt-page.reference-v2 .receipt-table {{ font-size: 13px !important; }}
+.receipt-page.reference-v2 .receipt-table thead th {{ padding: 15px 14px !important; height: 50px !important; font-size: 12px !important; }}
+.receipt-page.reference-v2 .receipt-table td {{ padding: 17px 14px !important; height: 54px !important; }}
+.receipt-page.reference-v2 .bottom-grid {{ grid-template-columns: 1fr 1fr !important; gap: 76px !important; margin-top: 20px !important; padding: 0 0 0 100px !important; align-items: center !important; }}
+.receipt-page.reference-v2 .thank-you {{ max-width: 470px !important; padding: 20px 24px !important; border-radius: 18px !important; }}
+.receipt-page.reference-v2 .summary {{ min-height: 238px !important; padding: 24px 28px !important; border-radius: 16px !important; }}
+.receipt-page.reference-v2 .summary-main {{ font-size: 27px !important; }}
+.receipt-page.reference-v2 .summary-main span:last-child {{ font-size: 25px !important; }}
+.receipt-page.reference-v2 .summary-row.status-row {{ font-size: 23px !important; }}
+.receipt-page.reference-v2 .final-balance {{ font-size: 25px !important; }}
+.receipt-page.reference-v2 .footer {{ margin-top: 18px !important; padding: 15px 24px 13px !important; }}
+
 @media print {{
   body {{
     background: white;
@@ -802,15 +836,83 @@ body {{
     border-top: 5px solid var(--green);
   }}
 }}
+
+/* ================================================================
+   REFERENCE LOCK V3 — EXACT VISUAL SYSTEM FOR PROVIDED 16:9 RECEIPTS
+   ================================================================ */
+.save-btn-container {{ display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:10px 0 14px !important; background:#fff !important; }}
+.view-receipt-btn, .save-img-btn {{ background:#075d2c !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:12px 24px !important; min-height:42px !important; font-size:13px !important; font-weight:900 !important; letter-spacing:.02em !important; cursor:pointer !important; box-shadow:none !important; }}
+.view-receipt-btn:hover, .save-img-btn:hover {{ background:#0a6f35 !important; transform:none !important; }}
+
+/* Construction: exact 1500x844 master artboard, matching the supplied reference */
+.receipt-page.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt-page.reference-v2 .receipt-inner {{ box-sizing:border-box !important; width:100% !important; height:100% !important; padding:20px 62px 0 !important; }}
+.receipt-page.reference-v2 .top-gold-line {{ height:2px !important; margin:0 0 18px !important; }}
+.receipt-page.reference-v2 .header {{ grid-template-columns:minmax(0,1.48fr) minmax(0,.52fr) !important; gap:28px !important; padding-bottom:24px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .brand {{ gap:18px !important; }}
+.receipt-page.reference-v2 .house-logo {{ width:92px !important; height:92px !important; flex:0 0 92px !important; }}
+.receipt-page.reference-v2 .company-name {{ font-size:41px !important; line-height:1 !important; letter-spacing:-1.1px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .company-sub {{ font-size:13px !important; line-height:1.32 !important; margin-top:6px !important; }}
+.receipt-page.reference-v2 .receipt-meta {{ min-height:108px !important; border-left:1px solid #d9dfda !important; padding-left:30px !important; align-items:flex-end !important; text-align:right !important; }}
+.receipt-page.reference-v2 .receipt-meta h2 {{ font-size:26px !important; line-height:1.1 !important; margin:0 0 14px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .date-line {{ font-size:14px !important; }}
+.receipt-page.reference-v2 .table-wrap {{ margin-top:0 !important; border-radius:14px !important; overflow:hidden !important; }}
+.receipt-page.reference-v2 .receipt-table {{ width:100% !important; table-layout:fixed !important; font-size:12px !important; }}
+.receipt-page.reference-v2 .receipt-table thead th {{ height:48px !important; padding:12px 13px !important; font-size:11px !important; }}
+.receipt-page.reference-v2 .receipt-table td {{ height:51px !important; padding:13px !important; }}
+.receipt-page.reference-v2 .bottom-grid {{ grid-template-columns:1fr 1fr !important; gap:70px !important; margin-top:20px !important; padding:0 0 0 100px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .thank-you {{ max-width:470px !important; padding:19px 23px !important; border-radius:18px !important; }}
+.receipt-page.reference-v2 .summary {{ min-height:236px !important; padding:23px 28px !important; border-radius:16px !important; }}
+.receipt-page.reference-v2 .summary-main {{ font-size:26px !important; }}
+.receipt-page.reference-v2 .summary-main span:last-child {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .summary-row {{ font-size:13px !important; }}
+.receipt-page.reference-v2 .summary-row.status-row {{ font-size:22px !important; }}
+.receipt-page.reference-v2 .final-balance {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .footer {{ margin-top:17px !important; padding:14px 22px 12px !important; }}
+
+/* Payroll: exact 1500x844 master artboard, matching the supplied reference */
+.receipt.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 62px 26px !important; box-sizing:border-box !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt.reference-v2:before {{ height:28px !important; }}
+.receipt.reference-v2 .header {{ grid-template-columns:minmax(0,1.42fr) minmax(0,.58fr) !important; gap:42px !important; padding:22px 0 23px !important; align-items:center !important; }}
+.receipt.reference-v2 .brand {{ gap:20px !important; }}
+.receipt.reference-v2 .logo {{ width:118px !important; height:110px !important; flex:0 0 118px !important; }}
+.receipt.reference-v2 .brand h1 {{ font-size:45px !important; line-height:1 !important; letter-spacing:-1.6px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .brand .subtitle {{ font-size:17px !important; margin-top:11px !important; }}
+.receipt.reference-v2 .brand .system {{ font-size:14px !important; margin-top:7px !important; }}
+.receipt.reference-v2 .brand .account {{ font-size:13px !important; margin-top:6px !important; }}
+.receipt.reference-v2 .meta {{ padding:7px 4px 7px 44px !important; }}
+.receipt.reference-v2 .meta h2 {{ font-size:32px !important; line-height:1.1 !important; margin-bottom:20px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .meta .row {{ font-size:15px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .table-wrap {{ border-radius:14px !important; overflow:hidden !important; }}
+.receipt.reference-v2 table.payroll {{ width:100% !important; table-layout:fixed !important; }}
+.receipt.reference-v2 table.payroll th {{ padding:13px 12px !important; height:56px !important; font-size:14px !important; }}
+.receipt.reference-v2 table.payroll td {{ padding:12px !important; height:57px !important; font-size:14px !important; }}
+.receipt.reference-v2 .lower {{ grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) !important; gap:68px !important; margin-top:32px !important; align-items:center !important; }}
+.receipt.reference-v2 .thanks {{ max-width:560px !important; padding:21px 23px !important; gap:19px !important; border-radius:16px !important; }}
+.receipt.reference-v2 .check {{ width:56px !important; height:56px !important; flex-basis:56px !important; font-size:30px !important; }}
+.receipt.reference-v2 .thanks h3 {{ font-size:20px !important; margin-bottom:7px !important; }}
+.receipt.reference-v2 .thanks p {{ font-size:13px !important; line-height:1.38 !important; }}
+.receipt.reference-v2 .summary {{ min-height:214px !important; padding:23px 27px !important; border-radius:14px !important; }}
+.receipt.reference-v2 .summary-title {{ font-size:23px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .sum-row {{ padding:7px 0 9px !important; font-size:14px !important; }}
+.receipt.reference-v2 .final {{ padding-top:15px !important; }}
+.receipt.reference-v2 .final .label {{ font-size:23px !important; }}
+.receipt.reference-v2 .final .value {{ font-size:27px !important; }}
+.receipt.reference-v2 .footer {{ margin-top:30px !important; padding:14px 28px !important; font-size:10px !important; }}
+
+/* Viewer: never show grey rails or internal scrolling */
+body {{ overflow-x:hidden !important; }}
+.receipt-page.reference-v2, .receipt.reference-v2 {{ transform-origin:top center !important; }}
+
 </style>
 </head>
 
 <body>
 <div class="save-btn-container">
-  <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button>
+  <button class="view-receipt-btn" onclick="fitReceiptToScreen()">VIEW RECEIPT</button><button class="save-img-btn" onclick="saveAsImage()">DOWNLOAD RECEIPT IMAGE</button>
 </div>
 
-<div class="receipt-page" id="receiptContent">
+<div class="receipt-page reference-v2" id="receiptContent">
   <div class="receipt-inner">
 
     <div class="top-gold-line"></div>
@@ -898,23 +1000,37 @@ body {{
 function fitReceiptToScreen() {{
   const element = document.getElementById('receiptContent');
   if (!element) return;
-  const baseWidth = 1500;
-  const viewportWidth = Math.max(1, window.innerWidth - 20);
-  const scale = Math.min(1, Math.max(0.22, viewportWidth / baseWidth));
-  const scaledWidth = baseWidth * scale;
 
-  // Keep the complete fixed-layout receipt visible on phones.
-  // The receipt is scaled from its top-left corner instead of scaling
-  // around its center (which previously pushed the right side off-screen).
+  // Use the actual composition being displayed. Payroll/construction phone
+  // previews are 540x960 (9:16); desktop receipts are 1500x844 (16:9).
+  // The old code always assumed 1500px, which made the phone receipt tiny,
+  // shifted, or horizontally clipped.
+  const isPhoneLayout = element.classList.contains('phone-preview') ||
+    (window.matchMedia && window.matchMedia('(max-width: 600px)').matches);
+  const baseWidth = isPhoneLayout ? 540 : 1500;
+  const baseHeight = isPhoneLayout ? 960 : 844;
+  const viewportWidth = Math.max(1, window.innerWidth - 20);
+  const viewportHeight = Math.max(1, window.innerHeight - 20);
+
+  // Fit BOTH dimensions so the complete receipt is visible at once.
+  const widthScale = viewportWidth / baseWidth;
+  const heightScale = viewportHeight / baseHeight;
+  const scale = Math.min(1, widthScale, heightScale);
+  const safeScale = Math.max(isPhoneLayout ? 0.35 : 0.45, scale);
+  const scaledWidth = baseWidth * safeScale;
+  const scaledHeight = baseHeight * safeScale;
+
   element.style.transformOrigin = 'top left';
-  element.style.transform = `scale(${{scale}})`;
+  element.style.transform = `scale(${{safeScale}})`;
   element.style.marginLeft = `${{Math.max(0, (viewportWidth - scaledWidth) / 2)}}px`;
   element.style.marginRight = '0';
-  element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
+  // Compensate for CSS transforms so the outer document does not create a
+  // second vertical scrollbar.
+  element.style.marginBottom = `${{Math.max(0, Math.round(scaledHeight - baseHeight))}}px`;
   element.style.position = 'relative';
   element.style.left = '0';
-  document.body.style.overflowX = 'hidden';
-  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
 }}
 window.addEventListener('load', fitReceiptToScreen);
 window.addEventListener('resize', fitReceiptToScreen);
@@ -952,11 +1068,19 @@ function downloadCanvasPng(canvas, filename) {{
       link.rel = 'noopener';
       link.style.display = 'none';
       document.body.appendChild(link);
+      let clicked = false;
       try {{
         link.click();
+        clicked = true;
       }} finally {{
         link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        // Some mobile/WebView environments ignore the download attribute.
+        // If the normal download click is rejected, expose the PNG in a new
+        // tab so the client can still save/share the exact generated image.
+        setTimeout(() => {{
+          if (!clicked) window.open(url, '_blank', 'noopener,noreferrer');
+        }}, 250);
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
       }}
       resolve();
     }};
@@ -1097,10 +1221,10 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 * {{ box-sizing: border-box; }}
-html,body {{ margin:0; padding:0; background:#3b3b3b; }}
-body {{ font-family:Arial,Helvetica,sans-serif; color:#183528; overflow-x:hidden; }}
-.page {{ width:100%; background:#3b3b3b; padding:16px 0; }}
-.receipt {{ width:1500px; min-height:844px; margin:0 auto; background:#fff; position:relative; overflow:hidden; padding:34px 62px 26px; box-shadow:0 0 0 1px rgba(0,0,0,.08); }}
+html,body {{ margin:0; padding:0; width:100%; background:#fff; }}
+body {{ font-family:Arial,Helvetica,sans-serif; color:#183528; overflow:hidden; }}
+.page {{ width:100%; background:#fff; padding:0; min-height:100vh; overflow:hidden; }}
+.receipt {{ width:1500px; height:844px; min-height:844px; margin:0 auto; background:#fff; position:relative; overflow:hidden; padding:34px 62px 26px; box-shadow:none; }}
 .receipt:before {{ content:""; position:absolute; left:0; top:0; right:0; height:28px; background:linear-gradient(135deg,#075d2c 0 56%,#0b7137 56% 70%,#075d2c 70%); }}
 .receipt:after {{ content:""; position:absolute; left:0; bottom:0; width:100%; height:56px; border-top:2px solid #c79a2b; background:linear-gradient(180deg,#fff 0 72%,#075d2c 72%); clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 62%,18% 62%,21% 0); opacity:.98; }}
 .header {{ display:grid; grid-template-columns:1.35fr .85fr; gap:42px; align-items:center; padding:24px 0 24px; position:relative; z-index:2; }}
@@ -1143,7 +1267,7 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 .final .value {{ font-size:28px; font-weight:900; white-space:nowrap; }}
 .footer {{ position:relative; z-index:3; margin-top:32px; padding:15px 30px; text-align:center; color:#5c625f; font-size:11px; letter-spacing:1.4px; text-transform:uppercase; }}
 .footer .shield {{ color:#075d2c; font-size:20px; vertical-align:middle; margin-right:12px; }}
-.save-btn-container {{ text-align:center; padding:12px; background:#f4f7f5; }}
+.save-btn-container {{ display:flex; justify-content:center; align-items:center; height:58px; padding:8px; background:#fff; }}
 .save-img-btn {{ background:#075d2c; color:#fff; border:0; padding:12px 22px; font-size:14px; font-weight:800; border-radius:8px; cursor:pointer; }}
 .save-img-btn:hover {{ background:#0a7137; }}
 @media (max-width:600px) {{
@@ -1242,13 +1366,119 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 .receipt.export-phone .final .label {{ font-size:13px !important; }}
 .receipt.export-phone .final .value {{ font-size:15px !important; }}
 .receipt.export-phone .footer {{ margin-top:10px !important; padding:9px 10px !important; font-size:6px !important; letter-spacing:.55px !important; }}
+/* REFERENCE DESIGN V2 — payroll receipt desktop composition */
+.receipt.reference-v2 {{
+  width: 1500px !important;
+  height: 844px !important;
+  min-height: 844px !important;
+  margin: 0 auto !important;
+  padding: 34px 62px 26px !important;
+  background: #fff !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}}
+.receipt.reference-v2:before {{ height: 28px !important; }}
+.receipt.reference-v2 .header {{ grid-template-columns: 1.35fr .85fr !important; gap: 42px !important; padding: 24px 0 24px !important; align-items: center !important; }}
+.receipt.reference-v2 .brand {{ gap: 22px !important; }}
+.receipt.reference-v2 .logo {{ width: 126px !important; height: 118px !important; }}
+.receipt.reference-v2 .brand h1 {{ font-size: 48px !important; letter-spacing: -1.8px !important; }}
+.receipt.reference-v2 .brand .subtitle {{ font-size: 19px !important; margin-top: 12px !important; }}
+.receipt.reference-v2 .brand .system {{ font-size: 16px !important; margin-top: 8px !important; }}
+.receipt.reference-v2 .brand .account {{ font-size: 15px !important; margin-top: 7px !important; }}
+.receipt.reference-v2 .meta {{ padding: 8px 6px 8px 48px !important; }}
+.receipt.reference-v2 .meta h2 {{ font-size: 34px !important; margin-bottom: 22px !important; }}
+.receipt.reference-v2 .meta .row {{ font-size: 16px !important; margin-bottom: 13px !important; }}
+.receipt.reference-v2 .table-wrap {{ border-radius: 14px !important; }}
+.receipt.reference-v2 table.payroll th {{ padding: 14px 12px !important; height: 58px !important; font-size: 15px !important; }}
+.receipt.reference-v2 table.payroll td {{ padding: 13px 12px !important; height: 58px !important; font-size: 15px !important; }}
+.receipt.reference-v2 .lower {{ grid-template-columns: 1fr 1.12fr !important; gap: 70px !important; margin-top: 34px !important; align-items: center !important; }}
+.receipt.reference-v2 .thanks {{ padding: 22px 24px !important; gap: 20px !important; max-width: 560px !important; border-radius: 16px !important; }}
+.receipt.reference-v2 .check {{ width: 58px !important; height: 58px !important; flex-basis: 58px !important; font-size: 31px !important; }}
+.receipt.reference-v2 .thanks h3 {{ font-size: 20px !important; margin-bottom: 8px !important; }}
+.receipt.reference-v2 .thanks p {{ font-size: 14px !important; line-height: 1.4 !important; }}
+.receipt.reference-v2 .summary {{ min-height: 218px !important; padding: 24px 28px !important; border-radius: 14px !important; }}
+.receipt.reference-v2 .summary-title {{ font-size: 24px !important; margin-bottom: 12px !important; }}
+.receipt.reference-v2 .sum-row {{ padding: 7px 0 10px !important; font-size: 15px !important; }}
+.receipt.reference-v2 .final {{ padding-top: 16px !important; }}
+.receipt.reference-v2 .final .label {{ font-size: 24px !important; }}
+.receipt.reference-v2 .final .value {{ font-size: 28px !important; }}
+.receipt.reference-v2 .footer {{ margin-top: 32px !important; padding: 15px 30px !important; font-size: 11px !important; }}
+
 @media print {{ .save-btn-container {{ display:none; }} html,body,.page {{ background:#fff; }} .receipt {{ box-shadow:none; }} }}
+
+/* ================================================================
+   REFERENCE LOCK V3 — EXACT VISUAL SYSTEM FOR PROVIDED 16:9 RECEIPTS
+   ================================================================ */
+.save-btn-container {{ display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:10px 0 14px !important; background:#fff !important; }}
+.view-receipt-btn, .save-img-btn {{ background:#075d2c !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:12px 24px !important; min-height:42px !important; font-size:13px !important; font-weight:900 !important; letter-spacing:.02em !important; cursor:pointer !important; box-shadow:none !important; }}
+.view-receipt-btn:hover, .save-img-btn:hover {{ background:#0a6f35 !important; transform:none !important; }}
+
+/* Construction: exact 1500x844 master artboard, matching the supplied reference */
+.receipt-page.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt-page.reference-v2 .receipt-inner {{ box-sizing:border-box !important; width:100% !important; height:100% !important; padding:20px 62px 0 !important; }}
+.receipt-page.reference-v2 .top-gold-line {{ height:2px !important; margin:0 0 18px !important; }}
+.receipt-page.reference-v2 .header {{ grid-template-columns:minmax(0,1.48fr) minmax(0,.52fr) !important; gap:28px !important; padding-bottom:24px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .brand {{ gap:18px !important; }}
+.receipt-page.reference-v2 .house-logo {{ width:92px !important; height:92px !important; flex:0 0 92px !important; }}
+.receipt-page.reference-v2 .company-name {{ font-size:41px !important; line-height:1 !important; letter-spacing:-1.1px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .company-sub {{ font-size:13px !important; line-height:1.32 !important; margin-top:6px !important; }}
+.receipt-page.reference-v2 .receipt-meta {{ min-height:108px !important; border-left:1px solid #d9dfda !important; padding-left:30px !important; align-items:flex-end !important; text-align:right !important; }}
+.receipt-page.reference-v2 .receipt-meta h2 {{ font-size:26px !important; line-height:1.1 !important; margin:0 0 14px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .date-line {{ font-size:14px !important; }}
+.receipt-page.reference-v2 .table-wrap {{ margin-top:0 !important; border-radius:14px !important; overflow:hidden !important; }}
+.receipt-page.reference-v2 .receipt-table {{ width:100% !important; table-layout:fixed !important; font-size:12px !important; }}
+.receipt-page.reference-v2 .receipt-table thead th {{ height:48px !important; padding:12px 13px !important; font-size:11px !important; }}
+.receipt-page.reference-v2 .receipt-table td {{ height:51px !important; padding:13px !important; }}
+.receipt-page.reference-v2 .bottom-grid {{ grid-template-columns:1fr 1fr !important; gap:70px !important; margin-top:20px !important; padding:0 0 0 100px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .thank-you {{ max-width:470px !important; padding:19px 23px !important; border-radius:18px !important; }}
+.receipt-page.reference-v2 .summary {{ min-height:236px !important; padding:23px 28px !important; border-radius:16px !important; }}
+.receipt-page.reference-v2 .summary-main {{ font-size:26px !important; }}
+.receipt-page.reference-v2 .summary-main span:last-child {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .summary-row {{ font-size:13px !important; }}
+.receipt-page.reference-v2 .summary-row.status-row {{ font-size:22px !important; }}
+.receipt-page.reference-v2 .final-balance {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .footer {{ margin-top:17px !important; padding:14px 22px 12px !important; }}
+
+/* Payroll: exact 1500x844 master artboard, matching the supplied reference */
+.receipt.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 62px 26px !important; box-sizing:border-box !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt.reference-v2:before {{ height:28px !important; }}
+.receipt.reference-v2 .header {{ grid-template-columns:minmax(0,1.42fr) minmax(0,.58fr) !important; gap:42px !important; padding:22px 0 23px !important; align-items:center !important; }}
+.receipt.reference-v2 .brand {{ gap:20px !important; }}
+.receipt.reference-v2 .logo {{ width:118px !important; height:110px !important; flex:0 0 118px !important; }}
+.receipt.reference-v2 .brand h1 {{ font-size:45px !important; line-height:1 !important; letter-spacing:-1.6px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .brand .subtitle {{ font-size:17px !important; margin-top:11px !important; }}
+.receipt.reference-v2 .brand .system {{ font-size:14px !important; margin-top:7px !important; }}
+.receipt.reference-v2 .brand .account {{ font-size:13px !important; margin-top:6px !important; }}
+.receipt.reference-v2 .meta {{ padding:7px 4px 7px 44px !important; }}
+.receipt.reference-v2 .meta h2 {{ font-size:32px !important; line-height:1.1 !important; margin-bottom:20px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .meta .row {{ font-size:15px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .table-wrap {{ border-radius:14px !important; overflow:hidden !important; }}
+.receipt.reference-v2 table.payroll {{ width:100% !important; table-layout:fixed !important; }}
+.receipt.reference-v2 table.payroll th {{ padding:13px 12px !important; height:56px !important; font-size:14px !important; }}
+.receipt.reference-v2 table.payroll td {{ padding:12px !important; height:57px !important; font-size:14px !important; }}
+.receipt.reference-v2 .lower {{ grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) !important; gap:68px !important; margin-top:32px !important; align-items:center !important; }}
+.receipt.reference-v2 .thanks {{ max-width:560px !important; padding:21px 23px !important; gap:19px !important; border-radius:16px !important; }}
+.receipt.reference-v2 .check {{ width:56px !important; height:56px !important; flex-basis:56px !important; font-size:30px !important; }}
+.receipt.reference-v2 .thanks h3 {{ font-size:20px !important; margin-bottom:7px !important; }}
+.receipt.reference-v2 .thanks p {{ font-size:13px !important; line-height:1.38 !important; }}
+.receipt.reference-v2 .summary {{ min-height:214px !important; padding:23px 27px !important; border-radius:14px !important; }}
+.receipt.reference-v2 .summary-title {{ font-size:23px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .sum-row {{ padding:7px 0 9px !important; font-size:14px !important; }}
+.receipt.reference-v2 .final {{ padding-top:15px !important; }}
+.receipt.reference-v2 .final .label {{ font-size:23px !important; }}
+.receipt.reference-v2 .final .value {{ font-size:27px !important; }}
+.receipt.reference-v2 .footer {{ margin-top:30px !important; padding:14px 28px !important; font-size:10px !important; }}
+
+/* Viewer: never show grey rails or internal scrolling */
+body {{ overflow-x:hidden !important; }}
+.receipt-page.reference-v2, .receipt.reference-v2 {{ transform-origin:top center !important; }}
+
 </style>
 </head>
 <body>
 <div class="page">
-<div class="save-btn-container"><button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button></div>
-<div class="receipt" id="receiptContent">
+<div class="save-btn-container"><button class="view-receipt-btn" onclick="fitReceiptToScreen()">VIEW RECEIPT</button><button class="save-img-btn" onclick="saveAsImage()">DOWNLOAD RECEIPT IMAGE</button></div>
+<div class="receipt reference-v2" id="receiptContent">
   <div class="header">
     <div class="brand">
       <svg class="logo" viewBox="0 0 180 170" xmlns="http://www.w3.org/2000/svg" aria-label="Ailyn Construction logo">
@@ -1312,32 +1542,26 @@ function fitReceiptToScreen() {{
   const el=document.getElementById('receiptContent'); if(!el) return;
   const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   el.classList.toggle('phone-preview', phone);
-  if(phone) {{
-    const baseW=540;
-    const scale=Math.min(1, Math.max(0.48, (window.innerWidth-12)/baseW));
-    el.style.transformOrigin='top center';
-    el.style.transform=`scale(${{scale}})`;
-    el.style.marginLeft='auto';
-    el.style.marginRight='auto';
-    el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
-    el.style.position='relative';
-    el.style.left='0';
-  }} else {{
-    // DESKTOP PREVIEW: scale the complete 1500x844 receipt to the
-    // available iframe width so the client never has to scroll sideways.
-    const baseW=1500;
-    const availableW=Math.max(320, window.innerWidth - 18);
-    const scale=Math.min(1, availableW / baseW);
-    el.style.transformOrigin='top center';
-    el.style.transform=`scale(${{scale}})`;
-    el.style.marginLeft='auto';
-    el.style.marginRight='auto';
-    el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
-    el.style.position='relative';
-    el.style.left='0';
-  }}
-  document.body.style.overflowX='hidden';
-  document.documentElement.style.overflowX='hidden';
+  el.classList.remove('export-phone');
+
+  const baseW=phone?540:1500;
+  const baseH=phone?960:844;
+  const availableW=Math.max(280, window.innerWidth);
+  const availableH=Math.max(360, window.innerHeight - 54);
+  // Fit the complete receipt into the embedded viewport in both directions.
+  const scale=Math.min(1, availableW/baseW, availableH/baseH);
+
+  el.style.width=`${{baseW}}px`;
+  el.style.height=`${{baseH}}px`;
+  el.style.transformOrigin='top left';
+  el.style.transform=`scale(${{scale}})`;
+  el.style.margin='0 auto';
+  el.style.marginBottom=`${{Math.max(0, Math.round(baseH*scale-baseH))}}px`;
+  el.style.position='relative';
+  el.style.left='0';
+
+  document.body.style.overflow='hidden';
+  document.documentElement.style.overflow='hidden';
 }}
 window.addEventListener('load',fitReceiptToScreen); window.addEventListener('resize',fitReceiptToScreen);
 function loadHtml2Canvas() {{
@@ -1432,6 +1656,74 @@ body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0;
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
 .save-img-btn:hover {{ background-color: #2e7d32; }}
 @media print {{ .save-btn-container {{ display: none; }} }}
+
+/* ================================================================
+   REFERENCE LOCK V3 — EXACT VISUAL SYSTEM FOR PROVIDED 16:9 RECEIPTS
+   ================================================================ */
+.save-btn-container {{ display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:10px 0 14px !important; background:#fff !important; }}
+.view-receipt-btn, .save-img-btn {{ background:#075d2c !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:12px 24px !important; min-height:42px !important; font-size:13px !important; font-weight:900 !important; letter-spacing:.02em !important; cursor:pointer !important; box-shadow:none !important; }}
+.view-receipt-btn:hover, .save-img-btn:hover {{ background:#0a6f35 !important; transform:none !important; }}
+
+/* Construction: exact 1500x844 master artboard, matching the supplied reference */
+.receipt-page.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt-page.reference-v2 .receipt-inner {{ box-sizing:border-box !important; width:100% !important; height:100% !important; padding:20px 62px 0 !important; }}
+.receipt-page.reference-v2 .top-gold-line {{ height:2px !important; margin:0 0 18px !important; }}
+.receipt-page.reference-v2 .header {{ grid-template-columns:minmax(0,1.48fr) minmax(0,.52fr) !important; gap:28px !important; padding-bottom:24px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .brand {{ gap:18px !important; }}
+.receipt-page.reference-v2 .house-logo {{ width:92px !important; height:92px !important; flex:0 0 92px !important; }}
+.receipt-page.reference-v2 .company-name {{ font-size:41px !important; line-height:1 !important; letter-spacing:-1.1px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .company-sub {{ font-size:13px !important; line-height:1.32 !important; margin-top:6px !important; }}
+.receipt-page.reference-v2 .receipt-meta {{ min-height:108px !important; border-left:1px solid #d9dfda !important; padding-left:30px !important; align-items:flex-end !important; text-align:right !important; }}
+.receipt-page.reference-v2 .receipt-meta h2 {{ font-size:26px !important; line-height:1.1 !important; margin:0 0 14px !important; white-space:nowrap !important; }}
+.receipt-page.reference-v2 .date-line {{ font-size:14px !important; }}
+.receipt-page.reference-v2 .table-wrap {{ margin-top:0 !important; border-radius:14px !important; overflow:hidden !important; }}
+.receipt-page.reference-v2 .receipt-table {{ width:100% !important; table-layout:fixed !important; font-size:12px !important; }}
+.receipt-page.reference-v2 .receipt-table thead th {{ height:48px !important; padding:12px 13px !important; font-size:11px !important; }}
+.receipt-page.reference-v2 .receipt-table td {{ height:51px !important; padding:13px !important; }}
+.receipt-page.reference-v2 .bottom-grid {{ grid-template-columns:1fr 1fr !important; gap:70px !important; margin-top:20px !important; padding:0 0 0 100px !important; align-items:center !important; }}
+.receipt-page.reference-v2 .thank-you {{ max-width:470px !important; padding:19px 23px !important; border-radius:18px !important; }}
+.receipt-page.reference-v2 .summary {{ min-height:236px !important; padding:23px 28px !important; border-radius:16px !important; }}
+.receipt-page.reference-v2 .summary-main {{ font-size:26px !important; }}
+.receipt-page.reference-v2 .summary-main span:last-child {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .summary-row {{ font-size:13px !important; }}
+.receipt-page.reference-v2 .summary-row.status-row {{ font-size:22px !important; }}
+.receipt-page.reference-v2 .final-balance {{ font-size:24px !important; }}
+.receipt-page.reference-v2 .footer {{ margin-top:17px !important; padding:14px 22px 12px !important; }}
+
+/* Payroll: exact 1500x844 master artboard, matching the supplied reference */
+.receipt.reference-v2 {{ width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 62px 26px !important; box-sizing:border-box !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }}
+.receipt.reference-v2:before {{ height:28px !important; }}
+.receipt.reference-v2 .header {{ grid-template-columns:minmax(0,1.42fr) minmax(0,.58fr) !important; gap:42px !important; padding:22px 0 23px !important; align-items:center !important; }}
+.receipt.reference-v2 .brand {{ gap:20px !important; }}
+.receipt.reference-v2 .logo {{ width:118px !important; height:110px !important; flex:0 0 118px !important; }}
+.receipt.reference-v2 .brand h1 {{ font-size:45px !important; line-height:1 !important; letter-spacing:-1.6px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .brand .subtitle {{ font-size:17px !important; margin-top:11px !important; }}
+.receipt.reference-v2 .brand .system {{ font-size:14px !important; margin-top:7px !important; }}
+.receipt.reference-v2 .brand .account {{ font-size:13px !important; margin-top:6px !important; }}
+.receipt.reference-v2 .meta {{ padding:7px 4px 7px 44px !important; }}
+.receipt.reference-v2 .meta h2 {{ font-size:32px !important; line-height:1.1 !important; margin-bottom:20px !important; white-space:nowrap !important; }}
+.receipt.reference-v2 .meta .row {{ font-size:15px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .table-wrap {{ border-radius:14px !important; overflow:hidden !important; }}
+.receipt.reference-v2 table.payroll {{ width:100% !important; table-layout:fixed !important; }}
+.receipt.reference-v2 table.payroll th {{ padding:13px 12px !important; height:56px !important; font-size:14px !important; }}
+.receipt.reference-v2 table.payroll td {{ padding:12px !important; height:57px !important; font-size:14px !important; }}
+.receipt.reference-v2 .lower {{ grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) !important; gap:68px !important; margin-top:32px !important; align-items:center !important; }}
+.receipt.reference-v2 .thanks {{ max-width:560px !important; padding:21px 23px !important; gap:19px !important; border-radius:16px !important; }}
+.receipt.reference-v2 .check {{ width:56px !important; height:56px !important; flex-basis:56px !important; font-size:30px !important; }}
+.receipt.reference-v2 .thanks h3 {{ font-size:20px !important; margin-bottom:7px !important; }}
+.receipt.reference-v2 .thanks p {{ font-size:13px !important; line-height:1.38 !important; }}
+.receipt.reference-v2 .summary {{ min-height:214px !important; padding:23px 27px !important; border-radius:14px !important; }}
+.receipt.reference-v2 .summary-title {{ font-size:23px !important; margin-bottom:11px !important; }}
+.receipt.reference-v2 .sum-row {{ padding:7px 0 9px !important; font-size:14px !important; }}
+.receipt.reference-v2 .final {{ padding-top:15px !important; }}
+.receipt.reference-v2 .final .label {{ font-size:23px !important; }}
+.receipt.reference-v2 .final .value {{ font-size:27px !important; }}
+.receipt.reference-v2 .footer {{ margin-top:30px !important; padding:14px 28px !important; font-size:10px !important; }}
+
+/* Viewer: never show grey rails or internal scrolling */
+body {{ overflow-x:hidden !important; }}
+.receipt-page.reference-v2, .receipt.reference-v2 {{ transform-origin:top center !important; }}
+
 </style>
 </head>
 <body>
@@ -1508,11 +1800,19 @@ function downloadCanvasPng(canvas, filename) {{
       link.rel = 'noopener';
       link.style.display = 'none';
       document.body.appendChild(link);
+      let clicked = false;
       try {{
         link.click();
+        clicked = true;
       }} finally {{
         link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        // Some mobile/WebView environments ignore the download attribute.
+        // If the normal download click is rejected, expose the PNG in a new
+        // tab so the client can still save/share the exact generated image.
+        setTimeout(() => {{
+          if (!clicked) window.open(url, '_blank', 'noopener,noreferrer');
+        }}, 250);
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
       }}
       resolve();
     }};
@@ -1800,6 +2100,74 @@ section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{margin:2
 @media (min-width:1920px){.dashboard-title-container{margin-top:125px;padding-top:52px;padding-bottom:40px;}.dashboard-heading-title{font-size:40px;}}
 @media(max-width:900px){.dashboard-title-container{margin-top:66px;padding:34px 22px 28px;border-radius:22px;}.dashboard-heading-title{font-size:28px;}.dashboard-heading img{width:58px;height:58px;}}
 @media(max-width:600px){section[data-testid="stSidebar"]>div{padding:18px 14px 26px!important;}.dashboard-title-container{margin-top:42px;padding:28px 14px 24px;border-radius:18px;}.dashboard-heading{gap:10px;}.dashboard-heading-title{font-size:22px;}.dashboard-heading-sub{font-size:8px;letter-spacing:.16em;}.dashboard-heading img{width:48px;height:48px;}.dashboard-welcome{font-size:11px;margin-top:12px;}}
+
+/* ================================================================
+   REFERENCE LOCK V3 — EXACT VISUAL SYSTEM FOR PROVIDED 16:9 RECEIPTS
+   ================================================================ */
+.save-btn-container { display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:10px 0 14px !important; background:#fff !important; }
+.view-receipt-btn, .save-img-btn { background:#075d2c !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:12px 24px !important; min-height:42px !important; font-size:13px !important; font-weight:900 !important; letter-spacing:.02em !important; cursor:pointer !important; box-shadow:none !important; }
+.view-receipt-btn:hover, .save-img-btn:hover { background:#0a6f35 !important; transform:none !important; }
+
+/* Construction: exact 1500x844 master artboard, matching the supplied reference */
+.receipt-page.reference-v2 { width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+.receipt-page.reference-v2 .receipt-inner { box-sizing:border-box !important; width:100% !important; height:100% !important; padding:20px 62px 0 !important; }
+.receipt-page.reference-v2 .top-gold-line { height:2px !important; margin:0 0 18px !important; }
+.receipt-page.reference-v2 .header { grid-template-columns:minmax(0,1.48fr) minmax(0,.52fr) !important; gap:28px !important; padding-bottom:24px !important; align-items:center !important; }
+.receipt-page.reference-v2 .brand { gap:18px !important; }
+.receipt-page.reference-v2 .house-logo { width:92px !important; height:92px !important; flex:0 0 92px !important; }
+.receipt-page.reference-v2 .company-name { font-size:41px !important; line-height:1 !important; letter-spacing:-1.1px !important; white-space:nowrap !important; }
+.receipt-page.reference-v2 .company-sub { font-size:13px !important; line-height:1.32 !important; margin-top:6px !important; }
+.receipt-page.reference-v2 .receipt-meta { min-height:108px !important; border-left:1px solid #d9dfda !important; padding-left:30px !important; align-items:flex-end !important; text-align:right !important; }
+.receipt-page.reference-v2 .receipt-meta h2 { font-size:26px !important; line-height:1.1 !important; margin:0 0 14px !important; white-space:nowrap !important; }
+.receipt-page.reference-v2 .date-line { font-size:14px !important; }
+.receipt-page.reference-v2 .table-wrap { margin-top:0 !important; border-radius:14px !important; overflow:hidden !important; }
+.receipt-page.reference-v2 .receipt-table { width:100% !important; table-layout:fixed !important; font-size:12px !important; }
+.receipt-page.reference-v2 .receipt-table thead th { height:48px !important; padding:12px 13px !important; font-size:11px !important; }
+.receipt-page.reference-v2 .receipt-table td { height:51px !important; padding:13px !important; }
+.receipt-page.reference-v2 .bottom-grid { grid-template-columns:1fr 1fr !important; gap:70px !important; margin-top:20px !important; padding:0 0 0 100px !important; align-items:center !important; }
+.receipt-page.reference-v2 .thank-you { max-width:470px !important; padding:19px 23px !important; border-radius:18px !important; }
+.receipt-page.reference-v2 .summary { min-height:236px !important; padding:23px 28px !important; border-radius:16px !important; }
+.receipt-page.reference-v2 .summary-main { font-size:26px !important; }
+.receipt-page.reference-v2 .summary-main span:last-child { font-size:24px !important; }
+.receipt-page.reference-v2 .summary-row { font-size:13px !important; }
+.receipt-page.reference-v2 .summary-row.status-row { font-size:22px !important; }
+.receipt-page.reference-v2 .final-balance { font-size:24px !important; }
+.receipt-page.reference-v2 .footer { margin-top:17px !important; padding:14px 22px 12px !important; }
+
+/* Payroll: exact 1500x844 master artboard, matching the supplied reference */
+.receipt.reference-v2 { width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 62px 26px !important; box-sizing:border-box !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+.receipt.reference-v2:before { height:28px !important; }
+.receipt.reference-v2 .header { grid-template-columns:minmax(0,1.42fr) minmax(0,.58fr) !important; gap:42px !important; padding:22px 0 23px !important; align-items:center !important; }
+.receipt.reference-v2 .brand { gap:20px !important; }
+.receipt.reference-v2 .logo { width:118px !important; height:110px !important; flex:0 0 118px !important; }
+.receipt.reference-v2 .brand h1 { font-size:45px !important; line-height:1 !important; letter-spacing:-1.6px !important; white-space:nowrap !important; }
+.receipt.reference-v2 .brand .subtitle { font-size:17px !important; margin-top:11px !important; }
+.receipt.reference-v2 .brand .system { font-size:14px !important; margin-top:7px !important; }
+.receipt.reference-v2 .brand .account { font-size:13px !important; margin-top:6px !important; }
+.receipt.reference-v2 .meta { padding:7px 4px 7px 44px !important; }
+.receipt.reference-v2 .meta h2 { font-size:32px !important; line-height:1.1 !important; margin-bottom:20px !important; white-space:nowrap !important; }
+.receipt.reference-v2 .meta .row { font-size:15px !important; margin-bottom:11px !important; }
+.receipt.reference-v2 .table-wrap { border-radius:14px !important; overflow:hidden !important; }
+.receipt.reference-v2 table.payroll { width:100% !important; table-layout:fixed !important; }
+.receipt.reference-v2 table.payroll th { padding:13px 12px !important; height:56px !important; font-size:14px !important; }
+.receipt.reference-v2 table.payroll td { padding:12px !important; height:57px !important; font-size:14px !important; }
+.receipt.reference-v2 .lower { grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) !important; gap:68px !important; margin-top:32px !important; align-items:center !important; }
+.receipt.reference-v2 .thanks { max-width:560px !important; padding:21px 23px !important; gap:19px !important; border-radius:16px !important; }
+.receipt.reference-v2 .check { width:56px !important; height:56px !important; flex-basis:56px !important; font-size:30px !important; }
+.receipt.reference-v2 .thanks h3 { font-size:20px !important; margin-bottom:7px !important; }
+.receipt.reference-v2 .thanks p { font-size:13px !important; line-height:1.38 !important; }
+.receipt.reference-v2 .summary { min-height:214px !important; padding:23px 27px !important; border-radius:14px !important; }
+.receipt.reference-v2 .summary-title { font-size:23px !important; margin-bottom:11px !important; }
+.receipt.reference-v2 .sum-row { padding:7px 0 9px !important; font-size:14px !important; }
+.receipt.reference-v2 .final { padding-top:15px !important; }
+.receipt.reference-v2 .final .label { font-size:23px !important; }
+.receipt.reference-v2 .final .value { font-size:27px !important; }
+.receipt.reference-v2 .footer { margin-top:30px !important; padding:14px 28px !important; font-size:10px !important; }
+
+/* Viewer: never show grey rails or internal scrolling */
+body { overflow-x:hidden !important; }
+.receipt-page.reference-v2, .receipt.reference-v2 { transform-origin:top center !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -1850,6 +2218,74 @@ section[data-testid="stSidebar"] .stButton > button p { font-size:13px !importan
 
 @media(max-width:900px) { .dashboard-title-container { margin-top:72px !important; padding:40px 24px 32px !important; } }
 @media(max-width:600px) { .dashboard-title-container { margin-top:44px !important; padding:32px 16px 28px !important; border-radius:22px !important; } }
+
+/* ================================================================
+   REFERENCE LOCK V3 — EXACT VISUAL SYSTEM FOR PROVIDED 16:9 RECEIPTS
+   ================================================================ */
+.save-btn-container { display:flex !important; justify-content:center !important; align-items:center !important; gap:14px !important; padding:10px 0 14px !important; background:#fff !important; }
+.view-receipt-btn, .save-img-btn { background:#075d2c !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:12px 24px !important; min-height:42px !important; font-size:13px !important; font-weight:900 !important; letter-spacing:.02em !important; cursor:pointer !important; box-shadow:none !important; }
+.view-receipt-btn:hover, .save-img-btn:hover { background:#0a6f35 !important; transform:none !important; }
+
+/* Construction: exact 1500x844 master artboard, matching the supplied reference */
+.receipt-page.reference-v2 { width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+.receipt-page.reference-v2 .receipt-inner { box-sizing:border-box !important; width:100% !important; height:100% !important; padding:20px 62px 0 !important; }
+.receipt-page.reference-v2 .top-gold-line { height:2px !important; margin:0 0 18px !important; }
+.receipt-page.reference-v2 .header { grid-template-columns:minmax(0,1.48fr) minmax(0,.52fr) !important; gap:28px !important; padding-bottom:24px !important; align-items:center !important; }
+.receipt-page.reference-v2 .brand { gap:18px !important; }
+.receipt-page.reference-v2 .house-logo { width:92px !important; height:92px !important; flex:0 0 92px !important; }
+.receipt-page.reference-v2 .company-name { font-size:41px !important; line-height:1 !important; letter-spacing:-1.1px !important; white-space:nowrap !important; }
+.receipt-page.reference-v2 .company-sub { font-size:13px !important; line-height:1.32 !important; margin-top:6px !important; }
+.receipt-page.reference-v2 .receipt-meta { min-height:108px !important; border-left:1px solid #d9dfda !important; padding-left:30px !important; align-items:flex-end !important; text-align:right !important; }
+.receipt-page.reference-v2 .receipt-meta h2 { font-size:26px !important; line-height:1.1 !important; margin:0 0 14px !important; white-space:nowrap !important; }
+.receipt-page.reference-v2 .date-line { font-size:14px !important; }
+.receipt-page.reference-v2 .table-wrap { margin-top:0 !important; border-radius:14px !important; overflow:hidden !important; }
+.receipt-page.reference-v2 .receipt-table { width:100% !important; table-layout:fixed !important; font-size:12px !important; }
+.receipt-page.reference-v2 .receipt-table thead th { height:48px !important; padding:12px 13px !important; font-size:11px !important; }
+.receipt-page.reference-v2 .receipt-table td { height:51px !important; padding:13px !important; }
+.receipt-page.reference-v2 .bottom-grid { grid-template-columns:1fr 1fr !important; gap:70px !important; margin-top:20px !important; padding:0 0 0 100px !important; align-items:center !important; }
+.receipt-page.reference-v2 .thank-you { max-width:470px !important; padding:19px 23px !important; border-radius:18px !important; }
+.receipt-page.reference-v2 .summary { min-height:236px !important; padding:23px 28px !important; border-radius:16px !important; }
+.receipt-page.reference-v2 .summary-main { font-size:26px !important; }
+.receipt-page.reference-v2 .summary-main span:last-child { font-size:24px !important; }
+.receipt-page.reference-v2 .summary-row { font-size:13px !important; }
+.receipt-page.reference-v2 .summary-row.status-row { font-size:22px !important; }
+.receipt-page.reference-v2 .final-balance { font-size:24px !important; }
+.receipt-page.reference-v2 .footer { margin-top:17px !important; padding:14px 22px 12px !important; }
+
+/* Payroll: exact 1500x844 master artboard, matching the supplied reference */
+.receipt.reference-v2 { width:1500px !important; height:844px !important; min-height:844px !important; max-width:none !important; margin:0 auto !important; padding:0 62px 26px !important; box-sizing:border-box !important; overflow:hidden !important; background:#fff !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+.receipt.reference-v2:before { height:28px !important; }
+.receipt.reference-v2 .header { grid-template-columns:minmax(0,1.42fr) minmax(0,.58fr) !important; gap:42px !important; padding:22px 0 23px !important; align-items:center !important; }
+.receipt.reference-v2 .brand { gap:20px !important; }
+.receipt.reference-v2 .logo { width:118px !important; height:110px !important; flex:0 0 118px !important; }
+.receipt.reference-v2 .brand h1 { font-size:45px !important; line-height:1 !important; letter-spacing:-1.6px !important; white-space:nowrap !important; }
+.receipt.reference-v2 .brand .subtitle { font-size:17px !important; margin-top:11px !important; }
+.receipt.reference-v2 .brand .system { font-size:14px !important; margin-top:7px !important; }
+.receipt.reference-v2 .brand .account { font-size:13px !important; margin-top:6px !important; }
+.receipt.reference-v2 .meta { padding:7px 4px 7px 44px !important; }
+.receipt.reference-v2 .meta h2 { font-size:32px !important; line-height:1.1 !important; margin-bottom:20px !important; white-space:nowrap !important; }
+.receipt.reference-v2 .meta .row { font-size:15px !important; margin-bottom:11px !important; }
+.receipt.reference-v2 .table-wrap { border-radius:14px !important; overflow:hidden !important; }
+.receipt.reference-v2 table.payroll { width:100% !important; table-layout:fixed !important; }
+.receipt.reference-v2 table.payroll th { padding:13px 12px !important; height:56px !important; font-size:14px !important; }
+.receipt.reference-v2 table.payroll td { padding:12px !important; height:57px !important; font-size:14px !important; }
+.receipt.reference-v2 .lower { grid-template-columns:minmax(0,1fr) minmax(0,1.12fr) !important; gap:68px !important; margin-top:32px !important; align-items:center !important; }
+.receipt.reference-v2 .thanks { max-width:560px !important; padding:21px 23px !important; gap:19px !important; border-radius:16px !important; }
+.receipt.reference-v2 .check { width:56px !important; height:56px !important; flex-basis:56px !important; font-size:30px !important; }
+.receipt.reference-v2 .thanks h3 { font-size:20px !important; margin-bottom:7px !important; }
+.receipt.reference-v2 .thanks p { font-size:13px !important; line-height:1.38 !important; }
+.receipt.reference-v2 .summary { min-height:214px !important; padding:23px 27px !important; border-radius:14px !important; }
+.receipt.reference-v2 .summary-title { font-size:23px !important; margin-bottom:11px !important; }
+.receipt.reference-v2 .sum-row { padding:7px 0 9px !important; font-size:14px !important; }
+.receipt.reference-v2 .final { padding-top:15px !important; }
+.receipt.reference-v2 .final .label { font-size:23px !important; }
+.receipt.reference-v2 .final .value { font-size:27px !important; }
+.receipt.reference-v2 .footer { margin-top:30px !important; padding:14px 28px !important; font-size:10px !important; }
+
+/* Viewer: never show grey rails or internal scrolling */
+body { overflow-x:hidden !important; }
+.receipt-page.reference-v2, .receipt.reference-v2 { transform-origin:top center !important; }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -2236,7 +2672,7 @@ elif view == "export":
     st.subheader("📄 EXPORT CONSTRUCTION REPORT")
     receipt_title = st.text_input("Receipt Title", value="Construction Receipt", placeholder="Enter a title for this receipt")
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
-    st.components.v1.html(html, height=650, scrolling=True)
+    st.components.v1.html(html, height=760, scrolling=False)
     if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
         if receipt_title.strip():
             archive_path = save_report_html("construction", html, title=receipt_title)
