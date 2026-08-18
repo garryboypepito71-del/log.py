@@ -899,13 +899,18 @@ function fitReceiptToScreen() {{
   const element = document.getElementById('receiptContent');
   if (!element) return;
   const baseWidth = 1500;
-  const scale = Math.min(1, Math.max(0.35, (window.innerWidth - 20) / baseWidth));
-  element.style.transformOrigin = 'top center';
+  const viewportWidth = Math.max(240, document.documentElement.clientWidth || window.innerWidth || baseWidth);
+  const scale = Math.min(1, Math.max(0.12, (viewportWidth - 16) / baseWidth));
+  const scaledWidth = baseWidth * scale;
+  const left = Math.max(0, Math.round((viewportWidth - scaledWidth) / 2));
+  element.style.transformOrigin = 'top left';
   element.style.transform = `scale(${{scale}})`;
-  element.style.marginLeft = 'auto';
-  element.style.marginRight = 'auto';
+  element.style.marginLeft = `${{left}}px`;
+  element.style.marginRight = '0';
   element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
+  element.style.display = 'block';
   document.body.style.overflowX = 'hidden';
+  document.documentElement.style.overflowX = 'hidden';
 }}
 window.addEventListener('load', fitReceiptToScreen);
 window.addEventListener('resize', fitReceiptToScreen);
@@ -1205,11 +1210,18 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 <script>
 function fitReceiptToScreen() {{
   const el=document.getElementById('receiptContent'); if(!el) return;
-  const scale=Math.min(1, Math.max(0.34,(window.innerWidth-20)/1500));
-  el.style.transformOrigin='top center'; el.style.transform=`scale(${{scale}})`;
-  el.style.marginLeft='auto'; el.style.marginRight='auto';
+  const baseWidth=1500;
+  const viewportWidth=Math.max(240, document.documentElement.clientWidth || window.innerWidth || baseWidth);
+  const scale=Math.min(1, Math.max(0.12,(viewportWidth-16)/baseWidth));
+  const scaledWidth=baseWidth*scale;
+  const left=Math.max(0, Math.round((viewportWidth-scaledWidth)/2));
+  el.style.transformOrigin='top left';
+  el.style.transform=`scale(${{scale}})`;
+  el.style.marginLeft=`${{left}}px`; el.style.marginRight='0';
   el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
+  el.style.display='block';
   document.body.style.overflowX='hidden';
+  document.documentElement.style.overflowX='hidden';
 }}
 window.addEventListener('load',fitReceiptToScreen); window.addEventListener('resize',fitReceiptToScreen);
 function loadHtml2Canvas() {{
