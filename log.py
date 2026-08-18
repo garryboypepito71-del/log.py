@@ -265,9 +265,10 @@ def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
             """
     else:
         rows_html = """
-        <tr class="empty-row">
-          <td colspan="6">No materials or expenses recorded.</td>
-        </tr>
+        <tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>
         """
 
     excess_html = ""
@@ -367,13 +368,14 @@ body {{
 
 .receipt-page {{
   width: 1500px;
+  min-height: 844px;
   max-width: none;
   margin: 0 auto;
   background: #fff;
   overflow: hidden;
   border: 1px solid #d7ddd7;
   border-top: 5px solid var(--green);
-  box-shadow: 0 10px 30px rgba(0,0,0,.10);
+  box-shadow: 0 12px 34px rgba(0,0,0,.12);
   position: relative;
 }}
 
@@ -408,7 +410,7 @@ body {{
 .receipt-inner {{
   position: relative;
   z-index: 1;
-  padding: clamp(18px, 3vw, 48px);
+  padding: 28px 62px 18px;
 }}
 
 .top-gold-line {{
@@ -421,9 +423,9 @@ body {{
 .header {{
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(260px, .48fr);
-  gap: 30px;
+  gap: 46px;
   align-items: center;
-  padding-bottom: 24px;
+  padding-bottom: 28px;
 }}
 
 .brand {{
@@ -434,15 +436,15 @@ body {{
 }}
 
 .house-logo {{
-  width: 94px;
-  height: 94px;
+  width: 96px;
+  height: 96px;
   flex: 0 0 auto;
 }}
 
 .company-name {{
   margin: 0;
   color: var(--green);
-  font-size: clamp(25px, 3vw, 46px);
+  font-size: 43px;
   line-height: 1.05;
   font-weight: 900;
   letter-spacing: -.8px;
@@ -452,7 +454,7 @@ body {{
 .company-sub {{
   margin: 7px 0 0;
   color: #606a63;
-  font-size: clamp(11px, 1.1vw, 17px);
+  font-size: 14px;
   line-height: 1.5;
 }}
 
@@ -470,8 +472,8 @@ body {{
 }}
 
 .receipt-meta {{
-  min-height: 115px;
-  padding-left: 28px;
+  min-height: 112px;
+  padding-left: 34px;
   border-left: 1px solid #d7ddd7;
   display: flex;
   flex-direction: column;
@@ -483,7 +485,7 @@ body {{
 .receipt-meta h2 {{
   margin: 0 0 14px;
   color: var(--green);
-  font-size: clamp(20px, 2.1vw, 32px);
+  font-size: 27px;
   line-height: 1.15;
   font-weight: 900;
   text-transform: uppercase;
@@ -495,26 +497,27 @@ body {{
   justify-content: flex-end;
   gap: 9px;
   color: #59645c;
-  font-size: clamp(12px, 1vw, 16px);
+  font-size: 15px;
   font-weight: 700;
 }}
 
 .calendar-icon {{
   color: var(--green);
-  font-size: 22px;
+  font-size: 21px;
 }}
 
 .table-wrap {{
   width: 100%;
   overflow-x: auto;
   border: 1px solid #d7ddd7;
-  border-radius: 16px;
+  border-radius: 15px;
   -webkit-overflow-scrolling: touch;
 }}
 
 .receipt-table {{
   width: 100%;
-  min-width: 760px;
+  min-width: 0;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 0;
   font-size: 13px;
@@ -523,7 +526,7 @@ body {{
 .receipt-table thead th {{
   background: var(--green);
   color: #fff;
-  padding: 15px 13px;
+  padding: 15px 14px;
   text-align: left;
   font-size: 12px;
   letter-spacing: .04em;
@@ -542,7 +545,8 @@ body {{
 }}
 
 .receipt-table td {{
-  padding: 17px 13px;
+  padding: 19px 14px;
+  height: 54px;
   border-right: 1px solid #e5eae5;
   border-bottom: 1px solid #e5eae5;
   vertical-align: middle;
@@ -580,20 +584,22 @@ body {{
 .empty-row td {{
   text-align: center;
   color: #89928b;
-  padding: 28px;
+  padding: 19px;
 }}
 
 .bottom-grid {{
   display: grid;
-  grid-template-columns: minmax(300px, 1fr) minmax(390px, .92fr);
-  gap: clamp(22px, 5vw, 80px);
-  align-items: end;
-  margin-top: 28px;
+  grid-template-columns: 1fr 1fr;
+  gap: 74px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 0 0 0 100px;
 }}
 
 .thank-you {{
-  max-width: 500px;
-  padding: 22px 24px;
+  width: 100%;
+  max-width: 470px;
+  padding: 20px 24px;
   border: 1px solid #d6ddd6;
   border-radius: 18px;
   background: rgba(255,255,255,.94);
@@ -636,7 +642,8 @@ body {{
 .summary {{
   background: var(--green);
   color: #fff;
-  padding: 26px 30px;
+  padding: 24px 28px;
+  min-height: 238px;
   border-radius: 16px;
   box-shadow: 0 8px 18px rgba(3,71,31,.16);
 }}
@@ -702,10 +709,12 @@ body {{
 }}
 
 .footer {{
-  margin-top: 34px;
-  padding: 15px 0 2px;
-  border-top: 2px solid #e5e9e5;
+  margin-top: 18px;
+  padding: 15px 24px 13px;
+  border-top: 3px solid var(--gold);
+  background: linear-gradient(90deg, var(--green) 0 19%, #fff 19% 81%, var(--green) 81% 100%);
   text-align: center;
+  position: relative;
   color: #657168;
   font-size: 10px;
   letter-spacing: .11em;
@@ -723,6 +732,11 @@ body {{
   background: #e6f3e8;
   color: var(--green);
   font-weight: 900;
+}}
+
+@media (max-width: 900px) {{
+  .receipt-page {{ width: 1500px; min-height: 844px; }}
+  .receipt-inner {{ padding: 28px 62px 18px; }}
 }}
 
 @media print {{
@@ -1000,14 +1014,14 @@ async function saveAsImage() {{
 
 
 def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, custom_title="PAYROLL RECEIPT"):
-    """Generate a responsive Ailyn Construction payroll receipt matching the reference design."""
+    """Generate payroll receipt using the same PC/phone visual system as the construction receipt."""
     date_str = datetime.now().strftime("%B %d, %Y | %I:%M %p")
     receipt_no = datetime.now().strftime("PR-%Y%m%d-%H%M%S")
     total_labor = sum(float(r.get('net', 0) or 0) for r in labor_records)
     total_expenses = sum(float(e.get('price', 0) or 0) for e in expense_records)
     total_ca = sum(float(r.get('ca', 0) or 0) for r in labor_records)
     subtotal = total_labor + total_expenses
-    grand_total = subtotal - (remaining_money or 0.0)
+    grand_total = subtotal - float(remaining_money or 0.0)
 
     html = f"""<!DOCTYPE html>
 <html>
@@ -1017,369 +1031,154 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 * {{ box-sizing: border-box; }}
-html, body {{ margin: 0; padding: 0; }}
-body {{
-    font-family: Arial, Helvetica, sans-serif;
-    background: #ffffff;
-    color: #183528;
-    padding: 0;
+html,body {{ margin:0; padding:0; background:#3b3b3b; }}
+body {{ font-family:Arial,Helvetica,sans-serif; color:#183528; overflow-x:hidden; }}
+.page {{ width:100%; background:#3b3b3b; padding:16px 0; }}
+.receipt {{ width:1500px; min-height:844px; margin:0 auto; background:#fff; position:relative; overflow:hidden; padding:34px 62px 26px; box-shadow:0 0 0 1px rgba(0,0,0,.08); }}
+.receipt:before {{ content:""; position:absolute; left:0; top:0; right:0; height:28px; background:linear-gradient(135deg,#075d2c 0 56%,#0b7137 56% 70%,#075d2c 70%); }}
+.receipt:after {{ content:""; position:absolute; left:0; bottom:0; width:100%; height:56px; border-top:2px solid #c79a2b; background:linear-gradient(180deg,#fff 0 72%,#075d2c 72%); clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 62%,18% 62%,21% 0); opacity:.98; }}
+.header {{ display:grid; grid-template-columns:1.35fr .85fr; gap:42px; align-items:center; padding:24px 0 24px; position:relative; z-index:2; }}
+.brand {{ display:flex; align-items:center; gap:22px; min-width:0; }}
+.logo {{ width:126px; height:118px; flex:0 0 126px; }}
+.brand h1 {{ margin:0; color:#075d2c; font-size:48px; line-height:1; font-weight:900; letter-spacing:-1.8px; text-transform:uppercase; }}
+.brand .subtitle {{ color:#4f5d54; font-size:19px; margin-top:12px; }}
+.brand .system {{ color:#555; font-size:16px; margin-top:8px; }}
+.brand .account {{ color:#555; font-size:15px; margin-top:7px; }}
+.brand .account b {{ color:#075d2c; }}
+.meta {{ border-left:1px solid #d7ddd9; padding:8px 6px 8px 48px; text-align:left; }}
+.meta h2 {{ color:#075d2c; margin:0 0 22px; font-size:34px; font-weight:900; text-transform:uppercase; }}
+.meta .row {{ margin:0 0 13px; font-size:16px; color:#333; }}
+.meta .label {{ color:#075d2c; font-weight:800; margin-right:8px; }}
+.meta .date-line {{ border-bottom:1px solid #bfc8c1; display:inline-block; min-width:260px; padding-bottom:5px; }}
+.table-wrap {{ width:100%; border:1px solid #d6ddd8; border-radius:14px; overflow:hidden; position:relative; z-index:2; }}
+table.payroll {{ width:100%; border-collapse:collapse; table-layout:fixed; }}
+table.payroll th {{ background:#075d2c; color:#fff; padding:14px 12px; height:58px; font-size:15px; font-weight:800; text-transform:uppercase; text-align:left; border-right:1px solid rgba(255,255,255,.22); }}
+table.payroll th:last-child {{ border-right:0; }}
+table.payroll td {{ padding:13px 12px; height:58px; border-right:1px solid #e5e9e6; border-bottom:1px solid #e2e7e3; font-size:15px; background:rgba(255,255,255,.96); }}
+table.payroll tr:last-child td {{ border-bottom:0; }}
+table.payroll td:last-child {{ border-right:0; }}
+table.payroll .center {{ text-align:center; }}
+table.payroll .money {{ text-align:right; white-space:nowrap; }}
+table.payroll .net {{ color:#075d2c; font-weight:800; }}
+.empty-row td {{ height:52px; }}
+.expense-heading td {{ background:#f4f8f5; color:#075d2c; font-weight:800; }}
+.lower {{ display:grid; grid-template-columns:1fr 1.12fr; gap:70px; align-items:center; margin-top:34px; position:relative; z-index:2; }}
+.thanks {{ border:1px solid #cbd4ce; border-radius:16px; padding:22px 24px; display:flex; align-items:center; gap:20px; max-width:560px; background:#fff; }}
+.check {{ width:58px; height:58px; flex:0 0 58px; border-radius:50%; background:#e7f2ea; display:grid; place-items:center; color:#075d2c; font-size:31px; font-weight:900; }}
+.thanks h3 {{ margin:0 0 8px; color:#075d2c; font-size:20px; }}
+.thanks p {{ margin:0; color:#333; font-size:14px; line-height:1.4; }}
+.summary {{ background:linear-gradient(135deg,#075d2c,#006b31); color:#fff; border-radius:14px; padding:24px 28px; min-height:218px; position:relative; overflow:hidden; }}
+.summary:after {{ content:"⌂"; position:absolute; right:12px; bottom:-55px; font-size:190px; color:rgba(255,255,255,.055); font-weight:900; }}
+.summary-title {{ position:relative; z-index:1; font-size:24px; font-weight:900; margin-bottom:12px; }}
+.sum-row {{ position:relative; z-index:1; display:flex; justify-content:space-between; gap:20px; padding:7px 0 10px; border-bottom:1px dashed rgba(255,255,255,.35); font-size:15px; }}
+.sum-row .value {{ white-space:nowrap; }}
+.final {{ position:relative; z-index:1; display:flex; justify-content:space-between; align-items:center; gap:20px; padding-top:16px; }}
+.final .label {{ font-size:24px; font-weight:900; text-transform:uppercase; }}
+.final .value {{ font-size:28px; font-weight:900; white-space:nowrap; }}
+.footer {{ position:relative; z-index:3; margin-top:32px; padding:15px 30px; text-align:center; color:#5c625f; font-size:11px; letter-spacing:1.4px; text-transform:uppercase; }}
+.footer .shield {{ color:#075d2c; font-size:20px; vertical-align:middle; margin-right:12px; }}
+.save-btn-container {{ text-align:center; padding:12px; background:#f4f7f5; }}
+.save-img-btn {{ background:#075d2c; color:#fff; border:0; padding:12px 22px; font-size:14px; font-weight:800; border-radius:8px; cursor:pointer; }}
+.save-img-btn:hover {{ background:#0a7137; }}
+@media (max-width:600px) {{
+  html,body {{ background:#fff; }} .page {{ padding:0; background:#fff; }} .save-btn-container {{ padding:8px; }}
+  .receipt {{ width:1500px; min-height:844px; margin:0; box-shadow:none; transform-origin:top left; }}
 }}
-.page {{
-    width: 100%;
-    min-height: 100vh;
-    background: #fff;
-    position: relative;
-    overflow: hidden;
-}}
-.top-line {{ height: 10px; background: #075d2c; width: 100%; }}
-.gold-line {{ height: 2px; background: #c79a2b; width: 52%; margin: 42px 0 0 38px; }}
-.receipt {{
-    width: 1460px;
-    max-width: none;
-    margin: 0 auto;
-    padding: 28px 0 34px;
-    position: relative;
-}}
-.receipt::after {{
-    content: "";
-    position: absolute;
-    right: -40px;
-    top: 0;
-    width: 300px;
-    height: 170px;
-    background: linear-gradient(135deg, transparent 0 32%, rgba(7,93,44,.08) 32% 52%, transparent 52% 62%, rgba(199,154,43,.05) 62% 76%, transparent 76%);
-    pointer-events: none;
-}}
-.header {{
-    display: grid;
-    grid-template-columns: 1fr 0.65fr;
-    gap: 38px;
-    align-items: center;
-    padding: 0 0 28px;
-}}
-.brand {{ display: flex; align-items: center; gap: 22px; min-width: 0; }}
-.logo {{ width: 150px; height: 145px; flex: 0 0 150px; }}
-.brand h1 {{
-    margin: 0;
-    color: #075d2c;
-    font-size: clamp(34px, 4vw, 67px);
-    line-height: .95;
-    font-weight: 900;
-    letter-spacing: -2px;
-    text-transform: uppercase;
-}}
-.brand .subtitle {{ color: #075d2c; font-size: clamp(16px, 1.5vw, 22px); margin-top: 12px; }}
-.brand .system {{ color: #444; font-size: 17px; margin-top: 16px; }}
-.brand .account {{ color: #333; font-size: 17px; margin-top: 10px; }}
-.brand .account b {{ color: #075d2c; }}
-.meta {{ border-left: 1px solid #d8ded9; padding: 10px 0 10px 48px; text-align: right; position: relative; z-index: 2; }}
-.meta h2 {{ color: #075d2c; margin: 0 0 26px; font-size: clamp(28px, 3vw, 48px); font-weight: 900; text-transform: uppercase; }}
-.meta .row {{ margin: 0 0 16px; font-size: 17px; color: #333; white-space: nowrap; }}
-.meta .label {{ color: #075d2c; font-weight: 800; margin-right: 10px; }}
-.meta .date-line {{ border-bottom: 1px solid #cfd8d2; padding-bottom: 9px; display: inline-block; min-width: 300px; }}
-.table-wrap {{ width: 100%; overflow-x: auto; border: 1px solid #c7d0ca; border-radius: 18px; margin-top: 6px; }}
-table.payroll {{ width: 100%; min-width: 900px; border-collapse: separate; border-spacing: 0; }}
-table.payroll th {{
-    background: #075d2c; color: white; padding: 17px 18px; font-size: 16px; font-weight: 800;
-    text-transform: uppercase; text-align: left; border-right: 1px solid rgba(255,255,255,.2);
-}}
-table.payroll th:first-child {{ border-radius: 16px 0 0 0; }}
-table.payroll th:last-child {{ border-radius: 0 16px 0 0; border-right: 0; }}
-table.payroll td {{ padding: 20px 18px; height: 62px; border-right: 1px solid #e0e5e1; border-bottom: 1px dashed #d8ded9; font-size: 15px; }}
-table.payroll tr:last-child td {{ border-bottom: 0; }}
-table.payroll td:last-child {{ border-right: 0; }}
-table.payroll .center {{ text-align: center; }}
-table.payroll .money {{ text-align: right; white-space: nowrap; }}
-table.payroll .net {{ color: #075d2c; font-weight: 800; }}
-.empty-row td {{ height: 55px; }}
-.lower {{ display: grid; grid-template-columns: 1fr 1.35fr; gap: 80px; align-items: center; margin-top: 48px; }}
-.thanks {{ border: 1px solid #c9d3cd; border-radius: 18px; padding: 28px 30px; display: flex; align-items: center; gap: 26px; max-width: 560px; }}
-.check {{ width: 76px; height: 76px; flex: 0 0 76px; border-radius: 50%; background: #e3f1e7; display: grid; place-items: center; color: #075d2c; font-size: 48px; font-weight: 300; }}
-.thanks h3 {{ margin: 0 0 12px; color: #075d2c; font-size: 25px; }}
-.thanks p {{ margin: 0; color: #333; font-size: 17px; line-height: 1.45; }}
-.summary {{ background: linear-gradient(135deg, #075d2c, #006b31); color: white; border-radius: 20px; padding: 30px 34px; min-height: 260px; position: relative; overflow: hidden; }}
-.summary::after {{ content: "⌂"; position: absolute; right: 10px; bottom: -45px; font-size: 220px; line-height: 1; color: rgba(255,255,255,.055); font-weight: 900; }}
-.sum-row {{ position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 4px 0 17px; margin-bottom: 14px; border-bottom: 1px dashed rgba(255,255,255,.42); font-size: 20px; font-weight: 700; }}
-.sum-row:last-of-type {{ border-bottom: 0; }}
-.sum-row .value {{ white-space: nowrap; }}
-.final {{ position: relative; z-index: 1; border-top: 1px solid rgba(255,255,255,.8); padding-top: 25px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }}
-.final .label {{ font-size: 31px; font-weight: 900; text-transform: uppercase; }}
-.final .value {{ font-size: clamp(30px, 3.2vw, 48px); font-weight: 900; white-space: nowrap; }}
-.footer {{ margin-top: 60px; border-top: 1px solid #d7ddd9; padding: 24px 30px; text-align: center; color: #5c625f; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }}
-.footer .shield {{ color: #075d2c; font-size: 24px; vertical-align: middle; margin-right: 16px; }}
-.save-btn-container {{ text-align: center; padding: 18px; background: #f7faf8; }}
-.save-img-btn {{ background: #075d2c; color: white; border: 0; padding: 13px 24px; font-size: 14px; font-weight: 800; border-radius: 8px; cursor: pointer; }}
-.save-img-btn:hover {{ background: #0a7137; }}
-@media print {{ .save-btn-container {{ display: none; }} body {{ background: white; }} .receipt {{ width: calc(100% - 30px); }} }}
+@media print {{ .save-btn-container {{ display:none; }} html,body,.page {{ background:#fff; }} .receipt {{ box-shadow:none; }} }}
 </style>
 </head>
 <body>
 <div class="page">
-<div class="top-line"></div>
-<div class="gold-line"></div>
-<div class="save-btn-container">
-    <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button>
-</div>
+<div class="save-btn-container"><button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO &amp; DOWNLOAD • LAPTOP 16:9 / PHONE 9:16</button></div>
 <div class="receipt" id="receiptContent">
-    <div class="header">
-        <div class="brand">
-            <svg class="logo" viewBox="0 0 180 170" xmlns="http://www.w3.org/2000/svg" aria-label="Ailyn Construction logo">
-                <path d="M18 142 L18 87 L53 55 L53 113 L87 81 L87 35 L116 9 L116 103 L145 79 L145 140 Z" fill="#075d2c"/>
-                <path d="M4 145 L90 80 L176 145 L162 145 L90 111 L18 145 Z" fill="#075d2c"/>
-                <path d="M37 136 L90 104 L143 136 L143 154 L37 154 Z" fill="white"/>
-                <path d="M67 136 h46 v28 h-46z" fill="#075d2c"/>
-                <path d="M82 137 h16 v27 h-16z M67 148 h46 v8 h-46z" fill="white"/>
-                <path d="M30 160 H151" stroke="#075d2c" stroke-width="5"/>
-            </svg>
-            <div>
-                <h1>AILYN CONSTRUCTION</h1>
-                <div class="subtitle">Official Labor &amp; Payroll Inventory</div>
-                <div class="system">Management System {APP_VERSION} — Payroll Management System</div>
-                <div class="account"><b>Account:</b> {RECEIVER_EMAIL}</div>
-            </div>
-        </div>
-        <div class="meta">
-            <h2>{custom_title}</h2>
-            <div class="row"><span class="label">▣ Date:</span><span class="date-line">{date_str}</span></div>
-            <div class="row"><span class="label">Receipt No.:</span> {receipt_no}</div>
-        </div>
+  <div class="header">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 180 170" xmlns="http://www.w3.org/2000/svg" aria-label="Ailyn Construction logo">
+        <path d="M18 142 L18 87 L53 55 L53 113 L87 81 L87 35 L116 9 L116 103 L145 79 L145 140 Z" fill="#075d2c"/>
+        <path d="M4 145 L90 80 L176 145 L162 145 L90 111 L18 145 Z" fill="#075d2c"/>
+        <path d="M37 136 L90 104 L143 136 L143 154 L37 154 Z" fill="white"/>
+        <path d="M67 136 h46 v28 h-46z" fill="#075d2c"/>
+        <path d="M82 137 h16 v27 h-16z M67 148 h46 v8 h-46z" fill="white"/>
+        <path d="M30 160 H151" stroke="#075d2c" stroke-width="5"/>
+      </svg>
+      <div>
+        <h1>AILYN HOUSE PROJECT</h1>
+        <div class="subtitle">Official Labor &amp; Payroll Inventory</div>
+        <div class="system">Management System {APP_VERSION} — GREEN EMERALD CORE</div>
+        <div class="account">Backup Receiver: <b>{RECEIVER_EMAIL}</b></div>
+      </div>
     </div>
-
-    <div class="table-wrap">
+    <div class="meta">
+      <h2>{custom_title}</h2>
+      <div class="row"><span class="label">▣ Date:</span><span class="date-line">{date_str}</span></div>
+      <div class="row"><span class="label">Receipt No.:</span>{receipt_no}</div>
+    </div>
+  </div>
+  <div class="table-wrap">
     <table class="payroll">
-        <thead>
-            <tr>
-                <th>▣ &nbsp; Worker Name</th>
-                <th>● &nbsp; Role</th>
-                <th>▣ &nbsp; Days / Point</th>
-                <th>▣ &nbsp; Gross Pay</th>
-                <th>− &nbsp; C.A.</th>
-                <th>▣ &nbsp; Net Pay</th>
-            </tr>
-        </thead>
-        <tbody>
+      <colgroup><col style="width:23%"><col style="width:15%"><col style="width:15%"><col style="width:16%"><col style="width:14%"><col style="width:17%"></colgroup>
+      <thead><tr><th>▣ &nbsp; WORKER NAME</th><th>● &nbsp; ROLE</th><th>▣ &nbsp; DAYS / POINT</th><th>▣ &nbsp; GROSS PAY</th><th>− &nbsp; C.A.</th><th>▣ &nbsp; NET PAY</th></tr></thead>
+      <tbody>
 """
-
     for r in labor_records:
         role_display = r.get('role', 'Labor')
         gross = float(r.get('gross_pay', float(r.get('days', 0) or 0) * float(r.get('rate', 0) or 0)))
         ca = float(r.get('ca', 0) or 0)
         net = float(r.get('net', 0) or 0)
-        html += f"""
-            <tr>
-                <td data-label="Worker Name"><b>{r.get('name', '')}</b></td>
-                <td data-label="Role" class="center">{role_display}</td>
-                <td data-label="Days / Point" class="center">{float(r.get('days', 0) or 0):.1f}</td>
-                <td data-label="Gross Pay" class="money">PHP {gross:,.2f}</td>
-                <td data-label="C.A." class="money">PHP {ca:,.2f}</td>
-                <td data-label="Net Pay" class="money net">PHP {net:,.2f}</td>
-            </tr>
-"""
-
+        html += f"""<tr><td><b>{r.get('name','')}</b></td><td class="center">{role_display}</td><td class="center">{float(r.get('days',0) or 0):.1f}</td><td class="money">PHP {gross:,.2f}</td><td class="money">PHP {ca:,.2f}</td><td class="money net">PHP {net:,.2f}</td></tr>"""
     if not labor_records:
-        for _ in range(3):
-            html += """<tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>"""
-
-    if expense_records:
-        html += """
-            <tr class="expense-heading">
-                <td data-label="Expense" colspan="5"><b>Expense Description</b></td>
-                <td data-label="Amount" class="money"><b>Amount</b></td>
-            </tr>
-"""
-        for e in expense_records:
-            price = float(e.get('price', 0) or 0)
-            html += f"""
-            <tr>
-                <td data-label="Expense Description" colspan="5">{e.get('item', '')}</td>
-                <td data-label="Amount" class="money">PHP {price:,.2f}</td>
-            </tr>
-"""
-
+        for _ in range(4):
+            html += '<tr class="empty-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+    for e in expense_records:
+        price = float(e.get('price', 0) or 0)
+        html += f'<tr class="expense-heading"><td colspan="5">Expense: {e.get("item","")}</td><td class="money">PHP {price:,.2f}</td></tr>'
     html += f"""
-        </tbody>
+      </tbody>
     </table>
+  </div>
+  <div class="lower">
+    <div class="thanks"><div class="check">✓</div><div><h3>Thank you for your hard work!</h3><p>This payroll receipt confirms the labor, deductions,<br>and expenses recorded for the Ailyn House Project.</p></div></div>
+    <div class="summary">
+      <div class="summary-title">Payroll Total:</div>
+      <div class="sum-row"><span>Total Net Labor:</span><span class="value">PHP {total_labor:,.2f}</span></div>
+      <div class="sum-row"><span>Payroll Expenses:</span><span class="value">PHP {total_expenses:,.2f}</span></div>
+      <div class="sum-row"><span>Total C.A. / Deductions:</span><span class="value">PHP {total_ca:,.2f}</span></div>
+      <div class="final"><span class="label">FINAL NET PAY</span><span class="value">PHP {grand_total:,.2f}</span></div>
     </div>
-
-    <div class="lower">
-        <div class="thanks">
-            <div class="check">✓</div>
-            <div>
-                <h3>Thank you for your hard work!</h3>
-                <p>This payroll receipt confirms your earnings<br class="desktop-only"> for the specified period.</p>
-            </div>
-        </div>
-        <div class="summary">
-            <div class="sum-row"><span>Subtotal Expenses:</span><span class="value">PHP {subtotal:,.2f}</span></div>
-            <div class="sum-row"><span>Total Deductions (C.A.):</span><span class="value">PHP {total_ca:,.2f}</span></div>
-            <div class="final"><span class="label">Final Net Pay</span><span class="value">PHP {grand_total:,.2f}</span></div>
-        </div>
-    </div>
-
-    <div class="footer"><span class="shield">♢</span> THIS DOCUMENT WAS ELECTRONICALLY GENERATED AND IS VALID WITHOUT SIGNATURE.</div>
+  </div>
+  <div class="footer"><span class="shield">●</span> THIS DOCUMENT WAS ELECTRONICALLY GENERATED AND IS VALID WITHOUT SIGNATURE.</div>
 </div>
 </div>
 <script>
 function fitReceiptToScreen() {{
-  const element = document.getElementById('receiptContent');
-  if (!element) return;
-  const baseWidth = 1460;
-  const scale = Math.min(1, Math.max(0.35, (window.innerWidth - 20) / baseWidth));
-  element.style.transformOrigin = 'top center';
-  element.style.transform = `scale(${{scale}})`;
-  element.style.marginLeft = 'auto';
-  element.style.marginRight = 'auto';
-  element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
-  document.body.style.overflowX = 'hidden';
+  const el=document.getElementById('receiptContent'); if(!el) return;
+  const scale=Math.min(1, Math.max(0.34,(window.innerWidth-20)/1500));
+  el.style.transformOrigin='top center'; el.style.transform=`scale(${{scale}})`;
+  el.style.marginLeft='auto'; el.style.marginRight='auto';
+  el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
+  document.body.style.overflowX='hidden';
 }}
-window.addEventListener('load', fitReceiptToScreen);
-window.addEventListener('resize', fitReceiptToScreen);
-
+window.addEventListener('load',fitReceiptToScreen); window.addEventListener('resize',fitReceiptToScreen);
 function loadHtml2Canvas() {{
-  if (typeof html2canvas === 'function') return Promise.resolve(html2canvas);
-  const sources = [
-    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
-  ];
-  let index = 0;
-  return new Promise((resolve, reject) => {{
-    const next = () => {{
-      if (typeof html2canvas === 'function') return resolve(html2canvas);
-      if (index >= sources.length) return reject(new Error('Image renderer could not be loaded.'));
-      const script = document.createElement('script');
-      script.src = sources[index++];
-      script.async = true;
-      script.onload = () => typeof html2canvas === 'function' ? resolve(html2canvas) : next();
-      script.onerror = next;
-      document.head.appendChild(script);
-    }};
-    next();
-  }});
+  if(typeof html2canvas==='function') return Promise.resolve(html2canvas);
+  const sources=['https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js','https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js']; let i=0;
+  return new Promise((resolve,reject)=>{{ const next=()=>{{ if(typeof html2canvas==='function') return resolve(html2canvas); if(i>=sources.length) return reject(new Error('Image renderer could not be loaded.')); const s=document.createElement('script'); s.src=sources[i++]; s.async=true; s.onload=()=>typeof html2canvas==='function'?resolve(html2canvas):next(); s.onerror=next; document.head.appendChild(s); }}; next(); }});
 }}
-
-function downloadCanvasPng(canvas, filename) {{
-  return new Promise((resolve, reject) => {{
-    const finish = (blob) => {{
-      if (!blob || !blob.size) return reject(new Error('PNG creation failed.'));
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = filename;
-      link.rel = 'noopener';
-      link.style.display = 'none';
-      document.body.appendChild(link);
-      try {{
-        link.click();
-      }} finally {{
-        link.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 3000);
-      }}
-      resolve();
-    }};
-    if (canvas.toBlob) {{
-      canvas.toBlob(finish, 'image/png', 1.0);
-    }} else {{
-      try {{
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = filename;
-        link.style.display = 'none';
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        resolve();
-      }} catch (err) {{ reject(err); }}
-    }}
-  }});
-}}
-
+function downloadCanvasPng(canvas,filename) {{ return new Promise((resolve,reject)=>{{ const finish=blob=>{{ if(!blob||!blob.size)return reject(new Error('PNG creation failed.')); const url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';document.body.appendChild(a);try{{a.click();}}finally{{a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}}resolve();}}; if(canvas.toBlob)canvas.toBlob(finish,'image/png',1); else {{ try{{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=filename;a.click();resolve();}}catch(e){{reject(e);}} }} }}); }}
 async function saveAsImage() {{
-  const button = document.querySelector('.save-img-btn');
-  const element = document.getElementById('receiptContent');
-  if (!element) return;
-  const originalText = button ? button.innerHTML : '';
-  if (button) {{ button.disabled = true; button.innerHTML = '⏳ PREPARING IMAGE…'; }}
-
-  const wasTransform = element.style.transform;
-  const wasOrigin = element.style.transformOrigin;
-  const wasMarginBottom = element.style.marginBottom;
-  const wasWidth = element.style.width;
-  const wasHeight = element.style.height;
-
-  try {{
-    await loadHtml2Canvas();
-    element.style.transform = 'none';
-    element.style.transformOrigin = 'top left';
-    element.style.marginBottom = '0';
-    element.style.width = element.classList.contains('receipt') ? '1460px' : '1500px';
-    element.style.height = 'auto';
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const targetW = isPhone ? 2160 : 3840;
-    const targetH = isPhone ? 3840 : 2160;
-    const rect = element.getBoundingClientRect();
-    const sourceW = Math.max(1, Math.ceil(rect.width));
-    const sourceH = Math.max(1, Math.ceil(rect.height));
-    const captureScale = Math.min(3, Math.max(1.5, targetW / sourceW));
-
-    const canvas = await html2canvas(element, {{
-      scale: captureScale,
-      useCORS: true,
-      allowTaint: false,
-      backgroundColor: '#ffffff',
-      logging: false,
-      imageTimeout: 30000,
-      scrollX: 0,
-      scrollY: 0,
-      width: sourceW,
-      height: sourceH,
-      windowWidth: Math.max(1600, sourceW),
-      windowHeight: Math.max(1200, sourceH)
-    }});
-
-    const out = document.createElement('canvas');
-    out.width = targetW;
-    out.height = targetH;
-    const ctx = out.getContext('2d', {{ alpha: false }});
-    if (!ctx) throw new Error('Canvas is unavailable in this browser.');
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, targetW, targetH);
-
-    const fit = Math.min(targetW / canvas.width, targetH / canvas.height);
-    const drawW = Math.max(1, Math.round(canvas.width * fit));
-    const drawH = Math.max(1, Math.round(canvas.height * fit));
-    const x = Math.round((targetW - drawW) / 2);
-    const y = Math.round((targetH - drawH) / 2);
-    ctx.drawImage(canvas, x, y, drawW, drawH);
-
-    const titleSource = document.title || 'Receipt';
-    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-    const filename = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
-    await downloadCanvasPng(out, filename);
-    if (button) button.innerHTML = '✓ IMAGE DOWNLOADED';
-    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 1800);
-  }} catch (err) {{
-    console.error('Receipt image export failed:', err);
-    if (button) button.innerHTML = '⚠ DOWNLOAD FAILED — TRY AGAIN';
-    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 2500);
-    alert('The receipt image could not be created. Please try the download button again or check your internet connection.');
-  }} finally {{
-    element.style.transform = wasTransform;
-    element.style.transformOrigin = wasOrigin;
-    element.style.marginBottom = wasMarginBottom;
-    element.style.width = wasWidth;
-    element.style.height = wasHeight;
-    if (typeof fitReceiptToScreen === 'function') fitReceiptToScreen();
-  }}
+  const btn=document.querySelector('.save-img-btn'),el=document.getElementById('receiptContent'); if(!el)return; const old=btn?btn.innerHTML:''; if(btn){{btn.disabled=true;btn.innerHTML='⏳ PREPARING IMAGE…';}}
+  const oldTransform=el.style.transform,oldOrigin=el.style.transformOrigin,oldMargin=el.style.marginBottom;
+  try {{ await loadHtml2Canvas(); el.style.transform='none';el.style.transformOrigin='top left';el.style.marginBottom='0'; await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+    const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); const targetW=phone?2160:3840,targetH=phone?3840:2160;
+    const rect=el.getBoundingClientRect(),sourceW=Math.max(1,Math.ceil(rect.width)),sourceH=Math.max(1,Math.ceil(rect.height)); const scale=Math.min(3,Math.max(1.5,targetW/sourceW));
+    const shot=await html2canvas(el,{{scale:scale,useCORS:true,allowTaint:false,backgroundColor:'#fff',logging:false,imageTimeout:30000,scrollX:0,scrollY:0,width:sourceW,height:sourceH,windowWidth:Math.max(1600,sourceW),windowHeight:Math.max(1200,sourceH)}});
+    const out=document.createElement('canvas');out.width=targetW;out.height=targetH;const ctx=out.getContext('2d',{{alpha:false}});ctx.fillStyle='#fff';ctx.fillRect(0,0,targetW,targetH);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';const fit=Math.min(targetW/shot.width,targetH/shot.height),w=Math.round(shot.width*fit),h=Math.round(shot.height*fit);ctx.drawImage(shot,Math.round((targetW-w)/2),Math.round((targetH-h)/2),w,h);
+    await downloadCanvasPng(out,'Payroll_Receipt_'+(phone?'Phone_9x16_2160x3840':'Laptop_16x9_3840x2160')+'.png'); if(btn)btn.innerHTML='✓ IMAGE DOWNLOADED'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},1800);
+  }} catch(err) {{ console.error(err); if(btn)btn.innerHTML='⚠ DOWNLOAD FAILED — TRY AGAIN'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},2500); }}
+  finally {{el.style.transform=oldTransform;el.style.transformOrigin=oldOrigin;el.style.marginBottom=oldMargin;fitReceiptToScreen();}}
 }}
-
 </script>
-</body>
-</html>"""
+</body></html>"""
     return html, grand_total
 
 def generate_planner_html(planner_tasks, custom_title="WORK SCHEDULE & CALENDAR RECEIPT"):
