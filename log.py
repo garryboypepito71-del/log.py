@@ -98,6 +98,7 @@ st.set_page_config(
     page_title="Ailyn Project Management System",
     page_icon="🅰️",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # Load persisted state safely
@@ -1594,10 +1595,10 @@ section[data-testid="stSidebar"]>div{padding:22px 14px 30px!important} section[d
 .sidebar-brand:after{content:"";position:absolute;inset:-80% 35%;background:rgba(255,255,255,.09);transform:rotate(25deg);animation:scan 7s linear infinite}
 .brand-row{position:relative;z-index:1;display:flex;align-items:center;gap:14px}.brand-logo{width:62px;height:62px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,.32));transition:.25s ease}.sidebar-brand:hover .brand-logo{transform:translateY(-4px) scale(1.06);filter:drop-shadow(0 14px 26px rgba(114,247,176,.30))}.brand-copy{min-width:0}.brand-title{font-family:'Outfit';font-size:17px;font-weight:900;letter-spacing:.06em;line-height:1.02;color:#fff!important}.brand-title span{display:block}.brand-sub{font-size:9px;color:#8ff1b4!important;letter-spacing:.16em;text-transform:uppercase;margin-top:7px;font-weight:800}
 section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{font-family:'Outfit';font-size:10px!important;letter-spacing:.18em;text-transform:uppercase;color:#72f7b0!important;margin:20px 5px 9px!important;display:flex;align-items:center;gap:9px} section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3:before{content:'•';font-size:20px;line-height:0;color:#45f39a;text-shadow:0 0 12px rgba(69,243,154,.8)} section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3:after{content:'';height:1px;flex:1;background:linear-gradient(90deg,rgba(114,247,176,.35),transparent)}section[data-testid="stSidebar"] hr{border-color:rgba(170,255,198,.10)!important;margin:10px 4px!important}.sidebar-gap{height:8px}.sidebar-live{font-size:9px;letter-spacing:.14em;color:#7feeb0!important;font-weight:800;text-align:center;margin:-4px 0 10px;text-shadow:0 0 12px rgba(114,247,176,.18)}
-section[data-testid="stSidebar"] button{min-height:52px!important;margin:7px 0!important;padding:0 16px!important;border-radius:18px!important;text-align:left!important;background:linear-gradient(145deg,rgba(18,82,48,.48),rgba(2,31,18,.42))!important;border:1px solid rgba(114,247,176,.15)!important;box-shadow:0 7px 0 rgba(1,12,7,.55),0 14px 28px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.10)!important;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,border-color .18s,background .18s!important;backdrop-filter:blur(14px) saturate(135%)!important;-webkit-backdrop-filter:blur(14px) saturate(135%)!important}
-section[data-testid="stSidebar"] button:hover{transform:translate3d(5px,-3px,0)!important;background:linear-gradient(145deg,rgba(28,116,67,.72),rgba(5,47,27,.56))!important;border-color:rgba(114,247,176,.58)!important;box-shadow:0 10px 0 rgba(1,12,7,.70),0 20px 36px rgba(0,0,0,.34),0 0 28px rgba(70,230,132,.16),inset 0 1px 0 rgba(255,255,255,.18)!important}
-section[data-testid="stSidebar"] button:active{transform:translate3d(2px,4px,0)!important;box-shadow:0 2px 0 rgba(1,12,7,.9),0 6px 12px rgba(0,0,0,.3)!important}
-section[data-testid="stSidebar"] button p{font-family:'Manrope'!important;font-weight:800!important;font-size:12px!important;letter-spacing:.01em}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]){min-height:52px!important;margin:7px 0!important;padding:0 16px!important;border-radius:18px!important;text-align:left!important;background:linear-gradient(145deg,rgba(18,82,48,.48),rgba(2,31,18,.42))!important;border:1px solid rgba(114,247,176,.15)!important;box-shadow:0 7px 0 rgba(1,12,7,.55),0 14px 28px rgba(0,0,0,.24),inset 0 1px 0 rgba(255,255,255,.10)!important;transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s,border-color .18s,background .18s!important;backdrop-filter:blur(14px) saturate(135%)!important;-webkit-backdrop-filter:blur(14px) saturate(135%)!important}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):hover{transform:translate3d(5px,-3px,0)!important;background:linear-gradient(145deg,rgba(28,116,67,.72),rgba(5,47,27,.56))!important;border-color:rgba(114,247,176,.58)!important;box-shadow:0 10px 0 rgba(1,12,7,.70),0 20px 36px rgba(0,0,0,.34),0 0 28px rgba(70,230,132,.16),inset 0 1px 0 rgba(255,255,255,.18)!important}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):active{transform:translate3d(2px,4px,0)!important;box-shadow:0 2px 0 rgba(1,12,7,.9),0 6px 12px rgba(0,0,0,.3)!important}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]) p{font-family:'Manrope'!important;font-weight:800!important;font-size:12px!important;letter-spacing:.01em}
 /* glass controls */
 button,.stDownloadButton>button,.stFormSubmitButton>button{position:relative!important;overflow:hidden!important;min-height:46px!important;border-radius:16px!important;color:#f5fff8!important;font-weight:800!important;background:linear-gradient(145deg,rgba(25,92,54,.88),rgba(5,33,19,.94))!important;border:1px solid rgba(173,255,201,.22)!important;box-shadow:0 6px 0 rgba(2,17,10,.78),0 13px 27px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.13)!important;transition:all .17s ease!important}
 button:hover,.stDownloadButton>button:hover,.stFormSubmitButton>button:hover{transform:translateY(-3px)!important;border-color:rgba(114,247,176,.58)!important;box-shadow:0 9px 0 rgba(2,17,10,.78),0 20px 34px rgba(0,0,0,.35),0 0 25px rgba(114,247,176,.13),inset 0 1px 0 rgba(255,255,255,.2)!important}
@@ -1630,156 +1631,139 @@ input,textarea{color:#fff!important;-webkit-text-fill-color:#fff!important}input
 img{image-rendering:auto;-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
 html,body,[class*="css"],button,input,textarea,select{ -webkit-font-smoothing:antialiased!important; -moz-osx-font-smoothing:grayscale!important; text-rendering:geometricPrecision!important; }
 .stApp,.block-container,section[data-testid="stSidebar"],section[data-testid="stSidebar"] *{ text-rendering:geometricPrecision!important; }
-section[data-testid="stSidebar"]{width:330px!important;min-width:330px!important;}
 section[data-testid="stSidebar"]>div{padding:18px 12px 28px!important;}
 .sidebar-budget-card{margin-top:2px;padding:15px 14px 8px;border:1px solid rgba(114,247,176,.12);border-radius:20px 20px 0 0;background:linear-gradient(145deg,rgba(6,38,23,.72),rgba(2,20,12,.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
 .budget-title{font-family:'Outfit';font-size:12px;font-weight:900;color:#f5fff8;letter-spacing:.02em;}
 .sidebar-budget-card + div{margin-top:-1px;}
 .sidebar-budget-card + div div[data-baseweb="input"]{border-radius:0 0 15px 15px!important;border-top-color:rgba(114,247,176,.08)!important;}
-section[data-testid="stSidebar"] button{font-size:13px!important;letter-spacing:.01em!important;}
-section[data-testid="stSidebar"] button p{font-size:13px!important;white-space:nowrap!important;}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]){font-size:13px!important;letter-spacing:.01em!important;}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]) p{font-size:13px!important;white-space:nowrap!important;}
 @media (min-width:1920px){
   .block-container{max-width:1700px!important;}
-  section[data-testid="stSidebar"]{width:350px!important;min-width:350px!important;}
   .headbar-title{font-size:31px!important;}
-  section[data-testid="stSidebar"] button{min-height:58px!important;}
-  section[data-testid="stSidebar"] button p{font-size:14px!important;}
+  section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]){min-height:58px!important;}
+  section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]) p{font-size:14px!important;}
 }
 .save-img-btn{font-weight:900!important;letter-spacing:.02em!important}
 
-/* FINAL SIDEBAR + DASHBOARD MATCH OVERRIDES */
+/* POLISHED RESPONSIVE SIDEBAR + DASHBOARD */
+/* Keep Streamlit's native sidebar open/close control functional. */
 section[data-testid="stSidebar"]{
-  width:clamp(280px,22vw,420px)!important;
-  min-width:280px!important;max-width:420px!important;
-  position:relative!important;resize:horizontal;overflow:auto;
+  overflow:visible!important;
+  z-index:1000!important;
 }
-section[data-testid="stSidebar"]>div{padding:22px 22px 30px!important;}
-.sidebar-resizer{
-  position:absolute;right:0;top:0;width:10px;height:100%;z-index:9999;
-  cursor:ew-resize;background:linear-gradient(90deg,transparent,rgba(114,247,176,.18),transparent);
-  opacity:.25;transition:opacity .2s ease;
+section[data-testid="stSidebar"]>div{
+  width:100%!important;
+  padding:22px 20px 34px!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  scrollbar-width:thin;
 }
-.sidebar-resizer:hover,.sidebar-resizer.dragging{opacity:1;background:linear-gradient(90deg,transparent,rgba(114,247,176,.48),transparent);}
-.sidebar-resizer::after{
-  content:"⋮";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  color:#72f7b0;font-size:18px;font-weight:900;text-shadow:0 0 12px rgba(114,247,176,.7);
+/* Native collapse button stays above the sidebar and remains clickable. */
+section[data-testid="stSidebar"] button[aria-label*="Close"],
+section[data-testid="stSidebar"] button[aria-label*="Collapse"],
+button[data-testid="stSidebarCollapseButton"]{
+  z-index:10000!important;
+  pointer-events:auto!important;
 }
-section[data-testid="stSidebar"] button{
-  min-height:54px!important; height:54px!important; margin:7px 0!important;
-  padding:0 18px!important; border-radius:18px!important;
-  display:flex!important; align-items:center!important; justify-content:flex-start!important;
-  text-align:left!important;
+/* Smooth nav interactions. */
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]){
+  min-height:54px!important;height:auto!important;min-height:54px!important;
+  margin:7px 0!important;padding:12px 17px!important;border-radius:17px!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;
+  text-align:left!important;white-space:normal!important;
   background:linear-gradient(145deg,rgba(9,59,35,.72),rgba(2,30,18,.68))!important;
   border:1px solid rgba(83,236,151,.22)!important;
-  box-shadow:0 10px 24px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.07)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.07)!important;
+  transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background .18s ease!important;
 }
-section[data-testid="stSidebar"] button p{
-  width:100%!important; font-family:'Manrope',sans-serif!important;
-  font-size:12px!important; font-weight:800!important; letter-spacing:.01em!important;
-  white-space:nowrap!important; text-align:left!important;
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):hover{
+  transform:translateX(4px) translateY(-2px)!important;
+  background:linear-gradient(145deg,rgba(13,87,50,.88),rgba(3,38,22,.80))!important;
+  border-color:rgba(114,247,176,.58)!important;
+  box-shadow:0 13px 28px rgba(0,0,0,.28),0 0 22px rgba(70,230,132,.12),inset 0 1px 0 rgba(255,255,255,.12)!important;
 }
-section[data-testid="stSidebar"] button:hover{
-  transform:translateY(-2px)!important;
-  background:linear-gradient(145deg,rgba(13,87,50,.86),rgba(3,38,22,.76))!important;
-  border-color:rgba(114,247,176,.55)!important;
-}
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
-  margin:24px 5px 10px!important; font-size:10px!important;
-  letter-spacing:.18em!important;
-}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):active{transform:translateX(2px) translateY(1px)!important;}
+section[data-testid="stSidebar"] button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]) p{font-family:'Manrope',sans-serif!important;font-size:13px!important;font-weight:800!important;letter-spacing:.01em!important;width:100%!important;}
+section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{margin:25px 5px 10px!important;font-size:10px!important;letter-spacing:.18em!important;}
 .sidebar-brand{margin-bottom:12px!important;}
 .sidebar-live{margin:0 0 10px!important;}
 .sidebar-budget-card{border-radius:18px 18px 0 0!important;}
 .sidebar-budget-card + div div[data-baseweb="input"]{border-radius:0 0 15px 15px!important;}
-
-/* Remove the old duplicate title-bar language. */
-.headbar-container,.headbar-card,.dash-hero{display:none!important;}
-
-/* Main dashboard title: centered inside a dedicated container with generous top spacing. */
-.dashboard-title-container{
-  width:100%;
-  max-width:1500px;
-  width:100%;
-  margin:92px auto 34px;
-  padding:42px 40px 34px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  border:1px solid rgba(114,247,176,.18);
-  border-radius:24px;
-  background:linear-gradient(145deg,rgba(8,35,22,.92),rgba(3,20,13,.82));
-  box-shadow:0 18px 50px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.05);
-}
-.dashboard-heading{
-  width:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:16px;
-  margin:0 auto;
-  text-align:center;
-}
-.dashboard-heading img{
-  width:68px;
-  height:68px;
-  flex:0 0 auto;
-  object-fit:contain;
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,.30));
-}
-.dashboard-heading > div{display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dashboard-heading-title{
-  font-family:'Outfit',sans-serif;
-  color:#fff;
-  font-size:32px;
-  font-weight:900;
-  letter-spacing:.025em;
-  line-height:1.05;
-  text-align:center;
-}
-.dashboard-heading-sub{
-  margin-top:7px;
-  color:#9fe5b8;
-  font-size:10px;
-  font-weight:800;
-  letter-spacing:.22em;
-  text-align:center;
-  text-transform:uppercase;
-}
-.dashboard-welcome{
-  max-width:1000px;
-  margin:16px auto 0;
-  text-align:center;
-  color:#b9d9c5;
-  font-size:13px;
-  font-weight:600;
-  line-height:1.6;
-}
-.dashboard-welcome b{color:#72f7b0;}
-
-/* Give the dashboard breathing room above the title and keep everything centered. */
-.block-container{max-width:1500px!important;padding-top:10px!important;}
-@media (min-width:1920px){
-  section[data-testid="stSidebar"]{width:340px!important;min-width:280px!important;max-width:520px!important;}
-  .block-container{max-width:1500px!important;padding-top:10px!important;}
-  .dashboard-title-container{margin-top:96px;}
-  .dashboard-heading-title{font-size:35px;}
-}
 @media(max-width:900px){
-  section[data-testid="stSidebar"]{width:clamp(280px,30vw,380px)!important;min-width:280px!important;max-width:380px!important;}
-  .dashboard-title-container{margin-top:58px;padding:32px 22px 26px;border-radius:20px;}
-  .dashboard-heading-title{font-size:27px;}
-  .dashboard-heading img{width:58px;height:58px;}
+  section[data-testid="stSidebar"]>div{padding:18px 14px 26px!important;}
 }
-@media(max-width:600px){
-  .dashboard-title-container{margin-top:34px;padding:26px 14px 22px;border-radius:18px;}
-  .dashboard-heading{gap:10px;}
-  .dashboard-heading-title{font-size:22px;}
-  .dashboard-heading-sub{font-size:8px;letter-spacing:.16em;}
-  .dashboard-heading img{width:48px;height:48px;}
-  .dashboard-welcome{font-size:11px;margin-top:12px;}
+/* Dashboard header: centered, spacious, stable. */
+.headbar-container,.headbar-card,.dash-hero{display:none!important;}
+.block-container{max-width:1500px!important;padding-top:8px!important;padding-left:clamp(18px,3vw,48px)!important;padding-right:clamp(18px,3vw,48px)!important;}
+.dashboard-title-container{
+  width:100%;max-width:1500px;margin:96px auto 42px;padding:46px 42px 36px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  box-sizing:border-box;border:1px solid rgba(114,247,176,.20);border-radius:28px;
+  background:linear-gradient(145deg,rgba(8,35,22,.94),rgba(3,20,13,.84));
+  box-shadow:0 24px 64px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.06);
 }
+.dashboard-heading{width:100%;display:flex;justify-content:center;align-items:center;gap:18px;margin:0 auto;text-align:center;}
+.dashboard-heading img{width:72px;height:72px;flex:0 0 auto;object-fit:contain;filter:drop-shadow(0 10px 18px rgba(0,0,0,.30));}
+.dashboard-heading > div{display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dashboard-heading-title{font-family:'Outfit',sans-serif;color:#fff;font-size:36px;font-weight:900;letter-spacing:.025em;line-height:1.05;text-align:center;}
+.dashboard-heading-sub{margin-top:8px;color:#9fe5b8;font-size:10px;font-weight:800;letter-spacing:.24em;text-align:center;text-transform:uppercase;}
+.dashboard-welcome{max-width:1000px;margin:18px auto 0;text-align:center;color:#b9d9c5;font-size:13px;font-weight:600;line-height:1.6;}
+.dashboard-welcome b{color:#72f7b0;}
+@media (min-width:1920px){.dashboard-title-container{margin-top:125px;padding-top:52px;padding-bottom:40px;}.dashboard-heading-title{font-size:40px;}}
+@media(max-width:900px){.dashboard-title-container{margin-top:66px;padding:34px 22px 28px;border-radius:22px;}.dashboard-heading-title{font-size:28px;}.dashboard-heading img{width:58px;height:58px;}}
+@media(max-width:600px){section[data-testid="stSidebar"]>div{padding:18px 14px 26px!important;}.dashboard-title-container{margin-top:42px;padding:28px 14px 24px;border-radius:18px;}.dashboard-heading{gap:10px;}.dashboard-heading-title{font-size:22px;}.dashboard-heading-sub{font-size:8px;letter-spacing:.16em;}.dashboard-heading img{width:48px;height:48px;}.dashboard-welcome{font-size:11px;margin-top:12px;}}
+</style>
+""", unsafe_allow_html=True)
+
+# --- FINAL UI OVERRIDES: native Streamlit-resizable sidebar + smooth UX refresh ---
+st.markdown("""
+<style>
+section[data-testid="stSidebar"] {
+  background: radial-gradient(circle at 20% 0%, rgba(61,220,130,.16), transparent 30%), linear-gradient(180deg,#07170f 0%,#04100a 48%,#020b07 100%) !important;
+  border-right: 1px solid rgba(114,247,176,.24) !important;
+  box-shadow: 16px 0 55px rgba(0,0,0,.42), inset -1px 0 rgba(114,247,176,.08) !important;
+}
+section[data-testid="stSidebar"] > div { padding: 24px 16px 40px !important; overflow-y:auto !important; overflow-x:hidden !important; scrollbar-width:thin; scrollbar-color:rgba(114,247,176,.35) transparent; }
+button[data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] button, section[data-testid="stSidebar"] button[aria-label*="Collapse"], section[data-testid="stSidebar"] button[aria-label*="Close"] {
+  width:46px !important; height:46px !important; min-width:46px !important; min-height:46px !important; padding:0 !important; margin:12px !important;
+  border-radius:50% !important; display:flex !important; align-items:center !important; justify-content:center !important;
+  background:linear-gradient(145deg,#17683f,#07351f) !important; border:1px solid rgba(142,255,188,.52) !important;
+  box-shadow:0 8px 22px rgba(0,0,0,.35), inset 0 1px rgba(255,255,255,.15), 0 0 18px rgba(65,235,137,.12) !important;
+  transition:transform .22s cubic-bezier(.22,.61,.36,1),box-shadow .22s ease,background .22s ease !important; z-index:100000 !important;
+}
+button[data-testid="stSidebarCollapseButton"]:hover, [data-testid="collapsedControl"] button:hover, section[data-testid="stSidebar"] button[aria-label*="Collapse"]:hover, section[data-testid="stSidebar"] button[aria-label*="Close"]:hover {
+  transform:scale(1.08) !important; background:linear-gradient(145deg,#22945b,#0b4d2d) !important; box-shadow:0 12px 30px rgba(0,0,0,.42),0 0 28px rgba(114,247,176,.28) !important;
+}
+
+.sidebar-brand { margin:8px 0 18px !important; padding:22px 18px !important; border-radius:24px !important; background:linear-gradient(145deg,rgba(20,105,61,.48),rgba(4,31,19,.78)) !important; border:1px solid rgba(114,247,176,.25) !important; box-shadow:0 18px 42px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.08) !important; }
+.sidebar-brand:hover { transform:translateY(-2px) !important; }
+
+section[data-testid="stSidebar"] .stButton { margin:0 !important; }
+section[data-testid="stSidebar"] .stButton > button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]) {
+  width:100% !important; min-height:50px !important; height:50px !important; margin:5px 0 !important; padding:0 16px !important; border-radius:15px !important;
+  background:rgba(8,38,24,.62) !important; border:1px solid rgba(114,247,176,.10) !important; box-shadow:0 5px 14px rgba(0,0,0,.14),inset 0 1px rgba(255,255,255,.045) !important;
+  transform:none !important; transition:background .20s ease,border-color .20s ease,transform .20s cubic-bezier(.22,.61,.36,1),box-shadow .20s ease !important;
+}
+section[data-testid="stSidebar"] .stButton > button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):hover {
+  transform:translateX(5px) !important; background:linear-gradient(90deg,rgba(25,116,68,.82),rgba(9,63,37,.70)) !important; border-color:rgba(114,247,176,.42) !important; box-shadow:0 9px 24px rgba(0,0,0,.25),0 0 18px rgba(114,247,176,.08) !important;
+}
+section[data-testid="stSidebar"] .stButton > button:not([data-testid="stSidebarCollapseButton"]):not([aria-label*="Collapse"]):not([aria-label*="Close"]):active { transform:translateX(2px) scale(.985) !important; }
+section[data-testid="stSidebar"] .stButton > button p { font-size:13px !important; font-weight:800 !important; }
+
+.block-container { max-width:1540px !important; padding-top:0 !important; padding-bottom:70px !important; }
+.dashboard-title-container { width:min(100%,1460px) !important; margin:118px auto 44px !important; padding:58px clamp(24px,5vw,72px) 46px !important; border-radius:32px !important; display:flex !important; flex-direction:column !important; align-items:center !important; text-align:center !important; background:linear-gradient(145deg,rgba(12,48,29,.92),rgba(3,19,12,.90)) !important; border:1px solid rgba(114,247,176,.22) !important; box-shadow:0 30px 80px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.07),0 0 55px rgba(42,200,115,.05) !important; position:relative; overflow:hidden; }
+.dashboard-title-container::before { content:""; position:absolute; width:520px; height:520px; top:-360px; border-radius:50%; background:radial-gradient(circle,rgba(114,247,176,.14),transparent 68%); pointer-events:none; }
+.dashboard-heading { position:relative; z-index:1; gap:22px !important; }
+.dashboard-heading-title { font-size:clamp(30px,3vw,46px) !important; letter-spacing:.02em !important; }
+.dashboard-heading-sub { margin-top:10px !important; }
+.dashboard-welcome { max-width:880px !important; margin-top:20px !important; }
+@keyframes ailynFadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+.dashboard-title-container,.dash-section,[data-testid="stMetric"] { animation:ailynFadeUp .45s ease both; }
+
+@media(max-width:900px) { .dashboard-title-container { margin-top:72px !important; padding:40px 24px 32px !important; } }
+@media(max-width:600px) { .dashboard-title-container { margin-top:44px !important; padding:32px 16px 28px !important; border-radius:22px !important; } }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1859,48 +1843,6 @@ with st.sidebar:
     if st.button("▣   Receipts Archive   ›", use_container_width=True, key="side_archive"):
         set_view("receipt_archive")
 
-    st.markdown("<div class='sidebar-resizer' id='sidebarResizer' title='Drag to resize sidebar'></div>", unsafe_allow_html=True)
-
-# Small client-side helper: drag the right edge of the sidebar to stretch/shrink it.
-st.sidebar.markdown("""
-<script>
-(function(){
-  const boot=()=>{
-    const sidebar=document.querySelector('section[data-testid="stSidebar"]');
-    const handle=document.getElementById('sidebarResizer');
-    if(!sidebar || !handle || handle.dataset.ready==='1') return;
-    handle.dataset.ready='1';
-    let dragging=false;
-    const min=280, max=520;
-    const setWidth=(w)=>{
-      const width=Math.max(min,Math.min(max,w));
-      sidebar.style.setProperty('width',width+'px','important');
-      sidebar.style.setProperty('min-width',width+'px','important');
-      sidebar.style.setProperty('max-width',width+'px','important');
-      document.documentElement.style.setProperty('--sidebar-width',width+'px');
-    };
-    handle.addEventListener('pointerdown',(e)=>{
-      dragging=true; handle.classList.add('dragging');
-      handle.setPointerCapture?.(e.pointerId);
-      document.body.style.cursor='ew-resize';
-      document.body.style.userSelect='none';
-    });
-    handle.addEventListener('pointermove',(e)=>{
-      if(!dragging) return;
-      setWidth(e.clientX);
-    });
-    const stop=()=>{
-      dragging=false; handle.classList.remove('dragging');
-      document.body.style.cursor=''; document.body.style.userSelect='';
-    };
-    handle.addEventListener('pointerup',stop);
-    handle.addEventListener('pointercancel',stop);
-  };
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
-  new MutationObserver(boot).observe(document.body,{childList:true,subtree:true});
-})();
-</script>
-""", unsafe_allow_html=True)
 
 view = st.session_state.view
 
