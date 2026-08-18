@@ -4,7 +4,6 @@
   "payroll_expenses": [],
   "planner_tasks": [],
   "budget": 0.0,
-  "budget_entries": [],
   "remaining_money": 0.0,
-  "view": "home"
+  "view": "export"
 }
