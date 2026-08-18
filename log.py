@@ -899,16 +899,20 @@ function fitReceiptToScreen() {{
   const element = document.getElementById('receiptContent');
   if (!element) return;
   const baseWidth = 1500;
-  const viewportWidth = Math.max(240, document.documentElement.clientWidth || window.innerWidth || baseWidth);
-  const scale = Math.min(1, Math.max(0.12, (viewportWidth - 16) / baseWidth));
+  const viewportWidth = Math.max(1, window.innerWidth - 20);
+  const scale = Math.min(1, Math.max(0.22, viewportWidth / baseWidth));
   const scaledWidth = baseWidth * scale;
-  const left = Math.max(0, Math.round((viewportWidth - scaledWidth) / 2));
+
+  // Keep the complete fixed-layout receipt visible on phones.
+  // The receipt is scaled from its top-left corner instead of scaling
+  // around its center (which previously pushed the right side off-screen).
   element.style.transformOrigin = 'top left';
   element.style.transform = `scale(${{scale}})`;
-  element.style.marginLeft = `${{left}}px`;
+  element.style.marginLeft = `${{Math.max(0, (viewportWidth - scaledWidth) / 2)}}px`;
   element.style.marginRight = '0';
   element.style.marginBottom = `${{Math.round(element.offsetHeight * (scale - 1))}}px`;
-  element.style.display = 'block';
+  element.style.position = 'relative';
+  element.style.left = '0';
   document.body.style.overflowX = 'hidden';
   document.documentElement.style.overflowX = 'hidden';
 }}
@@ -987,6 +991,8 @@ async function saveAsImage() {{
   const wasMarginBottom = element.style.marginBottom;
   const wasWidth = element.style.width;
   const wasHeight = element.style.height;
+  const wasPosition = element.style.position;
+  const wasLeft = element.style.left;
 
   try {{
     await loadHtml2Canvas();
@@ -1060,6 +1066,8 @@ async function saveAsImage() {{
     element.style.marginBottom = wasMarginBottom;
     element.style.width = wasWidth;
     element.style.height = wasHeight;
+    element.style.position = wasPosition;
+    element.style.left = wasLeft;
     if (typeof fitReceiptToScreen === 'function') fitReceiptToScreen();
   }}
 }}
@@ -1211,15 +1219,16 @@ table.payroll .net {{ color:#075d2c; font-weight:800; }}
 function fitReceiptToScreen() {{
   const el=document.getElementById('receiptContent'); if(!el) return;
   const baseWidth=1500;
-  const viewportWidth=Math.max(240, document.documentElement.clientWidth || window.innerWidth || baseWidth);
-  const scale=Math.min(1, Math.max(0.12,(viewportWidth-16)/baseWidth));
+  const viewportWidth=Math.max(1, window.innerWidth-20);
+  const scale=Math.min(1, Math.max(0.22, viewportWidth/baseWidth));
   const scaledWidth=baseWidth*scale;
-  const left=Math.max(0, Math.round((viewportWidth-scaledWidth)/2));
   el.style.transformOrigin='top left';
   el.style.transform=`scale(${{scale}})`;
-  el.style.marginLeft=`${{left}}px`; el.style.marginRight='0';
+  el.style.marginLeft=`${{Math.max(0,(viewportWidth-scaledWidth)/2)}}px`;
+  el.style.marginRight='0';
   el.style.marginBottom=`${{Math.round(el.offsetHeight*(scale-1))}}px`;
-  el.style.display='block';
+  el.style.position='relative';
+  el.style.left='0';
   document.body.style.overflowX='hidden';
   document.documentElement.style.overflowX='hidden';
 }}
@@ -1232,7 +1241,7 @@ function loadHtml2Canvas() {{
 function downloadCanvasPng(canvas,filename) {{ return new Promise((resolve,reject)=>{{ const finish=blob=>{{ if(!blob||!blob.size)return reject(new Error('PNG creation failed.')); const url=URL.createObjectURL(blob),a=document.createElement('a'); a.href=url;a.download=filename;a.rel='noopener';a.style.display='none';document.body.appendChild(a);try{{a.click();}}finally{{a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);}}resolve();}}; if(canvas.toBlob)canvas.toBlob(finish,'image/png',1); else {{ try{{const a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download=filename;a.click();resolve();}}catch(e){{reject(e);}} }} }}); }}
 async function saveAsImage() {{
   const btn=document.querySelector('.save-img-btn'),el=document.getElementById('receiptContent'); if(!el)return; const old=btn?btn.innerHTML:''; if(btn){{btn.disabled=true;btn.innerHTML='⏳ PREPARING IMAGE…';}}
-  const oldTransform=el.style.transform,oldOrigin=el.style.transformOrigin,oldMargin=el.style.marginBottom;
+  const oldTransform=el.style.transform,oldOrigin=el.style.transformOrigin,oldMargin=el.style.marginBottom,oldPosition=el.style.position,oldLeft=el.style.left;
   try {{ await loadHtml2Canvas(); el.style.transform='none';el.style.transformOrigin='top left';el.style.marginBottom='0'; await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
     const phone=window.matchMedia('(max-width:600px)').matches||/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent); const targetW=phone?2160:3840,targetH=phone?3840:2160;
     const rect=el.getBoundingClientRect(),sourceW=Math.max(1,Math.ceil(rect.width)),sourceH=Math.max(1,Math.ceil(rect.height)); const scale=Math.min(3,Math.max(1.5,targetW/sourceW));
@@ -1240,7 +1249,7 @@ async function saveAsImage() {{
     const out=document.createElement('canvas');out.width=targetW;out.height=targetH;const ctx=out.getContext('2d',{{alpha:false}});ctx.fillStyle='#fff';ctx.fillRect(0,0,targetW,targetH);ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';const fit=Math.min(targetW/shot.width,targetH/shot.height),w=Math.round(shot.width*fit),h=Math.round(shot.height*fit);ctx.drawImage(shot,Math.round((targetW-w)/2),Math.round((targetH-h)/2),w,h);
     await downloadCanvasPng(out,'Payroll_Receipt_'+(phone?'Phone_9x16_2160x3840':'Laptop_16x9_3840x2160')+'.png'); if(btn)btn.innerHTML='✓ IMAGE DOWNLOADED'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},1800);
   }} catch(err) {{ console.error(err); if(btn)btn.innerHTML='⚠ DOWNLOAD FAILED — TRY AGAIN'; setTimeout(()=>{{if(btn){{btn.innerHTML=old;btn.disabled=false;}}}},2500); }}
-  finally {{el.style.transform=oldTransform;el.style.transformOrigin=oldOrigin;el.style.marginBottom=oldMargin;fitReceiptToScreen();}}
+  finally {{el.style.transform=oldTransform;el.style.transformOrigin=oldOrigin;el.style.marginBottom=oldMargin;el.style.position=oldPosition;el.style.left=oldLeft;fitReceiptToScreen();}}
 }}
 </script>
 </body></html>"""
