@@ -91,6 +91,12 @@ def calculate_labor_pay(worked_days: float, role: str):
 APP_VERSION = "AILYHOUSEPROJECT — Ailyn Project Management System"
 
 # ================================================================
+# EDIT HERE — RECEIPT EXPORT OPTIONS
+# HTML DOWNLOAD OPTIONS REMOVED.
+# RECEIPT IMAGE SAVE BUTTONS INSIDE THE RECEIPT ARE MAINTAINED.
+# ================================================================
+
+# ================================================================
 # EDIT HERE #0 — ALL RECEIPTS USE THE SAME V10 VISUAL SYSTEM
 # Construction/Materials, Payroll, and Schedule are intentionally unified.
 # ================================================================
@@ -206,17 +212,12 @@ def add_tx(name, price, qty, delivery, ttype, sender):
 
 # ================================================================
 # MAIN RECEIPTS APPLIED EXACTLY — DO NOT USE V10 RECEIPT DESIGN
+# DEEP RECEIPT DESIGN v3 — LOOK ONLY: responsive grid, visual hierarchy, brand/logo polish, phone fit.
 # MATERIALS + PAYROLL BELOW ARE COPIED VERBATIM FROM MAIN RECEIPT CODE
 # ================================================================
 
-
-# ================================================================
-# EDIT HERE — RECEIPT LOOK ONLY v2
-# MAIN receipt structure/data/calculations are preserved.
-# The CSS inserted inside the three receipt functions controls only
-# the visual presentation and responsive fit in the V10 system.
-# ================================================================
 def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
+    brand_logo = '<div class="ah-logo"><svg viewBox="0 0 72 72" aria-label="Ailyn House logo" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="68" height="68" rx="18" fill="#075d2c"/><path d="M16 34 36 17l20 17v21H16V34Z" fill="none" stroke="#d6a84f" stroke-width="4"/><path d="M24 55V38h24v17" fill="none" stroke="#fff" stroke-width="4"/><path d="M31 55V45h10v10" fill="#d6a84f"/></svg></div>'
     material_and_expense_records = [r for r in records if r["type"] in ["material", "expense"]]
     excess_records = [r for r in records if r["type"] == "excess"]
     material_total = sum(r["amount"] for r in material_and_expense_records)
@@ -333,68 +334,111 @@ body {{ background:radial-gradient(circle at 15% 0%,#edf6ef 0,#f7faf7 35%,#eef4e
 }}
 
 /* ================================================================
-   AILYN HOUSE — RECEIPT REDESIGN v2 — LOOK ONLY
-   No data, calculations, state, or export logic changed.
+   AILYN HOUSE — MASSIVE RECEIPT LOOK V3 — LOOK ONLY
+   No calculations/data/state/export logic changed.
    ================================================================ */
-:root {{ --ahg:#075d2c; --ahg2:#0b7a3b; --ahgold:#c9a34a; --ahink:#17352a; --ahmuted:#68776f; --ahline:#dfe7df; --ahsoft:#f5f8f4; }}
-* {{ box-sizing:border-box; }}
-html, body {{ width:100%; min-width:0; overflow-x:hidden !important; }}
-body {{ margin:0 !important; padding:12px !important; background:#eef3ef !important; color:var(--ahink) !important; font-family:'Inter','Segoe UI',Arial,sans-serif !important; }}
-#receiptContent {{ width:100% !important; max-width:980px !important; margin:0 auto !important; padding:28px 30px 22px !important; background:#fff !important; border:1px solid #d8e2da !important; border-top:7px solid var(--ahg) !important; border-radius:20px !important; box-shadow:0 12px 30px rgba(7,93,44,.10) !important; overflow:hidden !important; position:relative !important; }}
-#receiptContent::before {{ content:'' !important; display:block !important; position:absolute !important; left:0 !important; top:0 !important; width:125px !important; height:7px !important; background:var(--ahgold) !important; }}
-.save-btn-container {{ margin:0 auto 10px !important; max-width:980px !important; }}
-.save-img-btn {{ background:var(--ahg) !important; border:1px solid var(--ahgold) !important; border-radius:9px !important; padding:9px 18px !important; font-size:12px !important; box-shadow:0 5px 12px rgba(7,93,44,.14) !important; }}
-.header {{ display:flex !important; gap:22px !important; align-items:center !important; justify-content:space-between !important; padding:4px 0 20px !important; margin:0 0 20px !important; border-bottom:1px solid var(--ahline) !important; }}
-.company-info {{ position:relative !important; padding-left:64px !important; min-width:0 !important; }}
-.company-info::before {{ content:'⌂' !important; position:absolute !important; left:0 !important; top:1px !important; width:48px !important; height:48px !important; display:grid !important; place-items:center !important; border-radius:13px !important; background:var(--ahg) !important; color:white !important; font-size:27px !important; font-weight:800 !important; box-shadow:0 5px 12px rgba(7,93,44,.18) !important; }}
-.company-info h1 {{ margin:0 !important; color:var(--ahg) !important; font-size:29px !important; line-height:1 !important; font-weight:900 !important; letter-spacing:.5px !important; }}
-.company-info p {{ margin:5px 0 0 !important; color:var(--ahmuted) !important; font-size:11px !important; line-height:1.3 !important; }}
-.receipt-meta {{ min-width:190px !important; padding:13px 16px !important; border:1px solid #e8d9b4 !important; border-radius:13px !important; background:#fffaf0 !important; text-align:right !important; }}
-.receipt-meta h2 {{ margin:0 0 6px !important; color:var(--ahg) !important; font-size:18px !important; font-weight:900 !important; text-transform:uppercase !important; }}
-.receipt-meta p {{ margin:3px 0 !important; color:#43534b !important; font-size:11px !important; }}
-#receiptContent > table {{ width:100% !important; table-layout:fixed !important; margin:0 0 18px !important; border-collapse:separate !important; border-spacing:0 !important; }}
-#receiptContent > table thead th {{ background:var(--ahg) !important; color:#fff !important; padding:10px 9px !important; border:0 !important; font-size:11px !important; letter-spacing:.45px !important; white-space:normal !important; }}
-#receiptContent > table thead th:first-child {{ border-radius:10px 0 0 10px !important; }}
-#receiptContent > table thead th:last-child {{ border-radius:0 10px 10px 0 !important; }}
-#receiptContent > table tbody td {{ padding:9px 8px !important; border-bottom:1px solid var(--ahline) !important; font-size:11px !important; line-height:1.25 !important; overflow-wrap:anywhere !important; word-break:normal !important; }}
-#receiptContent > table tbody tr:nth-child(even) td {{ background:#f8fbf8 !important; }}
-#receiptContent > table tbody tr:hover td {{ background:#f2f7f3 !important; }}
-#receiptContent > table th:nth-child(1), #receiptContent > table td:nth-child(1) {{ width:14% !important; }}
-#receiptContent > table th:nth-child(2), #receiptContent > table td:nth-child(2) {{ width:9% !important; text-align:center !important; }}
-#receiptContent > table th:nth-child(3), #receiptContent > table td:nth-child(3) {{ width:30% !important; }}
-#receiptContent > table th:nth-child(4), #receiptContent > table td:nth-child(4) {{ width:17% !important; text-align:right !important; }}
-#receiptContent > table th:nth-child(5), #receiptContent > table td:nth-child(5) {{ width:14% !important; text-align:right !important; }}
-#receiptContent > table th:nth-child(6), #receiptContent > table td:nth-child(6) {{ width:16% !important; text-align:right !important; }}
-#receiptContent > table td:nth-child(3) {{ color:var(--ahg) !important; font-weight:800 !important; }}
-.summary-container {{ display:flex !important; justify-content:flex-end !important; }}
-.summary-table {{ width:410px !important; max-width:100% !important; }}
-.grand-total {{ padding:17px 18px !important; border-radius:15px !important; background:linear-gradient(145deg,#064a27,#08733c) !important; border:1px solid rgba(201,163,74,.8) !important; box-shadow:0 10px 22px rgba(7,93,44,.14) !important; }}
-.balance-info {{ font-size:12px !important; }}
-.material-row {{ font-size:18px !important; }}
-.final-balance-row {{ font-size:17px !important; }}
-.footer {{ margin-top:18px !important; padding-top:12px !important; font-size:8px !important; color:#819087 !important; letter-spacing:1px !important; }}
-@media (max-width:700px) {{
- body {{ padding:5px !important; }}
- #receiptContent {{ padding:17px 12px 14px !important; border-radius:14px !important; border-top-width:5px !important; }}
- #receiptContent::before {{ height:5px !important; width:70px !important; }}
- .header {{ gap:10px !important; padding-bottom:13px !important; margin-bottom:13px !important; align-items:flex-start !important; }}
- .company-info {{ padding-left:45px !important; }}
- .company-info::before {{ width:34px !important; height:34px !important; border-radius:9px !important; font-size:19px !important; }}
- .company-info h1 {{ font-size:20px !important; }}
- .company-info p {{ font-size:8.5px !important; }}
- .receipt-meta {{ min-width:125px !important; padding:8px 9px !important; }}
- .receipt-meta h2 {{ font-size:12px !important; }}
- .receipt-meta p {{ font-size:8px !important; }}
- #receiptContent > table thead th {{ padding:7px 4px !important; font-size:8px !important; }}
- #receiptContent > table tbody td {{ padding:7px 4px !important; font-size:8.5px !important; }}
- .summary-table {{ width:100% !important; }}
- .grand-total {{ padding:13px !important; }}
- .material-row {{ font-size:14px !important; }}
- .final-balance-row {{ font-size:14px !important; }}
- .footer {{ font-size:6.5px !important; }}
- .save-img-btn {{ width:100% !important; }}
+:root {{ --brand:#075d2c; --brand2:#0b7a3b; --gold:#d6a84f; --ink:#18382b; --muted:#66766d; --paper:#ffffff; --soft:#f4f8f4; --line:#d9e5dc; }}
+body {{ background:linear-gradient(135deg,#e8f1eb 0%,#f8f5ec 52%,#eaf3ed 100%) !important; padding:18px !important; }}
+.receipt-container, .receipt-card, #receiptContent {{ max-width:1120px !important; margin:0 auto !important; background:var(--paper) !important; border:1px solid #d6e1d9 !important; border-top:0 !important; border-radius:28px !important; box-shadow:0 30px 80px rgba(4,55,30,.16) !important; overflow:hidden !important; position:relative !important; }}
+.receipt-container::before, .receipt-card::before, #receiptContent::before {{ content:"" !important; display:block !important; position:absolute !important; top:0 !important; left:0 !important; right:0 !important; height:9px !important; background:linear-gradient(90deg,var(--brand) 0 72%,var(--gold) 72% 100%) !important; z-index:3 !important; }}
+.header {{ background:linear-gradient(120deg,#fdfefd 0%,#f3f8f4 70%,#fffaf0 100%) !important; padding:28px 30px 24px !important; margin:0 -1px 26px !important; border-bottom:1px solid var(--line) !important; align-items:center !important; }}
+.brand-lockup {{ display:flex !important; align-items:center !important; gap:15px !important; }}
+.ah-logo {{ width:64px !important; height:64px !important; flex:0 0 64px !important; filter:drop-shadow(0 8px 12px rgba(7,93,44,.16)); }}
+.ah-logo svg {{ width:100% !important; height:100% !important; display:block !important; }}
+.company-info h1, .title h1, #receiptContent h1 {{ margin:0 !important; color:var(--brand) !important; font-size:34px !important; line-height:1 !important; letter-spacing:-1.2px !important; font-weight:900 !important; }}
+.brand-tag {{ margin-top:6px !important; color:#a07822 !important; font-size:10px !important; font-weight:900 !important; letter-spacing:1.7px !important; }}
+.brand-subtitle {{ color:var(--brand) !important; font-weight:800 !important; font-size:14px !important; margin:12px 0 4px !important; }}
+.company-info p:not(.brand-subtitle), .title p, .system-line {{ color:var(--muted) !important; }}
+.receipt-meta, .meta {{ background:#fff !important; border:1px solid #d9e2db !important; border-radius:18px !important; padding:16px 19px !important; box-shadow:0 8px 22px rgba(7,93,44,.08) !important; }}
+.receipt-meta h2, .meta h3 {{ font-size:18px !important; color:var(--brand) !important; font-weight:900 !important; margin:0 0 7px !important; }}
+#receiptContent table, .receipt-container table {{ border-collapse:separate !important; border-spacing:0 !important; overflow:hidden !important; }}
+#receiptContent th, .receipt-container th {{ background:var(--brand) !important; color:#fff !important; border:0 !important; font-size:12px !important; letter-spacing:.8px !important; padding:13px 12px !important; }}
+#receiptContent td, .receipt-container td {{ color:var(--ink) !important; border-bottom:1px solid var(--line) !important; padding:12px 10px !important; }}
+#receiptContent tbody tr:nth-child(even) td, .receipt-container tbody tr:nth-child(even) td {{ background:#f7faf7 !important; }}
+#receiptContent td.desccol, .desccol, .task-name {{ color:var(--brand) !important; font-weight:900 !important; }}
+.grand-total {{ background:linear-gradient(145deg,#064a28,#0b7a3b) !important; border:1px solid rgba(214,168,79,.8) !important; border-radius:22px !important; padding:24px !important; box-shadow:0 18px 34px rgba(7,93,44,.2) !important; }}
+.material-row {{ font-size:20px !important; }}
+.final-balance-row {{ font-size:20px !important; padding-top:14px !important; margin-top:12px !important; }}
+.footer {{ color:#819087 !important; border-top:1px solid var(--line) !important; padding-top:18px !important; }}
+.save-img-btn {{ background:var(--brand) !important; border:0 !important; border-radius:12px !important; padding:12px 20px !important; box-shadow:0 8px 18px rgba(7,93,44,.18) !important; }}
+.payroll-brand-cell {{ padding:0 0 4px !important; }}
+.payroll-brand-cell h1 {{ color:var(--brand) !important; font-size:34px !important; font-weight:900 !important; }}
+.payroll-brand-cell .system-line {{ font-size:12px !important; margin-top:4px !important; }}
+.task-grid {{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important; gap:18px !important; }}
+.task-card {{ background:linear-gradient(145deg,#fff,#f3f8f4) !important; border:1px solid #d6e3da !important; border-left:6px solid var(--brand) !important; border-radius:20px !important; padding:19px !important; box-shadow:0 12px 28px rgba(7,93,44,.09) !important; }}
+.task-date {{ background:#fff5dc !important; color:#87651f !important; border:1px solid #e5cf9c !important; }}
+.task-name {{ font-size:16px !important; }}
+@media(max-width:700px){{ body{{padding:6px !important;}} .receipt-container,#receiptContent,.receipt-card{{border-radius:18px !important;}} .header{{padding:20px 16px 18px !important; margin-bottom:16px !important;}} .ah-logo{{width:48px !important;height:48px !important;flex-basis:48px !important;}} .company-info h1,.title h1,#receiptContent h1,.payroll-brand-cell h1{{font-size:24px !important;}} .brand-tag{{font-size:8px !important;letter-spacing:1px !important;}} .receipt-meta,.meta{{padding:10px 12px !important;}} #receiptContent th,.receipt-container th,#receiptContent td,.receipt-container td{{padding:8px 5px !important;font-size:10px !important;}} .desccol,#receiptContent td.desccol{{font-size:10px !important;}} .grand-total{{padding:17px !important;border-radius:17px !important;}} .material-row,.final-balance-row{{font-size:16px !important;}} .task-grid{{grid-template-columns:1fr !important;}} }}
+
+/* ================================================================
+   AILYN HOUSE RECEIPT — DEEP DESIGN PASS / LOOK ONLY
+   Research basis: clear hierarchy, aligned grids, restrained branding,
+   prominent totals, controlled spacing, and mobile reflow.
+   No data/calculation/export logic is changed here.
+   ================================================================ */
+:root {{
+  --ah-deep:#063f24; --ah-green:#08733d; --ah-green-soft:#eaf5ee;
+  --ah-gold:#c89b3c; --ah-gold-soft:#fbf3df; --ah-ink:#18372a;
+  --ah-muted:#68776f; --ah-line:#dce6df; --ah-paper:#ffffff;
 }}
-@media print {{ body {{ padding:0 !important; background:#fff !important; }} #receiptContent {{ max-width:none !important; box-shadow:none !important; }} }}
+html,body {{ width:100% !important; max-width:100% !important; overflow-x:hidden !important; }}
+body {{ margin:0 !important; padding:14px !important; background:linear-gradient(135deg,#edf5ef 0%,#f8faf8 52%,#eef4ef 100%) !important; color:var(--ah-ink) !important; font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif !important; }}
+#receiptContent.receipt-container {{ width:100% !important; max-width:980px !important; box-sizing:border-box !important; margin:0 auto !important; padding:0 !important; background:var(--ah-paper) !important; border:1px solid #d7e2da !important; border-top:0 !important; border-radius:24px !important; box-shadow:0 22px 60px rgba(6,63,36,.14) !important; overflow:hidden !important; position:relative !important; }}
+#receiptContent.receipt-container::before {{ content:"" !important; display:block !important; height:8px !important; width:100% !important; background:linear-gradient(90deg,var(--ah-deep) 0 70%,var(--ah-gold) 70% 100%) !important; }}
+#receiptContent .header {{ margin:0 !important; padding:26px 28px 22px !important; border-bottom:1px solid var(--ah-line) !important; display:grid !important; grid-template-columns:minmax(0,1fr) minmax(190px,270px) !important; gap:22px !important; align-items:center !important; background:linear-gradient(180deg,#ffffff,#fbfdfb) !important; }}
+#receiptContent .brand-lockup {{ display:flex !important; align-items:center !important; gap:14px !important; }}
+#receiptContent .ah-logo {{ flex:0 0 auto !important; width:58px !important; height:58px !important; }}
+#receiptContent .ah-logo svg {{ width:58px !important; height:58px !important; display:block !important; }}
+#receiptContent .company-info h1 {{ margin:0 !important; font-size:clamp(26px,3vw,36px) !important; line-height:1 !important; letter-spacing:-1.2px !important; color:var(--ah-deep) !important; font-weight:900 !important; }}
+#receiptContent .brand-tag {{ margin-top:5px !important; color:var(--ah-gold) !important; font-size:10px !important; font-weight:900 !important; letter-spacing:1.5px !important; }}
+#receiptContent .brand-subtitle {{ margin:12px 0 3px !important; font-size:13px !important; color:var(--ah-ink) !important; font-weight:800 !important; }}
+#receiptContent .company-info > p:not(.brand-subtitle) {{ margin:3px 0 !important; font-size:10.5px !important; color:var(--ah-muted) !important; }}
+#receiptContent .receipt-meta {{ width:100% !important; box-sizing:border-box !important; padding:16px 18px !important; margin:0 !important; text-align:right !important; background:linear-gradient(145deg,#fffaf0,#f7f1df) !important; border:1px solid #ead8ad !important; border-radius:16px !important; }}
+#receiptContent .receipt-meta h2 {{ margin:0 0 7px !important; color:var(--ah-deep) !important; font-size:17px !important; line-height:1.15 !important; font-weight:900 !important; text-transform:uppercase !important; }}
+#receiptContent .receipt-meta p {{ margin:0 !important; color:#46584f !important; font-size:11px !important; font-weight:700 !important; }}
+#receiptContent > table {{ width:calc(100% - 56px) !important; margin:24px 28px 0 !important; table-layout:fixed !important; border-collapse:separate !important; border-spacing:0 !important; border:1px solid var(--ah-line) !important; border-radius:15px !important; overflow:hidden !important; font-size:11px !important; }}
+#receiptContent > table th {{ background:linear-gradient(135deg,var(--ah-deep),var(--ah-green)) !important; color:#fff !important; padding:11px 9px !important; border:0 !important; font-size:10px !important; font-weight:900 !important; letter-spacing:.65px !important; white-space:normal !important; }}
+#receiptContent > table th:nth-child(1){{width:14% !important}} #receiptContent > table th:nth-child(2){{width:8% !important}} #receiptContent > table th:nth-child(3){{width:32% !important}} #receiptContent > table th:nth-child(4){{width:16% !important}} #receiptContent > table th:nth-child(5){{width:14% !important}} #receiptContent > table th:nth-child(6){{width:16% !important}}
+#receiptContent > table td {{ padding:11px 9px !important; border-bottom:1px solid var(--ah-line) !important; color:#294036 !important; font-size:10.5px !important; line-height:1.35 !important; overflow-wrap:anywhere !important; word-break:break-word !important; }}
+#receiptContent > table tbody tr:last-child td {{ border-bottom:0 !important; }}
+#receiptContent > table tbody tr:nth-child(even) td {{ background:#f7faf8 !important; }}
+#receiptContent > table td.desccol {{ color:var(--ah-deep) !important; font-weight:900 !important; }}
+#receiptContent > table td.pricecol,#receiptContent > table td.deliverycol,#receiptContent > table td.totalcol {{ text-align:right !important; font-variant-numeric:tabular-nums !important; }}
+#receiptContent > table td.qty-col {{ text-align:center !important; font-weight:800 !important; }}
+#receiptContent .summary-container {{ display:flex !important; justify-content:flex-end !important; padding:18px 28px 0 !important; }}
+#receiptContent .summary-table {{ width:min(100%,480px) !important; }}
+#receiptContent .grand-total {{ margin:0 !important; padding:20px !important; border-radius:18px !important; background:linear-gradient(145deg,var(--ah-deep),#08713b) !important; border:1px solid rgba(200,155,60,.75) !important; box-shadow:0 16px 30px rgba(6,63,36,.17) !important; }}
+#receiptContent .balance-info {{ font-size:12px !important; line-height:1.7 !important; }}
+#receiptContent .balance-row {{ display:flex !important; justify-content:space-between !important; gap:14px !important; align-items:baseline !important; }}
+#receiptContent .material-row {{ font-size:18px !important; line-height:1.25 !important; }}
+#receiptContent .final-balance-row {{ margin-top:10px !important; padding-top:12px !important; font-size:17px !important; line-height:1.25 !important; }}
+#receiptContent .footer {{ margin:20px 28px 0 !important; padding:16px 0 22px !important; border-top:1px solid var(--ah-line) !important; font-size:8.5px !important; letter-spacing:1.2px !important; color:#87948d !important; }}
+#receiptContent .save-img-btn {{ background:linear-gradient(135deg,var(--ah-deep),var(--ah-green)) !important; color:#fff !important; border:1px solid var(--ah-gold) !important; border-radius:12px !important; padding:11px 20px !important; font-weight:900 !important; box-shadow:0 7px 18px rgba(6,63,36,.18) !important; }}
+@media (max-width:700px) {{
+  body {{ padding:6px !important; }}
+  #receiptContent.receipt-container {{ border-radius:16px !important; }}
+  #receiptContent .header {{ grid-template-columns:1fr !important; gap:12px !important; padding:18px 14px 15px !important; }}
+  #receiptContent .ah-logo,#receiptContent .ah-logo svg {{ width:44px !important; height:44px !important; }}
+  #receiptContent .brand-lockup {{ gap:10px !important; }}
+  #receiptContent .company-info h1 {{ font-size:23px !important; }}
+  #receiptContent .brand-tag {{ font-size:8px !important; letter-spacing:1px !important; }}
+  #receiptContent .brand-subtitle {{ margin-top:8px !important; font-size:11px !important; }}
+  #receiptContent .company-info > p:not(.brand-subtitle) {{ font-size:8.5px !important; }}
+  #receiptContent .receipt-meta {{ text-align:left !important; padding:11px 12px !important; }}
+  #receiptContent .receipt-meta h2 {{ font-size:13px !important; }}
+  #receiptContent .receipt-meta p {{ font-size:9px !important; }}
+  #receiptContent > table {{ width:calc(100% - 20px) !important; margin:14px 10px 0 !important; font-size:9px !important; }}
+  #receiptContent > table th {{ padding:7px 4px !important; font-size:8px !important; letter-spacing:.25px !important; }}
+  #receiptContent > table td {{ padding:7px 4px !important; font-size:8.5px !important; line-height:1.2 !important; }}
+  #receiptContent > table th:nth-child(1){{width:13% !important}} #receiptContent > table th:nth-child(2){{width:8% !important}} #receiptContent > table th:nth-child(3){{width:32% !important}} #receiptContent > table th:nth-child(4){{width:16% !important}} #receiptContent > table th:nth-child(5){{width:14% !important}} #receiptContent > table th:nth-child(6){{width:17% !important}}
+  #receiptContent .summary-container {{ padding:12px 10px 0 !important; }}
+  #receiptContent .summary-table {{ width:100% !important; }}
+  #receiptContent .grand-total {{ padding:14px !important; border-radius:14px !important; }}
+  #receiptContent .material-row {{ font-size:14px !important; }}
+  #receiptContent .balance-info {{ font-size:9.5px !important; }}
+  #receiptContent .final-balance-row {{ font-size:13px !important; }}
+  #receiptContent .footer {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; font-size:7px !important; }}
+}}
 
 </style>
 </head>
@@ -405,8 +449,11 @@ body {{ margin:0 !important; padding:12px !important; background:#eef3ef !import
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
-<h1>AILYN HOUSE</h1>
-<p>Official Materials & Expense Receipt</p>
+<div class="brand-lockup">{brand_logo}<div>
+<h1>AILYN HOUSE PROJECT </h1>
+<div class="brand-tag">SYSTEM </div>
+</div></div>
+<p class="brand-subtitle">Official Materials & Expense Receipt</p>
 <p>Management System {APP_VERSION}</p>
 <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
 </div>
@@ -507,6 +554,7 @@ function saveAsImage() {{
 # Phone/tablet/desktop use the same responsive receipt.
 # ================================================================
 def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, custom_title="INVENTORY RECEIPT"):
+    brand_logo = '<div class="ah-logo"><svg viewBox="0 0 72 72" aria-label="Ailyn House logo" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="68" height="68" rx="18" fill="#075d2c"/><path d="M16 34 36 17l20 17v21H16V34Z" fill="none" stroke="#d6a84f" stroke-width="4"/><path d="M24 55V38h24v17" fill="none" stroke="#fff" stroke-width="4"/><path d="M31 55V45h10v10" fill="#d6a84f"/></svg></div>'
     date_str = datetime.now().strftime("%B %d, %Y | %I:%M%p")
     total_labor = sum(r['net'] for r in labor_records)
     total_expenses = sum(e['price'] for e in expense_records)
@@ -591,65 +639,99 @@ body {{ background:radial-gradient(circle at 15% 0%,#edf6ef 0,#f7faf7 35%,#eef4e
 }}
 
 /* ================================================================
-   AILYN HOUSE — PAYROLL RECEIPT REDESIGN v2 — LOOK ONLY
+   AILYN HOUSE — MASSIVE RECEIPT LOOK V3 — LOOK ONLY
+   No calculations/data/state/export logic changed.
    ================================================================ */
-:root {{ --ahg:#075d2c; --ahg2:#0b7a3b; --ahgold:#c9a34a; --ahink:#17352a; --ahmuted:#68776f; --ahline:#dfe7df; }}
-* {{ box-sizing:border-box; }}
-html,body {{ width:100%; min-width:0; overflow-x:hidden !important; }}
-body {{ margin:0 !important; padding:12px !important; background:#eef3ef !important; color:var(--ahink) !important; font-family:'Inter','Segoe UI',Arial,sans-serif !important; }}
-#receiptContent {{ width:100% !important; max-width:980px !important; margin:0 auto !important; padding:25px 30px 20px !important; background:#fff !important; border:1px solid #d8e2da !important; border-top:7px solid var(--ahg) !important; border-radius:20px !important; box-shadow:0 12px 30px rgba(7,93,44,.10) !important; overflow:hidden !important; position:relative !important; }}
-#receiptContent::before {{ content:'' !important; position:absolute !important; left:0 !important; top:0 !important; width:125px !important; height:7px !important; background:var(--ahgold) !important; }}
-.save-btn-container {{ margin:0 auto 10px !important; max-width:980px !important; }}
-.save-img-btn {{ background:var(--ahg) !important; border:1px solid var(--ahgold) !important; border-radius:9px !important; padding:9px 18px !important; font-size:12px !important; box-shadow:0 5px 12px rgba(7,93,44,.14) !important; }}
-#receiptContent > table:first-of-type {{ width:100% !important; margin:0 0 16px !important; border-collapse:separate !important; border-spacing:0 !important; background:#f9fbf9 !important; border:1px solid #dfe8e1 !important; border-radius:14px !important; overflow:hidden !important; }}
-#receiptContent > table:first-of-type td:first-child {{ position:relative !important; padding:15px 16px 15px 76px !important; }}
-#receiptContent > table:first-of-type td:first-child::before {{ content:'⌂' !important; position:absolute !important; left:16px !important; top:15px !important; width:45px !important; height:45px !important; display:grid !important; place-items:center !important; border-radius:12px !important; background:var(--ahg) !important; color:#fff !important; font-size:25px !important; font-weight:800 !important; }}
-#receiptContent > table:first-of-type td:last-child {{ padding:15px 16px !important; }}
-#receiptContent > table:first-of-type h1 {{ margin:0 !important; color:var(--ahg) !important; font-size:29px !important; font-weight:900 !important; letter-spacing:.5px !important; }}
-#receiptContent > table:first-of-type h3 {{ margin:0 !important; color:var(--ahg) !important; font-size:20px !important; font-weight:900 !important; }}
-#receiptContent > table:first-of-type p {{ margin:4px 0 !important; color:#68776f !important; font-size:11px !important; }}
-#receiptContent > table:nth-of-type(2) {{ width:100% !important; table-layout:fixed !important; margin:0 0 16px !important; border-collapse:separate !important; border-spacing:0 !important; }}
-#receiptContent > table:nth-of-type(2) th {{ background:var(--ahg) !important; color:#fff !important; padding:10px 7px !important; font-size:10px !important; text-transform:uppercase !important; letter-spacing:.35px !important; }}
-#receiptContent > table:nth-of-type(2) th:first-child {{ border-radius:10px 0 0 10px !important; }}
-#receiptContent > table:nth-of-type(2) th:last-child {{ border-radius:0 10px 10px 0 !important; }}
-#receiptContent > table:nth-of-type(2) td {{ padding:8px 7px !important; font-size:10.5px !important; line-height:1.25 !important; border-bottom:1px solid var(--ahline) !important; overflow-wrap:anywhere !important; }}
-#receiptContent > table:nth-of-type(2) tr:nth-child(even) td {{ background:#f8fbf8 !important; }}
-#receiptContent > table:nth-of-type(2) td:first-child {{ font-weight:800 !important; color:var(--ahink) !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(1), #receiptContent > table:nth-of-type(2) td:nth-child(1) {{ width:25% !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(2), #receiptContent > table:nth-of-type(2) td:nth-child(2) {{ width:15% !important; text-align:center !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(3), #receiptContent > table:nth-of-type(2) td:nth-child(3) {{ width:18% !important; text-align:center !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(4), #receiptContent > table:nth-of-type(2) td:nth-child(4) {{ width:15% !important; text-align:right !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(5), #receiptContent > table:nth-of-type(2) td:nth-child(5) {{ width:11% !important; text-align:right !important; }}
-#receiptContent > table:nth-of-type(2) th:nth-child(6), #receiptContent > table:nth-of-type(2) td:nth-child(6) {{ width:16% !important; text-align:right !important; }}
-#receiptContent > table:nth-of-type(2) tbody tr:last-child td {{ border-bottom:2px solid var(--ahg) !important; }}
-#receiptContent > table:nth-of-type(2) tbody tr:nth-last-child(n+1) td {{ }}
-#receiptContent > table:nth-of-type(2) tr:has(td[colspan]) td {{ background:#fffaf0 !important; color:var(--ahg) !important; font-weight:800 !important; }}
-#receiptContent > table:nth-of-type(3) {{ width:100% !important; margin:0 0 14px !important; border-collapse:collapse !important; }}
-#receiptContent > table:nth-of-type(3) td {{ padding:9px 8px !important; border-bottom:1px solid var(--ahline) !important; color:#34483e !important; font-size:11px !important; }}
-#receiptContent > table:nth-of-type(4) {{ width:100% !important; margin-top:8px !important; }}
-#receiptContent > table:nth-of-type(4) td:last-child {{ width:360px !important; max-width:45% !important; padding:18px 20px !important; background:linear-gradient(145deg,#064a27,#08733c) !important; border:1px solid rgba(201,163,74,.8) !important; border-radius:15px !important; color:#fff !important; text-align:right !important; }}
-#receiptContent > table:nth-of-type(4) span:first-child {{ color:#dce8df !important; font-size:11px !important; letter-spacing:1.2px !important; }}
-#receiptContent > table:nth-of-type(4) span:last-child {{ color:#fff !important; font-size:30px !important; font-weight:900 !important; }}
-#receiptContent > div:last-child {{ margin-top:25px !important; padding-top:12px !important; border-top:1px solid var(--ahline) !important; }}
-#receiptContent > div:last-child p {{ margin:0 !important; color:#819087 !important; font-size:8px !important; letter-spacing:1px !important; }}
+:root {{ --brand:#075d2c; --brand2:#0b7a3b; --gold:#d6a84f; --ink:#18382b; --muted:#66766d; --paper:#ffffff; --soft:#f4f8f4; --line:#d9e5dc; }}
+body {{ background:linear-gradient(135deg,#e8f1eb 0%,#f8f5ec 52%,#eaf3ed 100%) !important; padding:18px !important; }}
+.receipt-container, .receipt-card, #receiptContent {{ max-width:1120px !important; margin:0 auto !important; background:var(--paper) !important; border:1px solid #d6e1d9 !important; border-top:0 !important; border-radius:28px !important; box-shadow:0 30px 80px rgba(4,55,30,.16) !important; overflow:hidden !important; position:relative !important; }}
+.receipt-container::before, .receipt-card::before, #receiptContent::before {{ content:"" !important; display:block !important; position:absolute !important; top:0 !important; left:0 !important; right:0 !important; height:9px !important; background:linear-gradient(90deg,var(--brand) 0 72%,var(--gold) 72% 100%) !important; z-index:3 !important; }}
+.header {{ background:linear-gradient(120deg,#fdfefd 0%,#f3f8f4 70%,#fffaf0 100%) !important; padding:28px 30px 24px !important; margin:0 -1px 26px !important; border-bottom:1px solid var(--line) !important; align-items:center !important; }}
+.brand-lockup {{ display:flex !important; align-items:center !important; gap:15px !important; }}
+.ah-logo {{ width:64px !important; height:64px !important; flex:0 0 64px !important; filter:drop-shadow(0 8px 12px rgba(7,93,44,.16)); }}
+.ah-logo svg {{ width:100% !important; height:100% !important; display:block !important; }}
+.company-info h1, .title h1, #receiptContent h1 {{ margin:0 !important; color:var(--brand) !important; font-size:34px !important; line-height:1 !important; letter-spacing:-1.2px !important; font-weight:900 !important; }}
+.brand-tag {{ margin-top:6px !important; color:#a07822 !important; font-size:10px !important; font-weight:900 !important; letter-spacing:1.7px !important; }}
+.brand-subtitle {{ color:var(--brand) !important; font-weight:800 !important; font-size:14px !important; margin:12px 0 4px !important; }}
+.company-info p:not(.brand-subtitle), .title p, .system-line {{ color:var(--muted) !important; }}
+.receipt-meta, .meta {{ background:#fff !important; border:1px solid #d9e2db !important; border-radius:18px !important; padding:16px 19px !important; box-shadow:0 8px 22px rgba(7,93,44,.08) !important; }}
+.receipt-meta h2, .meta h3 {{ font-size:18px !important; color:var(--brand) !important; font-weight:900 !important; margin:0 0 7px !important; }}
+#receiptContent table, .receipt-container table {{ border-collapse:separate !important; border-spacing:0 !important; overflow:hidden !important; }}
+#receiptContent th, .receipt-container th {{ background:var(--brand) !important; color:#fff !important; border:0 !important; font-size:12px !important; letter-spacing:.8px !important; padding:13px 12px !important; }}
+#receiptContent td, .receipt-container td {{ color:var(--ink) !important; border-bottom:1px solid var(--line) !important; padding:12px 10px !important; }}
+#receiptContent tbody tr:nth-child(even) td, .receipt-container tbody tr:nth-child(even) td {{ background:#f7faf7 !important; }}
+#receiptContent td.desccol, .desccol, .task-name {{ color:var(--brand) !important; font-weight:900 !important; }}
+.grand-total {{ background:linear-gradient(145deg,#064a28,#0b7a3b) !important; border:1px solid rgba(214,168,79,.8) !important; border-radius:22px !important; padding:24px !important; box-shadow:0 18px 34px rgba(7,93,44,.2) !important; }}
+.material-row {{ font-size:20px !important; }}
+.final-balance-row {{ font-size:20px !important; padding-top:14px !important; margin-top:12px !important; }}
+.footer {{ color:#819087 !important; border-top:1px solid var(--line) !important; padding-top:18px !important; }}
+.save-img-btn {{ background:var(--brand) !important; border:0 !important; border-radius:12px !important; padding:12px 20px !important; box-shadow:0 8px 18px rgba(7,93,44,.18) !important; }}
+.payroll-brand-cell {{ padding:0 0 4px !important; }}
+.payroll-brand-cell h1 {{ color:var(--brand) !important; font-size:34px !important; font-weight:900 !important; }}
+.payroll-brand-cell .system-line {{ font-size:12px !important; margin-top:4px !important; }}
+.task-grid {{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important; gap:18px !important; }}
+.task-card {{ background:linear-gradient(145deg,#fff,#f3f8f4) !important; border:1px solid #d6e3da !important; border-left:6px solid var(--brand) !important; border-radius:20px !important; padding:19px !important; box-shadow:0 12px 28px rgba(7,93,44,.09) !important; }}
+.task-date {{ background:#fff5dc !important; color:#87651f !important; border:1px solid #e5cf9c !important; }}
+.task-name {{ font-size:16px !important; }}
+@media(max-width:700px){{ body{{padding:6px !important;}} .receipt-container,#receiptContent,.receipt-card{{border-radius:18px !important;}} .header{{padding:20px 16px 18px !important; margin-bottom:16px !important;}} .ah-logo{{width:48px !important;height:48px !important;flex-basis:48px !important;}} .company-info h1,.title h1,#receiptContent h1,.payroll-brand-cell h1{{font-size:24px !important;}} .brand-tag{{font-size:8px !important;letter-spacing:1px !important;}} .receipt-meta,.meta{{padding:10px 12px !important;}} #receiptContent th,.receipt-container th,#receiptContent td,.receipt-container td{{padding:8px 5px !important;font-size:10px !important;}} .desccol,#receiptContent td.desccol{{font-size:10px !important;}} .grand-total{{padding:17px !important;border-radius:17px !important;}} .material-row,.final-balance-row{{font-size:16px !important;}} .task-grid{{grid-template-columns:1fr !important;}} }}
+
+/* ================================================================
+   AILYN HOUSE PAYROLL — DEEP DESIGN PASS / LOOK ONLY
+   Dense financial table: fixed grid, strong hierarchy, compact mobile fit.
+   ================================================================ */
+:root {{ --pay-deep:#063f24; --pay-green:#08733d; --pay-gold:#c89b3c; --pay-line:#dce6df; --pay-ink:#18372a; }}
+html,body {{ width:100% !important; max-width:100% !important; overflow-x:hidden !important; }}
+body {{ margin:0 !important; padding:14px !important; background:linear-gradient(135deg,#edf5ef,#f9fbf9) !important; color:var(--pay-ink) !important; }}
+#receiptContent {{ width:100% !important; max-width:980px !important; box-sizing:border-box !important; margin:0 auto !important; padding:0 !important; border:1px solid #d7e2da !important; border-top:0 !important; border-radius:24px !important; box-shadow:0 22px 60px rgba(6,63,36,.14) !important; overflow:hidden !important; background:#fff !important; position:relative !important; }}
+#receiptContent::before {{ content:"" !important; display:block !important; height:8px !important; background:linear-gradient(90deg,var(--pay-deep) 0 70%,var(--pay-gold) 70% 100%) !important; }}
+#receiptContent > table:first-of-type {{ width:100% !important; margin:0 !important; padding:22px 28px 18px !important; box-sizing:border-box !important; border-collapse:separate !important; border-spacing:0 !important; background:linear-gradient(180deg,#fff,#fbfdfb) !important; }}
+#receiptContent > table:first-of-type td {{ vertical-align:middle !important; }}
+#receiptContent .ah-logo,#receiptContent .ah-logo svg {{ width:54px !important; height:54px !important; }}
+#receiptContent .brand-lockup {{ display:flex !important; align-items:center !important; gap:13px !important; }}
+#receiptContent .payroll-brand-cell h1 {{ margin:0 !important; font-size:clamp(25px,3vw,35px) !important; line-height:1 !important; color:var(--pay-deep) !important; font-weight:900 !important; letter-spacing:-1px !important; }}
+#receiptContent .brand-tag {{ color:var(--pay-gold) !important; font-size:9px !important; font-weight:900 !important; letter-spacing:1.3px !important; margin-top:4px !important; }}
+#receiptContent .brand-subtitle {{ margin:10px 0 3px !important; color:#29463a !important; font-size:12px !important; font-weight:800 !important; }}
+#receiptContent .system-line {{ margin:0 !important; color:#708078 !important; font-size:9.5px !important; }}
+#receiptContent > table:first-of-type td:last-child {{ background:linear-gradient(145deg,#fffaf0,#f7f1df) !important; border:1px solid #ead8ad !important; border-radius:15px !important; padding:13px 15px !important; }}
+#receiptContent > table:first-of-type td:last-child h3 {{ color:var(--pay-deep) !important; font-size:16px !important; font-weight:900 !important; margin:0 !important; }}
+#receiptContent > table:first-of-type td:last-child p {{ font-size:10px !important; margin:5px 0 0 !important; color:#51625a !important; }}
+#receiptContent > table:nth-of-type(2) {{ width:calc(100% - 56px) !important; margin:22px 28px 0 !important; table-layout:fixed !important; border-collapse:separate !important; border-spacing:0 !important; border:1px solid var(--pay-line) !important; border-radius:15px !important; overflow:hidden !important; }}
+#receiptContent > table:nth-of-type(2) th {{ background:linear-gradient(135deg,var(--pay-deep),var(--pay-green)) !important; color:#fff !important; border:0 !important; padding:10px 7px !important; font-size:9.5px !important; font-weight:900 !important; letter-spacing:.4px !important; white-space:normal !important; }}
+#receiptContent > table:nth-of-type(2) th:nth-child(1){{width:24% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(2){{width:14% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(3){{width:14% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(4){{width:16% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(5){{width:12% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(6){{width:20% !important}}
+#receiptContent > table:nth-of-type(2) td {{ padding:10px 7px !important; border-bottom:1px solid var(--pay-line) !important; font-size:10px !important; line-height:1.25 !important; overflow-wrap:anywhere !important; word-break:break-word !important; color:#294036 !important; }}
+#receiptContent > table:nth-of-type(2) tbody tr:nth-child(even) td {{ background:#f7faf8 !important; }}
+#receiptContent > table:nth-of-type(2) tbody tr td:first-child {{ font-weight:850 !important; color:var(--pay-deep) !important; }}
+#receiptContent > table:nth-of-type(2) tbody tr td:last-child {{ font-weight:900 !important; color:var(--pay-deep) !important; font-variant-numeric:tabular-nums !important; }}
+#receiptContent > table:nth-of-type(2) tr:nth-last-child(1) td {{ border-bottom:0 !important; }}
+#receiptContent > table:nth-of-type(3) {{ width:calc(100% - 56px) !important; margin:18px 28px 0 !important; border-collapse:collapse !important; }}
+#receiptContent > table:nth-of-type(3) td {{ padding:8px 10px !important; border-top:1px solid var(--pay-line) !important; font-size:11px !important; }}
+#receiptContent > table:nth-of-type(4) {{ width:calc(100% - 56px) !important; margin:8px 28px 0 !important; border-collapse:separate !important; border-spacing:0 !important; }}
+#receiptContent > table:nth-of-type(4) td:last-child {{ width:min(360px,42%) !important; background:linear-gradient(145deg,var(--pay-deep),var(--pay-green)) !important; border:1px solid rgba(200,155,60,.75) !important; border-radius:18px !important; color:#fff !important; padding:18px 20px !important; box-shadow:0 16px 30px rgba(6,63,36,.17) !important; }}
+#receiptContent > table:nth-of-type(4) td:last-child span:first-child {{ font-size:10px !important; letter-spacing:1.5px !important; font-weight:800 !important; opacity:.86 !important; }}
+#receiptContent > table:nth-of-type(4) td:last-child span:last-child {{ font-size:clamp(26px,4vw,38px) !important; line-height:1.05 !important; font-weight:950 !important; }}
+#receiptContent > div:last-child {{ margin:18px 28px 0 !important; padding:15px 0 20px !important; border-top:1px solid var(--pay-line) !important; }}
+#receiptContent .save-img-btn {{ background:linear-gradient(135deg,var(--pay-deep),var(--pay-green)) !important; border:1px solid var(--pay-gold) !important; border-radius:12px !important; padding:11px 20px !important; font-weight:900 !important; }}
 @media (max-width:700px) {{
- body {{ padding:5px !important; }}
- #receiptContent {{ padding:14px 10px 12px !important; border-radius:14px !important; border-top-width:5px !important; }}
- #receiptContent::before {{ height:5px !important; width:70px !important; }}
- #receiptContent > table:first-of-type td:first-child {{ padding:11px 8px 11px 55px !important; }}
- #receiptContent > table:first-of-type td:first-child::before {{ left:9px !important; top:11px !important; width:34px !important; height:34px !important; border-radius:9px !important; font-size:19px !important; }}
- #receiptContent > table:first-of-type td:last-child {{ padding:11px 8px !important; }}
- #receiptContent > table:first-of-type h1 {{ font-size:20px !important; }}
- #receiptContent > table:first-of-type h3 {{ font-size:13px !important; }}
- #receiptContent > table:first-of-type p {{ font-size:8px !important; }}
- #receiptContent > table:nth-of-type(2) th {{ padding:7px 3px !important; font-size:7.5px !important; }}
- #receiptContent > table:nth-of-type(2) td {{ padding:7px 3px !important; font-size:8px !important; }}
- #receiptContent > table:nth-of-type(3) td {{ padding:7px 4px !important; font-size:8px !important; }}
- #receiptContent > table:nth-of-type(4) td:last-child {{ width:48% !important; max-width:55% !important; padding:12px !important; }}
- #receiptContent > table:nth-of-type(4) span:first-child {{ font-size:7px !important; }}
- #receiptContent > table:nth-of-type(4) span:last-child {{ font-size:20px !important; }}
+  body {{ padding:6px !important; }}
+  #receiptContent {{ border-radius:16px !important; }}
+  #receiptContent > table:first-of-type {{ display:block !important; padding:15px 12px !important; }}
+  #receiptContent > table:first-of-type tbody, #receiptContent > table:first-of-type tr {{ display:grid !important; grid-template-columns:1fr !important; gap:10px !important; }}
+  #receiptContent > table:first-of-type td {{ display:block !important; width:100% !important; box-sizing:border-box !important; }}
+  #receiptContent > table:first-of-type td:last-child {{ text-align:left !important; }}
+  #receiptContent .ah-logo,#receiptContent .ah-logo svg {{ width:42px !important; height:42px !important; }}
+  #receiptContent .payroll-brand-cell h1 {{ font-size:22px !important; }}
+  #receiptContent .brand-subtitle {{ font-size:10px !important; }}
+  #receiptContent .system-line {{ font-size:8px !important; }}
+  #receiptContent > table:nth-of-type(2) {{ width:calc(100% - 20px) !important; margin:12px 10px 0 !important; }}
+  #receiptContent > table:nth-of-type(2) th {{ padding:6px 3px !important; font-size:7.5px !important; letter-spacing:0 !important; }}
+  #receiptContent > table:nth-of-type(2) td {{ padding:6px 3px !important; font-size:7.5px !important; line-height:1.15 !important; }}
+  #receiptContent > table:nth-of-type(2) th:nth-child(1){{width:24% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(2){{width:14% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(3){{width:14% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(4){{width:16% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(5){{width:12% !important}} #receiptContent > table:nth-of-type(2) th:nth-child(6){{width:20% !important}}
+  #receiptContent > table:nth-of-type(3),#receiptContent > table:nth-of-type(4) {{ width:calc(100% - 20px) !important; margin-left:10px !important; margin-right:10px !important; }}
+  #receiptContent > table:nth-of-type(3) td {{ padding:7px 5px !important; font-size:9px !important; }}
+  #receiptContent > table:nth-of-type(4) td:last-child {{ width:100% !important; box-sizing:border-box !important; padding:14px !important; }}
+  #receiptContent > table:nth-of-type(4) td:last-child span:last-child {{ font-size:27px !important; }}
+  #receiptContent > div:last-child {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; }}
 }}
-@media print {{ body {{ padding:0 !important; background:#fff !important; }} #receiptContent {{ max-width:none !important; box-shadow:none !important; }} }}
 
 </style>
 </head>
@@ -660,10 +742,13 @@ body {{ margin:0 !important; padding:12px !important; background:#eef3ef !import
 <div id="receiptContent" style="max-width: 900px; margin: auto; background: white; border-top: 10px solid #1b5e20; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
 <tr>
-<td>
-<h1 style="color: #1b5e20; margin: 0; text-transform: uppercase;">AILYN HOUSE</h1>
-<p style="color: #555; margin: 5px 0 0 0;">Official Payroll & Labor Receipt</p>
-<p style="color: #777; font-size: 14px; margin: 0;">Management System v3.6 Enterprise</p>
+<td class="payroll-brand-cell">
+<div class="brand-lockup">{brand_logo}<div>
+<h1>AILYN HOUSE PROJECT</h1>
+<div class="brand-tag">SYSTEM</div>
+</div></div>
+<p class="brand-subtitle">Official Payroll & Labor Receipt</p>
+<p class="system-line">Management System {APP_VERSION}</p>
 </td>
 <td style="text-align: right;">
 <h3 style="color: #1b5e20; margin: 0;">{custom_title}</h3>
@@ -774,6 +859,7 @@ function saveAsImage() {{
 # Phone/tablet/desktop use the same responsive receipt.
 # ================================================================
 def generate_planner_html(planner_tasks, custom_title="WORK SCHEDULE & CALENDAR RECEIPT"):
+    brand_logo = '<div class="ah-logo"><svg viewBox="0 0 72 72" aria-label="Ailyn House logo" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="68" height="68" rx="18" fill="#075d2c"/><path d="M16 34 36 17l20 17v21H16V34Z" fill="none" stroke="#d6a84f" stroke-width="4"/><path d="M24 55V38h24v17" fill="none" stroke="#fff" stroke-width="4"/><path d="M31 55V45h10v10" fill="#d6a84f"/></svg></div>'
     # ================================================================
     # EDIT HERE - MAIN SCHEDULE RECEIPT (FULL MAIN DESIGN)
     # This function is copied from the MAIN receipt and applied fully to V10.
@@ -879,53 +965,74 @@ body {{ background:radial-gradient(circle at 15% 0%,#edf6ef 0,#f7faf7 35%,#eef4e
 }}
 
 /* ================================================================
-   AILYN HOUSE — SCHEDULE RECEIPT REDESIGN v2 — LOOK ONLY
+   AILYN HOUSE — MASSIVE RECEIPT LOOK V3 — LOOK ONLY
+   No calculations/data/state/export logic changed.
    ================================================================ */
-:root {{ --ahg:#075d2c; --ahg2:#0b7a3b; --ahgold:#c9a34a; --ahink:#17352a; --ahmuted:#68776f; --ahline:#dfe7df; }}
-* {{ box-sizing:border-box; }}
-html,body {{ width:100%; min-width:0; overflow-x:hidden !important; }}
-body {{ margin:0 !important; padding:12px !important; background:#eef3ef !important; color:var(--ahink) !important; font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif !important; }}
-.receipt-card {{ width:100% !important; max-width:980px !important; margin:0 auto !important; padding:24px 28px 20px !important; background:#fff !important; border:1px solid #d8e2da !important; border-top:7px solid var(--ahg) !important; border-radius:20px !important; box-shadow:0 12px 30px rgba(7,93,44,.10) !important; position:relative !important; overflow:hidden !important; }}
-.receipt-card::before {{ content:'' !important; position:absolute !important; left:0 !important; top:0 !important; width:125px !important; height:7px !important; background:var(--ahgold) !important; }}
-.header {{ display:flex !important; gap:20px !important; justify-content:space-between !important; align-items:center !important; padding:4px 0 17px !important; margin-bottom:17px !important; border-bottom:1px solid var(--ahline) !important; }}
-.title {{ position:relative !important; padding-left:64px !important; }}
-.title::before {{ content:'⌂' !important; position:absolute !important; left:0 !important; top:0 !important; width:48px !important; height:48px !important; display:grid !important; place-items:center !important; border-radius:13px !important; background:var(--ahg) !important; color:#fff !important; font-size:27px !important; font-weight:800 !important; }}
-.title h1 {{ margin:0 !important; color:var(--ahg) !important; font-size:27px !important; font-weight:900 !important; letter-spacing:.4px !important; }}
-.title p {{ margin:5px 0 0 !important; color:var(--ahmuted) !important; font-size:10px !important; }}
-.meta {{ min-width:180px !important; padding:12px 14px !important; background:#fffaf0 !important; border:1px solid #e8d9b4 !important; border-radius:13px !important; }}
-.meta h3 {{ margin:0 !important; color:var(--ahg) !important; font-size:16px !important; font-weight:900 !important; }}
-.meta p {{ margin:4px 0 0 !important; color:#4d5e55 !important; font-size:10px !important; }}
-.task-grid {{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important; gap:12px !important; margin-top:0 !important; }}
-.task-card {{ background:#fff !important; border:1px solid var(--ahline) !important; border-left:5px solid var(--ahg) !important; border-radius:13px !important; padding:14px !important; box-shadow:0 7px 16px rgba(7,93,44,.07) !important; }}
-.task-date {{ color:var(--ahg) !important; background:#fff8e9 !important; border:1px solid #ead9ad !important; padding:5px 8px !important; border-radius:7px !important; font-size:9px !important; }}
-.task-name {{ color:var(--ahink) !important; font-size:14px !important; font-weight:900 !important; line-height:1.3 !important; }}
-.task-phase {{ color:var(--ahmuted) !important; font-size:10px !important; }}
-.task-status {{ font-size:9px !important; }}
-.photo-gallery {{ border-top:1px dashed #dbe4dd !important; }}
-.photo-img {{ width:72px !important; height:72px !important; border-radius:8px !important; }}
-.footer {{ margin-top:20px !important; padding-top:12px !important; border-top:1px solid var(--ahline) !important; color:#819087 !important; font-size:8px !important; }}
-.save-btn-container {{ margin:0 auto 10px !important; max-width:980px !important; }}
-.save-img-btn {{ background:var(--ahg) !important; border:1px solid var(--ahgold) !important; border-radius:9px !important; padding:9px 18px !important; font-size:12px !important; }}
+:root {{ --brand:#075d2c; --brand2:#0b7a3b; --gold:#d6a84f; --ink:#18382b; --muted:#66766d; --paper:#ffffff; --soft:#f4f8f4; --line:#d9e5dc; }}
+body {{ background:linear-gradient(135deg,#e8f1eb 0%,#f8f5ec 52%,#eaf3ed 100%) !important; padding:18px !important; }}
+.receipt-container, .receipt-card, #receiptContent {{ max-width:1120px !important; margin:0 auto !important; background:var(--paper) !important; border:1px solid #d6e1d9 !important; border-top:0 !important; border-radius:28px !important; box-shadow:0 30px 80px rgba(4,55,30,.16) !important; overflow:hidden !important; position:relative !important; }}
+.receipt-container::before, .receipt-card::before, #receiptContent::before {{ content:"" !important; display:block !important; position:absolute !important; top:0 !important; left:0 !important; right:0 !important; height:9px !important; background:linear-gradient(90deg,var(--brand) 0 72%,var(--gold) 72% 100%) !important; z-index:3 !important; }}
+.header {{ background:linear-gradient(120deg,#fdfefd 0%,#f3f8f4 70%,#fffaf0 100%) !important; padding:28px 30px 24px !important; margin:0 -1px 26px !important; border-bottom:1px solid var(--line) !important; align-items:center !important; }}
+.brand-lockup {{ display:flex !important; align-items:center !important; gap:15px !important; }}
+.ah-logo {{ width:64px !important; height:64px !important; flex:0 0 64px !important; filter:drop-shadow(0 8px 12px rgba(7,93,44,.16)); }}
+.ah-logo svg {{ width:100% !important; height:100% !important; display:block !important; }}
+.company-info h1, .title h1, #receiptContent h1 {{ margin:0 !important; color:var(--brand) !important; font-size:34px !important; line-height:1 !important; letter-spacing:-1.2px !important; font-weight:900 !important; }}
+.brand-tag {{ margin-top:6px !important; color:#a07822 !important; font-size:10px !important; font-weight:900 !important; letter-spacing:1.7px !important; }}
+.brand-subtitle {{ color:var(--brand) !important; font-weight:800 !important; font-size:14px !important; margin:12px 0 4px !important; }}
+.company-info p:not(.brand-subtitle), .title p, .system-line {{ color:var(--muted) !important; }}
+.receipt-meta, .meta {{ background:#fff !important; border:1px solid #d9e2db !important; border-radius:18px !important; padding:16px 19px !important; box-shadow:0 8px 22px rgba(7,93,44,.08) !important; }}
+.receipt-meta h2, .meta h3 {{ font-size:18px !important; color:var(--brand) !important; font-weight:900 !important; margin:0 0 7px !important; }}
+#receiptContent table, .receipt-container table {{ border-collapse:separate !important; border-spacing:0 !important; overflow:hidden !important; }}
+#receiptContent th, .receipt-container th {{ background:var(--brand) !important; color:#fff !important; border:0 !important; font-size:12px !important; letter-spacing:.8px !important; padding:13px 12px !important; }}
+#receiptContent td, .receipt-container td {{ color:var(--ink) !important; border-bottom:1px solid var(--line) !important; padding:12px 10px !important; }}
+#receiptContent tbody tr:nth-child(even) td, .receipt-container tbody tr:nth-child(even) td {{ background:#f7faf7 !important; }}
+#receiptContent td.desccol, .desccol, .task-name {{ color:var(--brand) !important; font-weight:900 !important; }}
+.grand-total {{ background:linear-gradient(145deg,#064a28,#0b7a3b) !important; border:1px solid rgba(214,168,79,.8) !important; border-radius:22px !important; padding:24px !important; box-shadow:0 18px 34px rgba(7,93,44,.2) !important; }}
+.material-row {{ font-size:20px !important; }}
+.final-balance-row {{ font-size:20px !important; padding-top:14px !important; margin-top:12px !important; }}
+.footer {{ color:#819087 !important; border-top:1px solid var(--line) !important; padding-top:18px !important; }}
+.save-img-btn {{ background:var(--brand) !important; border:0 !important; border-radius:12px !important; padding:12px 20px !important; box-shadow:0 8px 18px rgba(7,93,44,.18) !important; }}
+.payroll-brand-cell {{ padding:0 0 4px !important; }}
+.payroll-brand-cell h1 {{ color:var(--brand) !important; font-size:34px !important; font-weight:900 !important; }}
+.payroll-brand-cell .system-line {{ font-size:12px !important; margin-top:4px !important; }}
+.task-grid {{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)) !important; gap:18px !important; }}
+.task-card {{ background:linear-gradient(145deg,#fff,#f3f8f4) !important; border:1px solid #d6e3da !important; border-left:6px solid var(--brand) !important; border-radius:20px !important; padding:19px !important; box-shadow:0 12px 28px rgba(7,93,44,.09) !important; }}
+.task-date {{ background:#fff5dc !important; color:#87651f !important; border:1px solid #e5cf9c !important; }}
+.task-name {{ font-size:16px !important; }}
+@media(max-width:700px){{ body{{padding:6px !important;}} .receipt-container,#receiptContent,.receipt-card{{border-radius:18px !important;}} .header{{padding:20px 16px 18px !important; margin-bottom:16px !important;}} .ah-logo{{width:48px !important;height:48px !important;flex-basis:48px !important;}} .company-info h1,.title h1,#receiptContent h1,.payroll-brand-cell h1{{font-size:24px !important;}} .brand-tag{{font-size:8px !important;letter-spacing:1px !important;}} .receipt-meta,.meta{{padding:10px 12px !important;}} #receiptContent th,.receipt-container th,#receiptContent td,.receipt-container td{{padding:8px 5px !important;font-size:10px !important;}} .desccol,#receiptContent td.desccol{{font-size:10px !important;}} .grand-total{{padding:17px !important;border-radius:17px !important;}} .material-row,.final-balance-row{{font-size:16px !important;}} .task-grid{{grid-template-columns:1fr !important;}} }}
+
+/* ================================================================
+   AILYN HOUSE SCHEDULE — DEEP DESIGN PASS / LOOK ONLY
+   ================================================================ */
+:root {{ --sch-deep:#063f24; --sch-green:#08733d; --sch-gold:#c89b3c; --sch-cream:#fffaf0; --sch-line:#dce6df; }}
+html,body {{ width:100% !important; max-width:100% !important; overflow-x:hidden !important; }}
+body {{ margin:0 !important; padding:14px !important; background:linear-gradient(135deg,#edf5ef,#f9fbf9) !important; }}
+#receiptContent.receipt-card {{ width:100% !important; max-width:980px !important; box-sizing:border-box !important; margin:0 auto !important; padding:0 !important; border:1px solid #d7e2da !important; border-top:0 !important; border-radius:24px !important; overflow:hidden !important; box-shadow:0 22px 60px rgba(6,63,36,.14) !important; background:#fff !important; }}
+#receiptContent.receipt-card::before {{ content:"" !important; display:block !important; height:8px !important; background:linear-gradient(90deg,var(--sch-deep) 0 70%,var(--sch-gold) 70% 100%) !important; }}
+#receiptContent .header {{ margin:0 !important; padding:24px 28px 20px !important; border-bottom:1px solid var(--sch-line) !important; background:linear-gradient(180deg,#fff,#fbfdfb) !important; }}
+#receiptContent .brand-row {{ display:flex !important; align-items:center !important; gap:13px !important; }}
+#receiptContent .brand-logo,#receiptContent .brand-logo svg,#receiptContent .ah-logo,#receiptContent .ah-logo svg {{ width:56px !important; height:56px !important; }}
+#receiptContent .brand-title {{ color:var(--sch-deep) !important; font-size:clamp(25px,3vw,35px) !important; font-weight:900 !important; letter-spacing:-1px !important; }}
+#receiptContent .brand-sub {{ color:var(--sch-gold) !important; font-size:9px !important; font-weight:900 !important; letter-spacing:1.4px !important; }}
+#receiptContent .title h1,#receiptContent .title h2 {{ color:var(--sch-deep) !important; font-weight:900 !important; }}
+#receiptContent .meta {{ background:linear-gradient(145deg,#fffaf0,#f7f1df) !important; border:1px solid #ead8ad !important; border-radius:15px !important; padding:12px 15px !important; }}
+#receiptContent .task-grid {{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:14px !important; padding:20px 28px 0 !important; }}
+#receiptContent .task-card {{ min-width:0 !important; background:linear-gradient(145deg,#fff,#f8fbf8) !important; border:1px solid var(--sch-line) !important; border-left:5px solid var(--sch-gold) !important; border-radius:16px !important; padding:15px !important; box-shadow:0 8px 22px rgba(6,63,36,.07) !important; }}
+#receiptContent .task-date {{ color:var(--sch-deep) !important; background:var(--sch-cream) !important; border:1px solid #ead8ad !important; }}
+#receiptContent .task-name {{ color:var(--sch-deep) !important; font-weight:900 !important; line-height:1.25 !important; overflow-wrap:anywhere !important; }}
+#receiptContent .task-phase {{ color:#64756c !important; }}
+#receiptContent .photo-img,#receiptContent .card-photo-thumb {{ border-radius:10px !important; border:1px solid #d7e2da !important; }}
+#receiptContent .footer {{ margin:18px 28px 0 !important; padding:15px 0 20px !important; border-top:1px solid var(--sch-line) !important; }}
 @media (max-width:700px) {{
- body {{ padding:5px !important; }}
- .receipt-card {{ padding:15px 10px 12px !important; border-radius:14px !important; border-top-width:5px !important; }}
- .receipt-card::before {{ height:5px !important; width:70px !important; }}
- .header {{ gap:9px !important; align-items:flex-start !important; padding-bottom:12px !important; margin-bottom:12px !important; }}
- .title {{ padding-left:43px !important; }}
- .title::before {{ width:33px !important; height:33px !important; border-radius:8px !important; font-size:18px !important; }}
- .title h1 {{ font-size:19px !important; }}
- .title p {{ font-size:8px !important; }}
- .meta {{ min-width:120px !important; padding:7px 8px !important; }}
- .meta h3 {{ font-size:11px !important; }}
- .meta p {{ font-size:7px !important; }}
- .task-grid {{ grid-template-columns:1fr !important; gap:9px !important; }}
- .task-card {{ padding:11px !important; }}
- .task-name {{ font-size:12px !important; }}
- .task-phase {{ font-size:9px !important; }}
- .photo-img {{ width:58px !important; height:58px !important; }}
- .save-img-btn {{ width:100% !important; }}
+  body {{ padding:6px !important; }}
+  #receiptContent.receipt-card {{ border-radius:16px !important; }}
+  #receiptContent .header {{ padding:16px 12px 14px !important; }}
+  #receiptContent .brand-logo,#receiptContent .brand-logo svg,#receiptContent .ah-logo,#receiptContent .ah-logo svg {{ width:42px !important; height:42px !important; }}
+  #receiptContent .brand-title {{ font-size:22px !important; }}
+  #receiptContent .task-grid {{ grid-template-columns:1fr !important; padding:12px 10px 0 !important; gap:10px !important; }}
+  #receiptContent .task-card {{ padding:12px !important; }}
+  #receiptContent .footer {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; }}
 }}
-@media print {{ body {{ padding:0 !important; background:#fff !important; }} .receipt-card {{ max-width:none !important; box-shadow:none !important; }} }}
 
 </style>
 </head>
@@ -1596,15 +1703,8 @@ elif view == "planner_output":
     st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     custom_receipt_title = st.text_input("Receipt Title", value="Construction Schedule Receipt", placeholder="Enter a custom title...")
     html_report = generate_planner_html(sorted_tasks, custom_title=custom_receipt_title)
-    st.markdown("### 🖼️ SEE PHOTO & DOWNLOAD SCHEDULE RECEIPT")
+    st.markdown("### 🖼️ SEE PHOTO & SAVE SCHEDULE RECEIPT IMAGE")
     st.components.v1.html(html_report, height=620, scrolling=False)
-    st.download_button(
-        label="📥 DOWNLOAD SCHEDULE RECEIPT HTML",
-        data=html_report,
-        file_name="construction_schedule_receipt.html",
-        mime="text/html",
-        use_container_width=True
-    )
     st.divider()
     if st.button("🏠 RETURN TO HOME", use_container_width=True):
         set_view("home")
@@ -1693,7 +1793,7 @@ elif view == "ledger":
                 st.rerun()
 
 elif view == "export":
-    st.subheader("📄 EXPORT CONSTRUCTION REPORT")
+    st.subheader("📄 EXPORT CONSTRUCTION RECEIPT IMAGE")
     receipt_title = st.text_input("Receipt Title", value="Construction Receipt", placeholder="Enter a title for this receipt")
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
     st.components.v1.html(html, height=620, scrolling=False)
@@ -1703,13 +1803,6 @@ elif view == "export":
             st.success(f"Saved to archive: {archive_path}")
         else:
             st.warning("Please enter a title before saving.")
-    st.download_button(
-        label="📥 DOWNLOAD CONSTRUCTION REPORT HTML",
-        data=html,
-        file_name="construction_report.html",
-        mime="text/html",
-        use_container_width=True
-    )
     if st.button("📂 OPEN RECEIPT ARCHIVE", use_container_width=True):
         set_view("receipt_archive")
 
@@ -1827,7 +1920,7 @@ elif view == "payroll_ledger":
                 st.rerun()
 
 elif view == "payroll_export":
-    st.subheader("📄 EXPORT PAYROLL REPORT")
+    st.subheader("📄 EXPORT PAYROLL RECEIPT IMAGE")
     receipt_title = st.text_input("Receipt Title", value="Payroll Receipt", placeholder="Enter a title for this receipt")
     html, total = generate_payroll_html(
         st.session_state.labor_records,
@@ -1842,13 +1935,6 @@ elif view == "payroll_export":
             st.success(f"Saved to archive: {archive_path}")
         else:
             st.warning("Please enter a title before saving.")
-    st.download_button(
-        label="📥 DOWNLOAD PAYROLL REPORT HTML",
-        data=html,
-        file_name="payroll_report.html",
-        mime="text/html",
-        use_container_width=True
-    )
     if st.button("📂 OPEN RECEIPT ARCHIVE", use_container_width=True):
         set_view("receipt_archive")
     if st.button("📧 EMAIL PAYROLL REPORT", use_container_width=True):
@@ -1884,14 +1970,6 @@ elif view == "receipt_archive":
                 with open(report_path, "r", encoding="utf-8") as handle:
                     report_html = handle.read()
                 st.components.v1.html(report_html, height=620, scrolling=False)
-                st.download_button(
-                    label="📥 DOWNLOAD THIS RECEIPT HTML",
-                    data=report_html,
-                    file_name=report_path.name,
-                    mime="text/html",
-                    use_container_width=True,
-                    key=f"download_{report_type}_{report_path.name}"
-                )
                 if st.button("❌ DELETE THIS RECEIPT", key=f"delete_{report_type}_{report_path.name}", use_container_width=True):
                     delete_report_file(report_path)
                     st.success(f"Deleted: {report_path.name}")
