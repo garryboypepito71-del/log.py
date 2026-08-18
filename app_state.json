@@ -1,9 +1,21 @@
 {
-  "records": [],
+  "records": [
+    {
+      "id": "1787050636.8357937",
+      "date": "Aug 18, 2026",
+      "name": "1000`",
+      "price": 616.0,
+      "qty": 66,
+      "delivery": 0.0,
+      "amount": 40656.0,
+      "type": "material",
+      "sender": "Garr"
+    }
+  ],
   "labor_records": [],
   "payroll_expenses": [],
   "planner_tasks": [],
   "budget": 0.0,
   "remaining_money": 0.0,
-  "view": "export"
+  "view": "payroll_export"
 }
