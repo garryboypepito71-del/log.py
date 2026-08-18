@@ -850,54 +850,148 @@ function fitReceiptToScreen() {{
 window.addEventListener('load', fitReceiptToScreen);
 window.addEventListener('resize', fitReceiptToScreen);
 
-function saveAsImage() {{
+function loadHtml2Canvas() {{
+  if (typeof html2canvas === 'function') return Promise.resolve(html2canvas);
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+  let index = 0;
+  return new Promise((resolve, reject) => {{
+    const next = () => {{
+      if (typeof html2canvas === 'function') return resolve(html2canvas);
+      if (index >= sources.length) return reject(new Error('Image renderer could not be loaded.'));
+      const script = document.createElement('script');
+      script.src = sources[index++];
+      script.async = true;
+      script.onload = () => typeof html2canvas === 'function' ? resolve(html2canvas) : next();
+      script.onerror = next;
+      document.head.appendChild(script);
+    }};
+    next();
+  }});
+}}
+
+function downloadCanvasPng(canvas, filename) {{
+  return new Promise((resolve, reject) => {{
+    const finish = (blob) => {{
+      if (!blob || !blob.size) return reject(new Error('PNG creation failed.'));
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.rel = 'noopener';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      try {{
+        link.click();
+      }} finally {{
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }}
+      resolve();
+    }};
+    if (canvas.toBlob) {{
+      canvas.toBlob(finish, 'image/png', 1.0);
+    }} else {{
+      try {{
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        resolve();
+      }} catch (err) {{ reject(err); }}
+    }}
+  }});
+}}
+
+async function saveAsImage() {{
+  const button = document.querySelector('.save-img-btn');
   const element = document.getElementById('receiptContent');
-  if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+  if (!element) return;
+  const originalText = button ? button.innerHTML : '';
+  if (button) {{ button.disabled = true; button.innerHTML = '⏳ PREPARING IMAGE…'; }}
+
   const wasTransform = element.style.transform;
   const wasOrigin = element.style.transformOrigin;
   const wasMarginBottom = element.style.marginBottom;
-  element.style.transform = 'none';
-  element.style.transformOrigin = 'top left';
-  element.style.marginBottom = '0';
-  const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const frameWidth = isPhone ? 2160 : 3840;
-  const frameHeight = isPhone ? 3840 : 2160;
-  const safeName = {{json.dumps(custom_title)}}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-  const rect = element.getBoundingClientRect();
-  html2canvas(element, {{
-    scale: Math.max(1, Math.min(4, 3840 / Math.max(rect.width, 1))),
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: '#ffffff',
-    logging: false,
-    width: Math.ceil(rect.width),
-    height: Math.ceil(rect.height),
-    windowWidth: 1600,
-    windowHeight: Math.max(1200, Math.ceil(rect.height))
-  }}).then(canvas => {{
+  const wasWidth = element.style.width;
+  const wasHeight = element.style.height;
+
+  try {{
+    await loadHtml2Canvas();
+    element.style.transform = 'none';
+    element.style.transformOrigin = 'top left';
+    element.style.marginBottom = '0';
+    element.style.width = element.classList.contains('receipt') ? '1460px' : '1500px';
+    element.style.height = 'auto';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const targetW = isPhone ? 2160 : 3840;
+    const targetH = isPhone ? 3840 : 2160;
+    const rect = element.getBoundingClientRect();
+    const sourceW = Math.max(1, Math.ceil(rect.width));
+    const sourceH = Math.max(1, Math.ceil(rect.height));
+    const captureScale = Math.min(3, Math.max(1.5, targetW / sourceW));
+
+    const canvas = await html2canvas(element, {{
+      scale: captureScale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 30000,
+      scrollX: 0,
+      scrollY: 0,
+      width: sourceW,
+      height: sourceH,
+      windowWidth: Math.max(1600, sourceW),
+      windowHeight: Math.max(1200, sourceH)
+    }});
+
     const out = document.createElement('canvas');
-    out.width = frameWidth; out.height = frameHeight;
+    out.width = targetW;
+    out.height = targetH;
     const ctx = out.getContext('2d', {{ alpha: false }});
-    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, out.width, out.height);
-    const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
-    const drawWidth = Math.round(canvas.width * fitScale);
-    const drawHeight = Math.round(canvas.height * fitScale);
-    ctx.drawImage(canvas, Math.round((out.width-drawWidth)/2), Math.round((out.height-drawHeight)/2), drawWidth, drawHeight);
-    out.toBlob(blob => {{
-      if (!blob) throw new Error('Receipt export failed');
-      const link = document.createElement('a');
-      link.download = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16' : 'Laptop_16x9') + '.png';
-      link.href = URL.createObjectURL(blob); link.click();
-      setTimeout(() => URL.revokeObjectURL(link.href), 1500);
-    }}, 'image/png');
-  }}).catch(() => {{ window.print(); }}).finally(() => {{
+    if (!ctx) throw new Error('Canvas is unavailable in this browser.');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    const fit = Math.min(targetW / canvas.width, targetH / canvas.height);
+    const drawW = Math.max(1, Math.round(canvas.width * fit));
+    const drawH = Math.max(1, Math.round(canvas.height * fit));
+    const x = Math.round((targetW - drawW) / 2);
+    const y = Math.round((targetH - drawH) / 2);
+    ctx.drawImage(canvas, x, y, drawW, drawH);
+
+    const titleSource = document.title || 'Receipt';
+    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+    const filename = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
+    await downloadCanvasPng(out, filename);
+    if (button) button.innerHTML = '✓ IMAGE DOWNLOADED';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 1800);
+  }} catch (err) {{
+    console.error('Receipt image export failed:', err);
+    if (button) button.innerHTML = '⚠ DOWNLOAD FAILED — TRY AGAIN';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 2500);
+    alert('The receipt image could not be created. Please try the download button again or check your internet connection.');
+  }} finally {{
     element.style.transform = wasTransform;
     element.style.transformOrigin = wasOrigin;
     element.style.marginBottom = wasMarginBottom;
-    fitReceiptToScreen();
-  }});
+    element.style.width = wasWidth;
+    element.style.height = wasHeight;
+    if (typeof fitReceiptToScreen === 'function') fitReceiptToScreen();
+  }}
 }}
+
 </script>
 </body>
 </html>"""
@@ -1141,54 +1235,148 @@ function fitReceiptToScreen() {{
 window.addEventListener('load', fitReceiptToScreen);
 window.addEventListener('resize', fitReceiptToScreen);
 
-function saveAsImage() {{
+function loadHtml2Canvas() {{
+  if (typeof html2canvas === 'function') return Promise.resolve(html2canvas);
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+  let index = 0;
+  return new Promise((resolve, reject) => {{
+    const next = () => {{
+      if (typeof html2canvas === 'function') return resolve(html2canvas);
+      if (index >= sources.length) return reject(new Error('Image renderer could not be loaded.'));
+      const script = document.createElement('script');
+      script.src = sources[index++];
+      script.async = true;
+      script.onload = () => typeof html2canvas === 'function' ? resolve(html2canvas) : next();
+      script.onerror = next;
+      document.head.appendChild(script);
+    }};
+    next();
+  }});
+}}
+
+function downloadCanvasPng(canvas, filename) {{
+  return new Promise((resolve, reject) => {{
+    const finish = (blob) => {{
+      if (!blob || !blob.size) return reject(new Error('PNG creation failed.'));
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.rel = 'noopener';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      try {{
+        link.click();
+      }} finally {{
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }}
+      resolve();
+    }};
+    if (canvas.toBlob) {{
+      canvas.toBlob(finish, 'image/png', 1.0);
+    }} else {{
+      try {{
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        resolve();
+      }} catch (err) {{ reject(err); }}
+    }}
+  }});
+}}
+
+async function saveAsImage() {{
+  const button = document.querySelector('.save-img-btn');
   const element = document.getElementById('receiptContent');
-  if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
+  if (!element) return;
+  const originalText = button ? button.innerHTML : '';
+  if (button) {{ button.disabled = true; button.innerHTML = '⏳ PREPARING IMAGE…'; }}
+
   const wasTransform = element.style.transform;
   const wasOrigin = element.style.transformOrigin;
   const wasMarginBottom = element.style.marginBottom;
-  element.style.transform = 'none';
-  element.style.transformOrigin = 'top left';
-  element.style.marginBottom = '0';
-  const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const frameWidth = isPhone ? 2160 : 3840;
-  const frameHeight = isPhone ? 3840 : 2160;
-  const safeName = {{json.dumps(custom_title)}}.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
-  const rect = element.getBoundingClientRect();
-  html2canvas(element, {{
-    scale: Math.max(1, Math.min(4, 3840 / Math.max(rect.width, 1))),
-    useCORS: true,
-    allowTaint: false,
-    backgroundColor: '#ffffff',
-    logging: false,
-    width: Math.ceil(rect.width),
-    height: Math.ceil(rect.height),
-    windowWidth: 1600,
-    windowHeight: Math.max(1200, Math.ceil(rect.height))
-  }}).then(canvas => {{
+  const wasWidth = element.style.width;
+  const wasHeight = element.style.height;
+
+  try {{
+    await loadHtml2Canvas();
+    element.style.transform = 'none';
+    element.style.transformOrigin = 'top left';
+    element.style.marginBottom = '0';
+    element.style.width = element.classList.contains('receipt') ? '1460px' : '1500px';
+    element.style.height = 'auto';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const targetW = isPhone ? 2160 : 3840;
+    const targetH = isPhone ? 3840 : 2160;
+    const rect = element.getBoundingClientRect();
+    const sourceW = Math.max(1, Math.ceil(rect.width));
+    const sourceH = Math.max(1, Math.ceil(rect.height));
+    const captureScale = Math.min(3, Math.max(1.5, targetW / sourceW));
+
+    const canvas = await html2canvas(element, {{
+      scale: captureScale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 30000,
+      scrollX: 0,
+      scrollY: 0,
+      width: sourceW,
+      height: sourceH,
+      windowWidth: Math.max(1600, sourceW),
+      windowHeight: Math.max(1200, sourceH)
+    }});
+
     const out = document.createElement('canvas');
-    out.width = frameWidth; out.height = frameHeight;
+    out.width = targetW;
+    out.height = targetH;
     const ctx = out.getContext('2d', {{ alpha: false }});
-    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, out.width, out.height);
-    const fitScale = Math.min(out.width / canvas.width, out.height / canvas.height);
-    const drawWidth = Math.round(canvas.width * fitScale);
-    const drawHeight = Math.round(canvas.height * fitScale);
-    ctx.drawImage(canvas, Math.round((out.width-drawWidth)/2), Math.round((out.height-drawHeight)/2), drawWidth, drawHeight);
-    out.toBlob(blob => {{
-      if (!blob) throw new Error('Receipt export failed');
-      const link = document.createElement('a');
-      link.download = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16' : 'Laptop_16x9') + '.png';
-      link.href = URL.createObjectURL(blob); link.click();
-      setTimeout(() => URL.revokeObjectURL(link.href), 1500);
-    }}, 'image/png');
-  }}).catch(() => {{ window.print(); }}).finally(() => {{
+    if (!ctx) throw new Error('Canvas is unavailable in this browser.');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    const fit = Math.min(targetW / canvas.width, targetH / canvas.height);
+    const drawW = Math.max(1, Math.round(canvas.width * fit));
+    const drawH = Math.max(1, Math.round(canvas.height * fit));
+    const x = Math.round((targetW - drawW) / 2);
+    const y = Math.round((targetH - drawH) / 2);
+    ctx.drawImage(canvas, x, y, drawW, drawH);
+
+    const titleSource = document.title || 'Receipt';
+    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+    const filename = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
+    await downloadCanvasPng(out, filename);
+    if (button) button.innerHTML = '✓ IMAGE DOWNLOADED';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 1800);
+  }} catch (err) {{
+    console.error('Receipt image export failed:', err);
+    if (button) button.innerHTML = '⚠ DOWNLOAD FAILED — TRY AGAIN';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 2500);
+    alert('The receipt image could not be created. Please try the download button again or check your internet connection.');
+  }} finally {{
     element.style.transform = wasTransform;
     element.style.transformOrigin = wasOrigin;
     element.style.marginBottom = wasMarginBottom;
-    fitReceiptToScreen();
-  }});
+    element.style.width = wasWidth;
+    element.style.height = wasHeight;
+    if (typeof fitReceiptToScreen === 'function') fitReceiptToScreen();
+  }}
 }}
+
 </script>
 </body>
 </html>"""
@@ -1272,51 +1460,148 @@ Official Construction Task Schedule Document Electronically Generated
 </div>
 </div>
 <script>
-function saveAsImage() {{
-    const element = document.getElementById('receiptContent');
-    if (typeof html2canvas === 'undefined') {{ window.print(); return; }}
-
-    const rect = element.getBoundingClientRect();
-    const targetWidth = 3840;
-    const scale = Math.max(1, Math.min(6, targetWidth / Math.max(rect.width, 1)));
-
-    html2canvas(element, {{
-        scale: scale,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: '#ffffff',
-        imageTimeout: 30000,
-        scrollX: 0,
-        scrollY: 0,
-        width: Math.ceil(rect.width),
-        height: Math.ceil(rect.height),
-        windowWidth: Math.max(document.documentElement.clientWidth, Math.ceil(rect.width)),
-        windowHeight: Math.max(document.documentElement.clientHeight, Math.ceil(rect.height))
-    }}).then(canvas => {{
-        const out = document.createElement('canvas');
-        out.width = targetWidth;
-        out.height = Math.round(canvas.height * (targetWidth / canvas.width));
-        const ctx = out.getContext('2d', {{ alpha: false }});
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, out.width, out.height);
-        ctx.drawImage(canvas, 0, 0, out.width, out.height);
-
-        out.toBlob(blob => {{
-            if (!blob) throw new Error('UHD image export failed');
-            const link = document.createElement('a');
-            link.download = 'Schedule_Receipt_UHD_4K_3840px.png';
-            link.href = URL.createObjectURL(blob);
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-            setTimeout(() => URL.revokeObjectURL(link.href), 1500);
-        }}, 'image/png');
-    }}).catch(() => {{
-        window.print();
-    }});
+function loadHtml2Canvas() {{
+  if (typeof html2canvas === 'function') return Promise.resolve(html2canvas);
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
+    'https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js'
+  ];
+  let index = 0;
+  return new Promise((resolve, reject) => {{
+    const next = () => {{
+      if (typeof html2canvas === 'function') return resolve(html2canvas);
+      if (index >= sources.length) return reject(new Error('Image renderer could not be loaded.'));
+      const script = document.createElement('script');
+      script.src = sources[index++];
+      script.async = true;
+      script.onload = () => typeof html2canvas === 'function' ? resolve(html2canvas) : next();
+      script.onerror = next;
+      document.head.appendChild(script);
+    }};
+    next();
+  }});
 }}
+
+function downloadCanvasPng(canvas, filename) {{
+  return new Promise((resolve, reject) => {{
+    const finish = (blob) => {{
+      if (!blob || !blob.size) return reject(new Error('PNG creation failed.'));
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.rel = 'noopener';
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      try {{
+        link.click();
+      }} finally {{
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+      }}
+      resolve();
+    }};
+    if (canvas.toBlob) {{
+      canvas.toBlob(finish, 'image/png', 1.0);
+    }} else {{
+      try {{
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = filename;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        resolve();
+      }} catch (err) {{ reject(err); }}
+    }}
+  }});
+}}
+
+async function saveAsImage() {{
+  const button = document.querySelector('.save-img-btn');
+  const element = document.getElementById('receiptContent');
+  if (!element) return;
+  const originalText = button ? button.innerHTML : '';
+  if (button) {{ button.disabled = true; button.innerHTML = '⏳ PREPARING IMAGE…'; }}
+
+  const wasTransform = element.style.transform;
+  const wasOrigin = element.style.transformOrigin;
+  const wasMarginBottom = element.style.marginBottom;
+  const wasWidth = element.style.width;
+  const wasHeight = element.style.height;
+
+  try {{
+    await loadHtml2Canvas();
+    element.style.transform = 'none';
+    element.style.transformOrigin = 'top left';
+    element.style.marginBottom = '0';
+    element.style.width = element.classList.contains('receipt') ? '1460px' : '1500px';
+    element.style.height = 'auto';
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+    const isPhone = window.matchMedia('(max-width: 600px)').matches || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const targetW = isPhone ? 2160 : 3840;
+    const targetH = isPhone ? 3840 : 2160;
+    const rect = element.getBoundingClientRect();
+    const sourceW = Math.max(1, Math.ceil(rect.width));
+    const sourceH = Math.max(1, Math.ceil(rect.height));
+    const captureScale = Math.min(3, Math.max(1.5, targetW / sourceW));
+
+    const canvas = await html2canvas(element, {{
+      scale: captureScale,
+      useCORS: true,
+      allowTaint: false,
+      backgroundColor: '#ffffff',
+      logging: false,
+      imageTimeout: 30000,
+      scrollX: 0,
+      scrollY: 0,
+      width: sourceW,
+      height: sourceH,
+      windowWidth: Math.max(1600, sourceW),
+      windowHeight: Math.max(1200, sourceH)
+    }});
+
+    const out = document.createElement('canvas');
+    out.width = targetW;
+    out.height = targetH;
+    const ctx = out.getContext('2d', {{ alpha: false }});
+    if (!ctx) throw new Error('Canvas is unavailable in this browser.');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, targetW, targetH);
+
+    const fit = Math.min(targetW / canvas.width, targetH / canvas.height);
+    const drawW = Math.max(1, Math.round(canvas.width * fit));
+    const drawH = Math.max(1, Math.round(canvas.height * fit));
+    const x = Math.round((targetW - drawW) / 2);
+    const y = Math.round((targetH - drawH) / 2);
+    ctx.drawImage(canvas, x, y, drawW, drawH);
+
+    const titleSource = document.title || 'Receipt';
+    const safeName = titleSource.replace(/[^a-z0-9_-]+/gi, '_').replace(/^_+|_+$/g, '') || 'Receipt';
+    const filename = safeName + '_Receipt_' + (isPhone ? 'Phone_9x16_2160x3840' : 'Laptop_16x9_3840x2160') + '.png';
+    await downloadCanvasPng(out, filename);
+    if (button) button.innerHTML = '✓ IMAGE DOWNLOADED';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 1800);
+  }} catch (err) {{
+    console.error('Receipt image export failed:', err);
+    if (button) button.innerHTML = '⚠ DOWNLOAD FAILED — TRY AGAIN';
+    setTimeout(() => {{ if (button) {{ button.innerHTML = originalText; button.disabled = false; }} }}, 2500);
+    alert('The receipt image could not be created. Please try the download button again or check your internet connection.');
+  }} finally {{
+    element.style.transform = wasTransform;
+    element.style.transformOrigin = wasOrigin;
+    element.style.marginBottom = wasMarginBottom;
+    element.style.width = wasWidth;
+    element.style.height = wasHeight;
+    if (typeof fitReceiptToScreen === 'function') fitReceiptToScreen();
+  }}
+}}
+
 </script>
 </body>
 </html>"""
