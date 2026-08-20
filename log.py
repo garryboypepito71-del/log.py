@@ -102,7 +102,7 @@ def calculate_labor_pay(worked_days: float, role: str):
     gross_pay = full_days_pay + partial_days_pay
     return gross_pay, full_days_pay, partial_days_pay
 
-def receipt_preview_height(item_count, row_height=55, base_height=620):
+def receipt_preview_height(item_count, row_height=62, base_height=700):
     """Reserve enough preview space for every report row and its totals."""
     return max(base_height, base_height + item_count * row_height)
 
@@ -255,9 +255,9 @@ def build_html_report(records, budget, custom_title="AILYN HOUSE PROJECT"):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap');
-body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 20px; color: #333; }}
-.receipt-container {{ max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
+body {{ font-family: 'Lora', Georgia, serif; background-color: #f0f4f0; margin: 0; padding: 12px; color: #26352d; }}
+.receipt-container {{ max-width: 900px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
 .header {{ display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }}
 .company-info h1 {{ color: #1b5e20; margin: 0; font-size: 24px; letter-spacing: -1px; }}
 .company-info p {{ margin: 4px 0; font-size: 12px; color: #666; }}
@@ -294,6 +294,11 @@ body {{ background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; c
     border-bottom: 4px solid var(--v10-green) !important;
 }}
 .receipt-container, .receipt-card, #receiptContent {{
+    border-top: 10px solid var(--v10-green) !important;
+    border-bottom: 4px solid var(--v10-green) !important;
+}}
+.save-btn-container {{ text-align: center; margin: 18px auto 6px; padding-top: 14px; border-top: 1px solid var(--v10-gold); max-width: 900px; }}
+.receipt-container, .receipt-card, #receiptContent {{
     border: 1px solid #dfe7df !important;
     border-top: 10px solid var(--v10-green) !important;
     border-bottom: 4px solid var(--v10-green) !important;
@@ -305,7 +310,7 @@ body {{ background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; c
 }}
 
 
-.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:-.5px !important; font-weight:800 !important; }}
+.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:0 !important; font-weight:600 !important; }}
 .company-info p, .title p {{ color:#617168 !important; }}
 .receipt-meta h2, .meta h3 {{ color:var(--v10-green) !important; }}
 .receipt-meta, .meta {{ background:var(--v10-cream); border:1px solid #eadfbe; border-radius:12px; padding:12px 15px; }}
@@ -320,7 +325,7 @@ tr:nth-child(even) td {{ background:#fbfcfa; }}
 .save-img-btn {{ background:var(--v10-green) !important; border-radius:10px !important; border:1px solid var(--v10-gold) !important; box-shadow:0 6px 16px rgba(7,93,44,.18) !important; }}
 .save-img-btn:hover {{ background:var(--v10-green-2) !important; }}
 .footer {{ color:#718078 !important; }}
-@media (max-width:700px) {{ body {{ padding:8px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:18px !important; border-radius:14px !important; }}   .company-info h1, .title h1 {{ font-size:20px !important; }} .receipt-meta, .meta {{ padding:9px 10px; }} th, td {{ padding:8px 6px !important; font-size:11px !important; }} .save-img-btn {{ width:100%; }} }}
+@media (max-width:700px) {{ body {{ padding:4px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:10px !important; border-radius:10px !important; }}   .company-info h1, .title h1 {{ font-size:18px !important; }} .receipt-meta, .meta {{ padding:6px 7px; }} th, td {{ padding:4px 2px !important; font-size:9px !important; overflow-wrap:anywhere !important; }} .save-img-btn {{ width:100%; padding:9px 12px !important; }} }}
 
 /* ================================================================
    FINAL FIX — SIDEBAR + RECEIPT BRANDING
@@ -392,7 +397,7 @@ body {{
     width: 100% !important;
     max-width: 900px !important;
     box-sizing: border-box !important;
-    padding: clamp(16px, 4vw, 40px) !important;
+    padding: clamp(16px, 4vw, 30px) !important;
     margin: 0 auto !important;
 }}
 #receiptContent table {{
@@ -405,7 +410,7 @@ body {{
     word-break: break-word !important;
 }}
 @media (max-width: 700px) {{
-    #receiptContent h1 {{ font-size: 22px !important; }}
+    #receiptContent h1 {{ font-size:18px !important; }}
     #receiptContent h3 {{ font-size: 15px !important; }}
     #receiptContent th,
     #receiptContent td {{ padding: 7px 4px !important; font-size: 10px !important; }}
@@ -414,9 +419,6 @@ body {{
 </style>
 </head>
 <body>
-<div class="save-btn-container">
-<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
-</div>
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
@@ -500,6 +502,9 @@ body {{
 This document was electronically generated and is valid without signature.
 </div>
 </div>
+<div class="save-btn-container">
+<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
+</div>
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
@@ -535,6 +540,7 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
 .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
 .save-img-btn:hover {{ background-color: #2e7d32; }}
@@ -542,11 +548,13 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 /* RECEIPT LOOK ONLY — AILYN HOUSE PROJECT
    EDIT HERE #RECEIPT-BRAND = branding/layout only */
 :root {{ --v10-green:#075d2c; --v10-green-2:#0b7a3b; --v10-gold:#d6a84f; --v10-cream:#f7f5ee; --v10-ink:#17352a; --v10-line:#dfe7df; }}
-body {{ background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; color:var(--v10-ink) !important; }}
+body {{ font-family:'Lora', Georgia, serif !important; background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; color:var(--v10-ink) !important; }}
 .receipt-container, .receipt-card, #receiptContent {{ border-top-color:var(--v10-green) !important; border-radius:18px !important; box-shadow:0 16px 45px rgba(7,93,44,.12),0 2px 8px rgba(0,0,0,.05) !important; position:relative; overflow:hidden; }}
+.receipt-container, .receipt-card, #receiptContent {{ border:1px solid #dfe7df !important; border-top:10px solid var(--v10-green) !important; border-bottom:4px solid var(--v10-green) !important; }}
+.save-btn-container {{ text-align:center; margin:18px auto 6px; padding-top:14px; border-top:1px solid var(--v10-gold); max-width:900px; }}
 
 
-.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:-.5px !important; font-weight:800 !important; }}
+.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:0 !important; font-weight:600 !important; }}
 .company-info p, .title p {{ color:#617168 !important; }}
 .receipt-meta h2, .meta h3 {{ color:var(--v10-green) !important; }}
 .receipt-meta, .meta {{ background:var(--v10-cream); border:1px solid #eadfbe; border-radius:12px; padding:12px 15px; }}
@@ -561,7 +569,7 @@ tr:nth-child(even) td {{ background:#fbfcfa; }}
 .save-img-btn {{ background:var(--v10-green) !important; border-radius:10px !important; border:1px solid var(--v10-gold) !important; box-shadow:0 6px 16px rgba(7,93,44,.18) !important; }}
 .save-img-btn:hover {{ background:var(--v10-green-2) !important; }}
 .footer {{ color:#718078 !important; }}
-@media (max-width:700px) {{ body {{ padding:8px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:18px !important; border-radius:14px !important; }}   .company-info h1, .title h1 {{ font-size:20px !important; }} .receipt-meta, .meta {{ padding:9px 10px; }} th, td {{ padding:8px 6px !important; font-size:11px !important; }} .save-img-btn {{ width:100%; }} }}
+@media (max-width:700px) {{ body {{ padding:4px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:10px !important; border-radius:10px !important; }}   .company-info h1, .title h1 {{ font-size:18px !important; }} .receipt-meta, .meta {{ padding:6px 7px; }} th, td {{ padding:4px 2px !important; font-size:9px !important; overflow-wrap:anywhere !important; }} .save-img-btn {{ width:100%; padding:9px 12px !important; }} }}
 
 /* ================================================================
    FINAL FIX — SIDEBAR + RECEIPT BRANDING
@@ -633,7 +641,7 @@ body {{
     width: 100% !important;
     max-width: 900px !important;
     box-sizing: border-box !important;
-    padding: clamp(16px, 4vw, 40px) !important;
+    padding: clamp(16px, 4vw, 30px) !important;
     margin: 0 auto !important;
 }}
 #receiptContent table {{
@@ -654,11 +662,8 @@ body {{
 
 </style>
 </head>
-<body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px;">
-<div class="save-btn-container">
-<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
-</div>
-<div id="receiptContent" style="max-width: 900px; margin: auto; background: white; border-top: 10px solid #1b5e20; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<body style="font-family: 'Lora', Georgia, serif; background-color: #f4f7f6; padding: 12px;">
+<div id="receiptContent" style="max-width: 900px; margin: auto; background: white; border-top: 10px solid #1b5e20; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
 <tr>
 <td>
@@ -749,6 +754,10 @@ THIS DOCUMENT WAS ELECTRONICALLY GENERATED AND IS VALID WITHOUT SIGNATURE.
 </p>
 </div>
 </div>
+</div>
+<div class="save-btn-container">
+<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
+</div>
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
@@ -789,9 +798,9 @@ def generate_planner_html(planner_tasks, custom_title="AILYN HOUSE PROJECT"):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap');
-body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0; margin: 0; padding: 30px; color: #1e293b; }}
-.receipt-card {{ max-width: 900px; margin: auto; background: #ffffff; border-radius: 12px; padding: 35px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap');
+body {{ font-family: 'Lora', Georgia, serif; background-color: #f0f4f0; margin: 0; padding: 12px; color: #26352d; }}
+.receipt-card {{ max-width: 900px; margin: auto; background: #ffffff; border-radius: 12px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
 .header {{ border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-start; }}
 .title h1 {{ color: #1b5e20; margin: 0; font-size: 24px; font-weight: 800; text-transform: uppercase; }}
 .title p {{ color: #64748b; margin: 4px 0 0 0; font-size: 13px; font-weight: 600; }}
@@ -818,9 +827,11 @@ body {{ font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f0f4f0;
 :root {{ --v10-green:#075d2c; --v10-green-2:#0b7a3b; --v10-gold:#d6a84f; --v10-cream:#f7f5ee; --v10-ink:#17352a; --v10-line:#dfe7df; }}
 body {{ background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; color:var(--v10-ink) !important; }}
 .receipt-container, .receipt-card, #receiptContent {{ border-top-color:var(--v10-green) !important; border-radius:18px !important; box-shadow:0 16px 45px rgba(7,93,44,.12),0 2px 8px rgba(0,0,0,.05) !important; position:relative; overflow:hidden; }}
+.receipt-container, .receipt-card, #receiptContent {{ border:1px solid #dfe7df !important; border-top:10px solid var(--v10-green) !important; border-bottom:4px solid var(--v10-green) !important; }}
+.save-btn-container {{ text-align: center; margin: 18px auto 6px; padding-top: 14px; border-top: 1px solid var(--v10-gold); max-width: 900px; }}
 
 
-.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:-.5px !important; font-weight:800 !important; }}
+.company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:0 !important; font-weight:600 !important; }}
 .company-info p, .title p {{ color:#617168 !important; }}
 .receipt-meta h2, .meta h3 {{ color:var(--v10-green) !important; }}
 .receipt-meta, .meta {{ background:var(--v10-cream); border:1px solid #eadfbe; border-radius:12px; padding:12px 15px; }}
@@ -835,7 +846,7 @@ tr:nth-child(even) td {{ background:#fbfcfa; }}
 .save-img-btn {{ background:var(--v10-green) !important; border-radius:10px !important; border:1px solid var(--v10-gold) !important; box-shadow:0 6px 16px rgba(7,93,44,.18) !important; }}
 .save-img-btn:hover {{ background:var(--v10-green-2) !important; }}
 .footer {{ color:#718078 !important; }}
-@media (max-width:700px) {{ body {{ padding:8px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:18px !important; border-radius:14px !important; }}   .company-info h1, .title h1 {{ font-size:20px !important; }} .receipt-meta, .meta {{ padding:9px 10px; }} th, td {{ padding:8px 6px !important; font-size:11px !important; }} .save-img-btn {{ width:100%; }} }}
+@media (max-width:700px) {{ body {{ padding:4px !important; }} .receipt-container, .receipt-card, #receiptContent {{ padding:10px !important; border-radius:10px !important; }}   .company-info h1, .title h1 {{ font-size:18px !important; }} .receipt-meta, .meta {{ padding:6px 7px; }} th, td {{ padding:4px 2px !important; font-size:9px !important; overflow-wrap:anywhere !important; }} .save-img-btn {{ width:100%; padding:9px 12px !important; }} }}
 
 /* ================================================================
    FINAL FIX — SIDEBAR + RECEIPT BRANDING
@@ -902,9 +913,6 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
 </style>
 </head>
 <body>
-<div class="save-btn-container">
-<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
-</div>
 <div class="receipt-card" id="receiptContent">
 <div class="header">
 <div class="title">
@@ -940,6 +948,9 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
 <div class="footer">
 Official Construction Task Schedule Document Electronically Generated
 </div>
+</div>
+<div class="save-btn-container">
+<button class="save-img-btn" onclick="saveAsImage()">SAVE RECEIPT IMAGE</button>
 </div>
 <script>
 function saveAsImage() {{
@@ -1716,7 +1727,7 @@ elif view == "planner_output":
     st.markdown("### 🖼️ SEE PHOTO & DOWNLOAD SCHEDULE RECEIPT")
     st.components.v1.html(
         html_report,
-        height=receipt_preview_height(len(sorted_tasks), row_height=150),
+        height=receipt_preview_height(len(sorted_tasks), row_height=150, base_height=700),
         scrolling=False,
     )
     st.download_button(
@@ -1872,7 +1883,7 @@ elif view == "export":
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
     st.components.v1.html(
         html,
-        height=receipt_preview_height(len(st.session_state.records), row_height=42),
+        height=receipt_preview_height(len(st.session_state.records), row_height=45, base_height=700),
         scrolling=False,
     )
     if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
@@ -2092,7 +2103,7 @@ elif view == "payroll_export":
         html,
         height=receipt_preview_height(
             len(st.session_state.labor_records) + len(st.session_state.payroll_expenses),
-            row_height=55,
+            row_height=70,
         ),
         scrolling=False,
     )
@@ -2153,7 +2164,7 @@ elif view == "receipt_archive":
                         len(st.session_state.labor_records)
                         if report_type == "payroll"
                         else len(st.session_state.records),
-                        row_height=55 if report_type == "payroll" else 42,
+                        row_height=70 if report_type == "payroll" else 45,
                     ),
                     scrolling=False,
                 )
