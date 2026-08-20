@@ -288,6 +288,21 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 :root {{ --v10-green:#075d2c; --v10-green-2:#0b7a3b; --v10-gold:#d6a84f; --v10-cream:#f7f5ee; --v10-ink:#17352a; --v10-line:#dfe7df; }}
 body {{ background:linear-gradient(180deg,#eef5ef 0%,#f8faf7 100%) !important; color:var(--v10-ink) !important; }}
 .receipt-container, .receipt-card, #receiptContent {{ border-top-color:var(--v10-green) !important; border-radius:18px !important; box-shadow:0 16px 45px rgba(7,93,44,.12),0 2px 8px rgba(0,0,0,.05) !important; position:relative; overflow:hidden; }}
+.receipt-container, .receipt-card, #receiptContent {{
+    border: 1px solid #dfe7df !important;
+    border-top: 10px solid var(--v10-green) !important;
+    border-bottom: 4px solid var(--v10-green) !important;
+}}
+.receipt-container, .receipt-card, #receiptContent {{
+    border: 1px solid #dfe7df !important;
+    border-top: 10px solid var(--v10-green) !important;
+    border-bottom: 4px solid var(--v10-green) !important;
+}}
+.receipt-container, .receipt-card, #receiptContent {{
+    border: 1px solid #dfe7df !important;
+    border-top: 10px solid var(--v10-green) !important;
+    border-bottom: 4px solid var(--v10-green) !important;
+}}
 
 
 .company-info h1, .title h1 {{ color:var(--v10-green) !important; letter-spacing:-.5px !important; font-weight:800 !important; }}
