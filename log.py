@@ -1,4 +1,9 @@
 import os
+# ================================================================
+# MAIN ORIGINAL RECEIPT SIZE LOCK APPLIED TO V10
+# Base composition: 1200 x 675 minimum, matching the MAIN receipt.
+# All devices visually scale this same composition; no device ratio.
+# ================================================================
 import time
 import base64
 from datetime import datetime
@@ -440,7 +445,429 @@ body {{ margin:0 !important; padding:14px !important; background:linear-gradient
   #receiptContent .footer {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; font-size:7px !important; }}
 }}
 
+
+/* ================================================================
+   REFERENCE LOOK — EXACT VISUAL DIRECTION FROM USER SCREENSHOT
+   LOOK ONLY: receipt data/calculations/save-image remain unchanged.
+   ================================================================ */
+:root{{
+  --ref-green:#075b2b;
+  --ref-green-dark:#044820;
+  --ref-gold:#d4aa4f;
+  --ref-line:#dfe6df;
+  --ref-soft:#f7faf7;
+  --ref-text:#33413a;
+  --ref-muted:#6f7b75;
+}}
+html,body{{
+  margin:0 !important;
+  padding:0 !important;
+  background:#ffffff !important;
+  color:var(--ref-text) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}}
+.save-btn-container{{
+  margin:0 auto 8px !important;
+  text-align:center !important;
+}}
+.save-img-btn{{
+  background:var(--ref-green) !important;
+  border:0 !important;
+  color:#fff !important;
+  padding:8px 18px !important;
+  border-radius:6px !important;
+  font-size:11px !important;
+  box-shadow:none !important;
+}}
+.receipt-container,
+#receiptContent,
+.receipt-card{{
+  width:min(100%,1100px) !important;
+  max-width:1100px !important;
+  margin:0 auto !important;
+  padding:20px 24px 14px !important;
+  background:#fff !important;
+  border:1px solid #d8e0da !important;
+  border-top:7px solid var(--ref-green) !important;
+  border-bottom:5px solid var(--ref-green) !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  position:relative !important;
+}}
+.receipt-container::after,
+#receiptContent::after,
+.receipt-card::after{{
+  content:"" !important;
+  position:absolute !important;
+  top:-7px !important;
+  right:0 !important;
+  width:18% !important;
+  height:7px !important;
+  background:var(--ref-gold) !important;
+  opacity:1 !important;
+}}
+.receipt-container::before,
+#receiptContent::before,
+.receipt-card::before{{
+  display:none !important;
+}}
+
+/* Header */
+.header{{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  margin:0 0 15px !important;
+  padding:7px 0 12px !important;
+  border-bottom:1px solid var(--ref-line) !important;
+}}
+.company-info,.title{{
+  padding-left:0 !important;
+}}
+.brand-lockup{{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+}}
+.brand-lockup .ah-logo{{
+  width:42px !important;
+  height:42px !important;
+  flex:0 0 42px !important;
+}}
+.brand-lockup .ah-logo svg{{
+  width:42px !important;
+  height:42px !important;
+  display:block !important;
+}}
+.company-info h1,.title h1{{
+  margin:0 !important;
+  color:var(--ref-green) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  letter-spacing:-.4px !important;
+  font-weight:800 !important;
+}}
+.brand-tag{{
+  color:#718078 !important;
+  font-size:7px !important;
+  line-height:1.2 !important;
+  margin-top:2px !important;
+  font-weight:600 !important;
+}}
+.brand-subtitle{{
+  margin:5px 0 1px 51px !important;
+  color:#59675f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+}}
+.company-info p:not(.brand-subtitle){{
+  margin:2px 0 !important;
+  color:#68746e !important;
+  font-size:7px !important;
+  line-height:1.25 !important;
+}}
+.receipt-meta,.meta{{
+  min-width:175px !important;
+  text-align:right !important;
+  margin:0 !important;
+  padding:3px 0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}}
+.receipt-meta h2,.meta h3{{
+  margin:0 0 5px !important;
+  color:var(--ref-green) !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+.receipt-meta p,.meta p{{
+  margin:2px 0 !important;
+  color:#68736d !important;
+  font-size:7px !important;
+}}
+
+/* Tables */
+table{{
+  width:100% !important;
+  max-width:100% !important;
+  table-layout:fixed !important;
+  border-collapse:collapse !important;
+  margin:0 0 12px !important;
+  font-size:8px !important;
+}}
+th{{
+  background:var(--ref-green) !important;
+  color:#fff !important;
+  border-right:1px solid rgba(255,255,255,.20) !important;
+  padding:6px 6px !important;
+  font-size:7px !important;
+  line-height:1.15 !important;
+  letter-spacing:.25px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+td{{
+  padding:7px 6px !important;
+  border-bottom:1px solid #e9eeea !important;
+  color:#49564f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  overflow-wrap:anywhere !important;
+  word-break:normal !important;
+  vertical-align:middle !important;
+}}
+tbody tr:nth-child(even) td{{background:#fafcfb !important;}}
+.desccol,#receiptContent td:nth-child(3){{
+  color:var(--ref-green) !important;
+  font-weight:700 !important;
+}}
+
+/* Construction summary */
+.summary-container{{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:7px !important;
+}}
+.summary-table{{
+  width:310px !important;
+  max-width:100% !important;
+}}
+.grand-total{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  color:#fff !important;
+  padding:11px 13px !important;
+  border:0 !important;
+  border-radius:8px !important;
+  margin-top:0 !important;
+  box-shadow:none !important;
+}}
+.balance-info{{font-size:8px !important;line-height:1.5 !important;}}
+.balance-row{{display:flex !important;justify-content:space-between !important;gap:12px !important;}}
+.material-row{{
+  font-size:12px !important;
+  font-weight:800 !important;
+  padding-bottom:5px !important;
+  border-bottom:1px solid rgba(255,255,255,.25) !important;
+}}
+.final-balance-row{{
+  display:flex !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  border-top:1px dashed rgba(255,255,255,.35) !important;
+  margin-top:5px !important;
+  padding-top:6px !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+}}
+
+/* Footer */
+.footer{{
+  margin:12px 0 0 !important;
+  padding-top:8px !important;
+  border-top:1px solid #e4e9e5 !important;
+  text-align:center !important;
+  font-size:6px !important;
+  color:#89938e !important;
+  letter-spacing:1px !important;
+}}
+
+/* Payroll-specific */
+.payroll-brand-cell{{
+  vertical-align:top !important;
+}}
+#receiptContent .payroll-brand-cell .brand-lockup{{
+  justify-content:flex-start !important;
+}}
+#receiptContent > table{{
+  margin-bottom:12px !important;
+}}
+#receiptContent > table:first-of-type{{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}}
+#receiptContent > table:first-of-type h1{{
+  font-size:18px !important;
+}}
+#receiptContent > table:nth-of-type(2) th{{
+  font-size:7px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:nth-of-type(2) td{{
+  font-size:8px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:last-of-type td[style*="background"]{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  border:0 !important;
+  border-radius:8px !important;
+  padding:12px !important;
+}}
+#receiptContent span[style*="font-size: 32px"]{{
+  font-size:18px !important;
+}}
+#receiptContent table td[style*="font-size: 15px"]{{
+  font-size:9px !important;
+}}
+
+/* Schedule */
+.task-grid{{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin-top:5px !important;
+}}
+.task-card{{
+  min-width:0 !important;
+  background:#fff !important;
+  border:1px solid #dfe7e1 !important;
+  border-left:4px solid var(--ref-green) !important;
+  border-radius:7px !important;
+  padding:10px !important;
+  box-shadow:none !important;
+}}
+.task-date{{
+  display:inline-block !important;
+  color:var(--ref-green) !important;
+  background:#edf5ef !important;
+  border:1px solid #d8e7db !important;
+  border-radius:4px !important;
+  padding:3px 6px !important;
+  font-size:7px !important;
+}}
+.task-name{{
+  color:var(--ref-green) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+}}
+.task-phase,.task-status{{
+  font-size:7px !important;
+}}
+.photo-gallery{{gap:5px !important;}}
+.photo-img{{max-width:100% !important;height:auto !important;border-radius:4px !important;}}
+
+/* Mobile: same reference look, compact enough to fit the V10 panel */
+@media(max-width:700px){{
+  body{{padding:0 !important;}}
+  .save-btn-container{{margin-bottom:5px !important;}}
+  .receipt-container,#receiptContent,.receipt-card{{
+    width:100% !important;
+    max-width:100% !important;
+    padding:12px 10px 9px !important;
+    border-top-width:5px !important;
+    border-bottom-width:3px !important;
+  }}
+  .receipt-container::after,#receiptContent::after,.receipt-card::after{{
+    top:-5px !important;height:5px !important;width:22% !important;
+  }}
+  .header{{
+    gap:8px !important;
+    margin-bottom:8px !important;
+    padding-bottom:8px !important;
+  }}
+  .brand-lockup{{gap:6px !important;}}
+  .brand-lockup .ah-logo,.brand-lockup .ah-logo svg{{
+    width:28px !important;height:28px !important;
+  }}
+  .company-info h1,.title h1{{font-size:13px !important;}}
+  .brand-tag{{font-size:5px !important;}}
+  .brand-subtitle{{margin-left:34px !important;font-size:5px !important;}}
+  .company-info p:not(.brand-subtitle){{font-size:5px !important;}}
+  .receipt-meta,.meta{{min-width:90px !important;}}
+  .receipt-meta h2,.meta h3{{font-size:8px !important;margin-bottom:3px !important;}}
+  .receipt-meta p,.meta p{{font-size:5px !important;}}
+  table{{font-size:6px !important;margin-bottom:7px !important;}}
+  th{{padding:4px 3px !important;font-size:5px !important;}}
+  td{{padding:4px 3px !important;font-size:6px !important;}}
+  .desccol,#receiptContent td:nth-child(3){{font-size:6px !important;}}
+  .summary-container{{margin-top:4px !important;}}
+  .summary-table{{width:48% !important;min-width:0 !important;}}
+  .grand-total{{padding:7px 8px !important;border-radius:6px !important;}}
+  .balance-info{{font-size:5px !important;}}
+  .material-row,.final-balance-row{{font-size:7px !important;}}
+  .footer{{font-size:4px !important;margin-top:6px !important;padding-top:5px !important;}}
+  .task-grid{{grid-template-columns:1fr !important;gap:6px !important;}}
+  .task-card{{padding:7px !important;}}
+  .task-name{{font-size:9px !important;}}
+  #receiptContent > table:first-of-type h1{{font-size:13px !important;}}
+  #receiptContent > table:nth-of-type(2) th,
+  #receiptContent > table:nth-of-type(2) td{{font-size:5px !important;padding:4px 2px !important;}}
+  #receiptContent span[style*="font-size: 32px"]{{font-size:14px !important;}}
+  #receiptContent table td[style*="font-size: 15px"]{{font-size:6px !important;}}
+}}
+
 </style>
+
+<style id="MAIN_ORIGINAL_RECEIPT_SIZE_LOCK">
+/* ================================================================
+   EDIT HERE — MAIN ORIGINAL RECEIPT SIZE
+   Reference MAIN receipt base: 1200px wide x 675px minimum.
+   Same proportion on every device; phone only scales it.
+   No 9:16 or 16:9 device-specific receipt is created.
+   ================================================================ */
+#receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+  width: 1200px !important;
+  max-width: 1200px !important;
+  min-width: 1200px !important;
+  min-height: 675px !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  transform-origin: top left !important;
+}}
+#receiptContent .head, #receiptContent .header {{
+  grid-template-columns: 1.55fr .85fr !important;
+}}
+#receiptContent .lower {{
+  grid-template-columns: 1fr .95fr !important;
+  gap: 70px !important;
+}}
+@media (max-width: 700px) {{
+  #receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+    width: 1200px !important;
+    max-width: 1200px !important;
+    min-width: 1200px !important;
+    min-height: 675px !important;
+    aspect-ratio: auto !important;
+  }}
+}}
+</style>
+<script>
+/* ================================================================
+   EDIT HERE — UNIVERSAL FIT OF THE MAIN ORIGINAL SIZE
+   The receipt remains 1200x675 internally. It is only visually scaled
+   to fit the client's viewport. Export is not changed by this scaling.
+   ================================================================ */
+function fitMainOriginalReceiptSize() {{
+  const el = document.getElementById('receiptContent');
+  if (!el) return;
+  const baseW = 1200;
+  const viewportW = Math.max(280, window.innerWidth);
+  const scale = Math.min(1, viewportW / baseW);
+  el.style.width = baseW + 'px';
+  el.style.maxWidth = baseW + 'px';
+  el.style.minWidth = baseW + 'px';
+  el.style.transformOrigin = 'top left';
+  el.style.transform = 'scale(' + scale + ')';
+  el.style.marginLeft = Math.max(0, (viewportW - baseW * scale) / 2) + 'px';
+  el.style.marginRight = '0';
+  el.style.marginBottom = Math.round(Math.max(0, el.offsetHeight * (scale - 1))) + 'px';
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
+}}
+window.addEventListener('load', fitMainOriginalReceiptSize);
+window.addEventListener('resize', fitMainOriginalReceiptSize);
+</script>
+
 </head>
 <body>
 <div class="save-btn-container">
@@ -450,8 +877,8 @@ body {{ margin:0 !important; padding:14px !important; background:linear-gradient
 <div class="header">
 <div class="company-info">
 <div class="brand-lockup">{brand_logo}<div>
-<h1>AILYN HOUSE PROJECT </h1>
-<div class="brand-tag">SYSTEM </div>
+<h1>AILYN HOUSE</h1>
+<div class="brand-tag">BUILDING HOMES • BUILDING TRUST</div>
 </div></div>
 <p class="brand-subtitle">Official Materials & Expense Receipt</p>
 <p>Management System {APP_VERSION}</p>
@@ -733,7 +1160,429 @@ body {{ margin:0 !important; padding:14px !important; background:linear-gradient
   #receiptContent > div:last-child {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; }}
 }}
 
+
+/* ================================================================
+   REFERENCE LOOK — EXACT VISUAL DIRECTION FROM USER SCREENSHOT
+   LOOK ONLY: receipt data/calculations/save-image remain unchanged.
+   ================================================================ */
+:root{{
+  --ref-green:#075b2b;
+  --ref-green-dark:#044820;
+  --ref-gold:#d4aa4f;
+  --ref-line:#dfe6df;
+  --ref-soft:#f7faf7;
+  --ref-text:#33413a;
+  --ref-muted:#6f7b75;
+}}
+html,body{{
+  margin:0 !important;
+  padding:0 !important;
+  background:#ffffff !important;
+  color:var(--ref-text) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}}
+.save-btn-container{{
+  margin:0 auto 8px !important;
+  text-align:center !important;
+}}
+.save-img-btn{{
+  background:var(--ref-green) !important;
+  border:0 !important;
+  color:#fff !important;
+  padding:8px 18px !important;
+  border-radius:6px !important;
+  font-size:11px !important;
+  box-shadow:none !important;
+}}
+.receipt-container,
+#receiptContent,
+.receipt-card{{
+  width:min(100%,1100px) !important;
+  max-width:1100px !important;
+  margin:0 auto !important;
+  padding:20px 24px 14px !important;
+  background:#fff !important;
+  border:1px solid #d8e0da !important;
+  border-top:7px solid var(--ref-green) !important;
+  border-bottom:5px solid var(--ref-green) !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  position:relative !important;
+}}
+.receipt-container::after,
+#receiptContent::after,
+.receipt-card::after{{
+  content:"" !important;
+  position:absolute !important;
+  top:-7px !important;
+  right:0 !important;
+  width:18% !important;
+  height:7px !important;
+  background:var(--ref-gold) !important;
+  opacity:1 !important;
+}}
+.receipt-container::before,
+#receiptContent::before,
+.receipt-card::before{{
+  display:none !important;
+}}
+
+/* Header */
+.header{{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  margin:0 0 15px !important;
+  padding:7px 0 12px !important;
+  border-bottom:1px solid var(--ref-line) !important;
+}}
+.company-info,.title{{
+  padding-left:0 !important;
+}}
+.brand-lockup{{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+}}
+.brand-lockup .ah-logo{{
+  width:42px !important;
+  height:42px !important;
+  flex:0 0 42px !important;
+}}
+.brand-lockup .ah-logo svg{{
+  width:42px !important;
+  height:42px !important;
+  display:block !important;
+}}
+.company-info h1,.title h1{{
+  margin:0 !important;
+  color:var(--ref-green) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  letter-spacing:-.4px !important;
+  font-weight:800 !important;
+}}
+.brand-tag{{
+  color:#718078 !important;
+  font-size:7px !important;
+  line-height:1.2 !important;
+  margin-top:2px !important;
+  font-weight:600 !important;
+}}
+.brand-subtitle{{
+  margin:5px 0 1px 51px !important;
+  color:#59675f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+}}
+.company-info p:not(.brand-subtitle){{
+  margin:2px 0 !important;
+  color:#68746e !important;
+  font-size:7px !important;
+  line-height:1.25 !important;
+}}
+.receipt-meta,.meta{{
+  min-width:175px !important;
+  text-align:right !important;
+  margin:0 !important;
+  padding:3px 0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}}
+.receipt-meta h2,.meta h3{{
+  margin:0 0 5px !important;
+  color:var(--ref-green) !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+.receipt-meta p,.meta p{{
+  margin:2px 0 !important;
+  color:#68736d !important;
+  font-size:7px !important;
+}}
+
+/* Tables */
+table{{
+  width:100% !important;
+  max-width:100% !important;
+  table-layout:fixed !important;
+  border-collapse:collapse !important;
+  margin:0 0 12px !important;
+  font-size:8px !important;
+}}
+th{{
+  background:var(--ref-green) !important;
+  color:#fff !important;
+  border-right:1px solid rgba(255,255,255,.20) !important;
+  padding:6px 6px !important;
+  font-size:7px !important;
+  line-height:1.15 !important;
+  letter-spacing:.25px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+td{{
+  padding:7px 6px !important;
+  border-bottom:1px solid #e9eeea !important;
+  color:#49564f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  overflow-wrap:anywhere !important;
+  word-break:normal !important;
+  vertical-align:middle !important;
+}}
+tbody tr:nth-child(even) td{{background:#fafcfb !important;}}
+.desccol,#receiptContent td:nth-child(3){{
+  color:var(--ref-green) !important;
+  font-weight:700 !important;
+}}
+
+/* Construction summary */
+.summary-container{{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:7px !important;
+}}
+.summary-table{{
+  width:310px !important;
+  max-width:100% !important;
+}}
+.grand-total{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  color:#fff !important;
+  padding:11px 13px !important;
+  border:0 !important;
+  border-radius:8px !important;
+  margin-top:0 !important;
+  box-shadow:none !important;
+}}
+.balance-info{{font-size:8px !important;line-height:1.5 !important;}}
+.balance-row{{display:flex !important;justify-content:space-between !important;gap:12px !important;}}
+.material-row{{
+  font-size:12px !important;
+  font-weight:800 !important;
+  padding-bottom:5px !important;
+  border-bottom:1px solid rgba(255,255,255,.25) !important;
+}}
+.final-balance-row{{
+  display:flex !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  border-top:1px dashed rgba(255,255,255,.35) !important;
+  margin-top:5px !important;
+  padding-top:6px !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+}}
+
+/* Footer */
+.footer{{
+  margin:12px 0 0 !important;
+  padding-top:8px !important;
+  border-top:1px solid #e4e9e5 !important;
+  text-align:center !important;
+  font-size:6px !important;
+  color:#89938e !important;
+  letter-spacing:1px !important;
+}}
+
+/* Payroll-specific */
+.payroll-brand-cell{{
+  vertical-align:top !important;
+}}
+#receiptContent .payroll-brand-cell .brand-lockup{{
+  justify-content:flex-start !important;
+}}
+#receiptContent > table{{
+  margin-bottom:12px !important;
+}}
+#receiptContent > table:first-of-type{{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}}
+#receiptContent > table:first-of-type h1{{
+  font-size:18px !important;
+}}
+#receiptContent > table:nth-of-type(2) th{{
+  font-size:7px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:nth-of-type(2) td{{
+  font-size:8px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:last-of-type td[style*="background"]{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  border:0 !important;
+  border-radius:8px !important;
+  padding:12px !important;
+}}
+#receiptContent span[style*="font-size: 32px"]{{
+  font-size:18px !important;
+}}
+#receiptContent table td[style*="font-size: 15px"]{{
+  font-size:9px !important;
+}}
+
+/* Schedule */
+.task-grid{{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin-top:5px !important;
+}}
+.task-card{{
+  min-width:0 !important;
+  background:#fff !important;
+  border:1px solid #dfe7e1 !important;
+  border-left:4px solid var(--ref-green) !important;
+  border-radius:7px !important;
+  padding:10px !important;
+  box-shadow:none !important;
+}}
+.task-date{{
+  display:inline-block !important;
+  color:var(--ref-green) !important;
+  background:#edf5ef !important;
+  border:1px solid #d8e7db !important;
+  border-radius:4px !important;
+  padding:3px 6px !important;
+  font-size:7px !important;
+}}
+.task-name{{
+  color:var(--ref-green) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+}}
+.task-phase,.task-status{{
+  font-size:7px !important;
+}}
+.photo-gallery{{gap:5px !important;}}
+.photo-img{{max-width:100% !important;height:auto !important;border-radius:4px !important;}}
+
+/* Mobile: same reference look, compact enough to fit the V10 panel */
+@media(max-width:700px){{
+  body{{padding:0 !important;}}
+  .save-btn-container{{margin-bottom:5px !important;}}
+  .receipt-container,#receiptContent,.receipt-card{{
+    width:100% !important;
+    max-width:100% !important;
+    padding:12px 10px 9px !important;
+    border-top-width:5px !important;
+    border-bottom-width:3px !important;
+  }}
+  .receipt-container::after,#receiptContent::after,.receipt-card::after{{
+    top:-5px !important;height:5px !important;width:22% !important;
+  }}
+  .header{{
+    gap:8px !important;
+    margin-bottom:8px !important;
+    padding-bottom:8px !important;
+  }}
+  .brand-lockup{{gap:6px !important;}}
+  .brand-lockup .ah-logo,.brand-lockup .ah-logo svg{{
+    width:28px !important;height:28px !important;
+  }}
+  .company-info h1,.title h1{{font-size:13px !important;}}
+  .brand-tag{{font-size:5px !important;}}
+  .brand-subtitle{{margin-left:34px !important;font-size:5px !important;}}
+  .company-info p:not(.brand-subtitle){{font-size:5px !important;}}
+  .receipt-meta,.meta{{min-width:90px !important;}}
+  .receipt-meta h2,.meta h3{{font-size:8px !important;margin-bottom:3px !important;}}
+  .receipt-meta p,.meta p{{font-size:5px !important;}}
+  table{{font-size:6px !important;margin-bottom:7px !important;}}
+  th{{padding:4px 3px !important;font-size:5px !important;}}
+  td{{padding:4px 3px !important;font-size:6px !important;}}
+  .desccol,#receiptContent td:nth-child(3){{font-size:6px !important;}}
+  .summary-container{{margin-top:4px !important;}}
+  .summary-table{{width:48% !important;min-width:0 !important;}}
+  .grand-total{{padding:7px 8px !important;border-radius:6px !important;}}
+  .balance-info{{font-size:5px !important;}}
+  .material-row,.final-balance-row{{font-size:7px !important;}}
+  .footer{{font-size:4px !important;margin-top:6px !important;padding-top:5px !important;}}
+  .task-grid{{grid-template-columns:1fr !important;gap:6px !important;}}
+  .task-card{{padding:7px !important;}}
+  .task-name{{font-size:9px !important;}}
+  #receiptContent > table:first-of-type h1{{font-size:13px !important;}}
+  #receiptContent > table:nth-of-type(2) th,
+  #receiptContent > table:nth-of-type(2) td{{font-size:5px !important;padding:4px 2px !important;}}
+  #receiptContent span[style*="font-size: 32px"]{{font-size:14px !important;}}
+  #receiptContent table td[style*="font-size: 15px"]{{font-size:6px !important;}}
+}}
+
 </style>
+
+<style id="MAIN_ORIGINAL_RECEIPT_SIZE_LOCK">
+/* ================================================================
+   EDIT HERE — MAIN ORIGINAL RECEIPT SIZE
+   Reference MAIN receipt base: 1200px wide x 675px minimum.
+   Same proportion on every device; phone only scales it.
+   No 9:16 or 16:9 device-specific receipt is created.
+   ================================================================ */
+#receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+  width: 1200px !important;
+  max-width: 1200px !important;
+  min-width: 1200px !important;
+  min-height: 675px !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  transform-origin: top left !important;
+}}
+#receiptContent .head, #receiptContent .header {{
+  grid-template-columns: 1.55fr .85fr !important;
+}}
+#receiptContent .lower {{
+  grid-template-columns: 1fr .95fr !important;
+  gap: 70px !important;
+}}
+@media (max-width: 700px) {{
+  #receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+    width: 1200px !important;
+    max-width: 1200px !important;
+    min-width: 1200px !important;
+    min-height: 675px !important;
+    aspect-ratio: auto !important;
+  }}
+}}
+</style>
+<script>
+/* ================================================================
+   EDIT HERE — UNIVERSAL FIT OF THE MAIN ORIGINAL SIZE
+   The receipt remains 1200x675 internally. It is only visually scaled
+   to fit the client's viewport. Export is not changed by this scaling.
+   ================================================================ */
+function fitMainOriginalReceiptSize() {{
+  const el = document.getElementById('receiptContent');
+  if (!el) return;
+  const baseW = 1200;
+  const viewportW = Math.max(280, window.innerWidth);
+  const scale = Math.min(1, viewportW / baseW);
+  el.style.width = baseW + 'px';
+  el.style.maxWidth = baseW + 'px';
+  el.style.minWidth = baseW + 'px';
+  el.style.transformOrigin = 'top left';
+  el.style.transform = 'scale(' + scale + ')';
+  el.style.marginLeft = Math.max(0, (viewportW - baseW * scale) / 2) + 'px';
+  el.style.marginRight = '0';
+  el.style.marginBottom = Math.round(Math.max(0, el.offsetHeight * (scale - 1))) + 'px';
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
+}}
+window.addEventListener('load', fitMainOriginalReceiptSize);
+window.addEventListener('resize', fitMainOriginalReceiptSize);
+</script>
+
 </head>
 <body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px;">
 <div class="save-btn-container">
@@ -744,8 +1593,8 @@ body {{ margin:0 !important; padding:14px !important; background:linear-gradient
 <tr>
 <td class="payroll-brand-cell">
 <div class="brand-lockup">{brand_logo}<div>
-<h1>AILYN HOUSE PROJECT</h1>
-<div class="brand-tag">SYSTEM</div>
+<h1>AILYN HOUSE</h1>
+<div class="brand-tag">BUILDING HOMES • BUILDING TRUST</div>
 </div></div>
 <p class="brand-subtitle">Official Payroll & Labor Receipt</p>
 <p class="system-line">Management System {APP_VERSION}</p>
@@ -1034,7 +1883,429 @@ body {{ margin:0 !important; padding:14px !important; background:linear-gradient
   #receiptContent .footer {{ margin:12px 10px 0 !important; padding:10px 0 14px !important; }}
 }}
 
+
+/* ================================================================
+   REFERENCE LOOK — EXACT VISUAL DIRECTION FROM USER SCREENSHOT
+   LOOK ONLY: receipt data/calculations/save-image remain unchanged.
+   ================================================================ */
+:root{{
+  --ref-green:#075b2b;
+  --ref-green-dark:#044820;
+  --ref-gold:#d4aa4f;
+  --ref-line:#dfe6df;
+  --ref-soft:#f7faf7;
+  --ref-text:#33413a;
+  --ref-muted:#6f7b75;
+}}
+html,body{{
+  margin:0 !important;
+  padding:0 !important;
+  background:#ffffff !important;
+  color:var(--ref-text) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+}}
+.save-btn-container{{
+  margin:0 auto 8px !important;
+  text-align:center !important;
+}}
+.save-img-btn{{
+  background:var(--ref-green) !important;
+  border:0 !important;
+  color:#fff !important;
+  padding:8px 18px !important;
+  border-radius:6px !important;
+  font-size:11px !important;
+  box-shadow:none !important;
+}}
+.receipt-container,
+#receiptContent,
+.receipt-card{{
+  width:min(100%,1100px) !important;
+  max-width:1100px !important;
+  margin:0 auto !important;
+  padding:20px 24px 14px !important;
+  background:#fff !important;
+  border:1px solid #d8e0da !important;
+  border-top:7px solid var(--ref-green) !important;
+  border-bottom:5px solid var(--ref-green) !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  box-sizing:border-box !important;
+  overflow:hidden !important;
+  position:relative !important;
+}}
+.receipt-container::after,
+#receiptContent::after,
+.receipt-card::after{{
+  content:"" !important;
+  position:absolute !important;
+  top:-7px !important;
+  right:0 !important;
+  width:18% !important;
+  height:7px !important;
+  background:var(--ref-gold) !important;
+  opacity:1 !important;
+}}
+.receipt-container::before,
+#receiptContent::before,
+.receipt-card::before{{
+  display:none !important;
+}}
+
+/* Header */
+.header{{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:18px !important;
+  margin:0 0 15px !important;
+  padding:7px 0 12px !important;
+  border-bottom:1px solid var(--ref-line) !important;
+}}
+.company-info,.title{{
+  padding-left:0 !important;
+}}
+.brand-lockup{{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+}}
+.brand-lockup .ah-logo{{
+  width:42px !important;
+  height:42px !important;
+  flex:0 0 42px !important;
+}}
+.brand-lockup .ah-logo svg{{
+  width:42px !important;
+  height:42px !important;
+  display:block !important;
+}}
+.company-info h1,.title h1{{
+  margin:0 !important;
+  color:var(--ref-green) !important;
+  font-family:Arial,Helvetica,sans-serif !important;
+  font-size:18px !important;
+  line-height:1 !important;
+  letter-spacing:-.4px !important;
+  font-weight:800 !important;
+}}
+.brand-tag{{
+  color:#718078 !important;
+  font-size:7px !important;
+  line-height:1.2 !important;
+  margin-top:2px !important;
+  font-weight:600 !important;
+}}
+.brand-subtitle{{
+  margin:5px 0 1px 51px !important;
+  color:#59675f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  font-weight:600 !important;
+}}
+.company-info p:not(.brand-subtitle){{
+  margin:2px 0 !important;
+  color:#68746e !important;
+  font-size:7px !important;
+  line-height:1.25 !important;
+}}
+.receipt-meta,.meta{{
+  min-width:175px !important;
+  text-align:right !important;
+  margin:0 !important;
+  padding:3px 0 !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+}}
+.receipt-meta h2,.meta h3{{
+  margin:0 0 5px !important;
+  color:var(--ref-green) !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+.receipt-meta p,.meta p{{
+  margin:2px 0 !important;
+  color:#68736d !important;
+  font-size:7px !important;
+}}
+
+/* Tables */
+table{{
+  width:100% !important;
+  max-width:100% !important;
+  table-layout:fixed !important;
+  border-collapse:collapse !important;
+  margin:0 0 12px !important;
+  font-size:8px !important;
+}}
+th{{
+  background:var(--ref-green) !important;
+  color:#fff !important;
+  border-right:1px solid rgba(255,255,255,.20) !important;
+  padding:6px 6px !important;
+  font-size:7px !important;
+  line-height:1.15 !important;
+  letter-spacing:.25px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+}}
+td{{
+  padding:7px 6px !important;
+  border-bottom:1px solid #e9eeea !important;
+  color:#49564f !important;
+  font-size:8px !important;
+  line-height:1.25 !important;
+  overflow-wrap:anywhere !important;
+  word-break:normal !important;
+  vertical-align:middle !important;
+}}
+tbody tr:nth-child(even) td{{background:#fafcfb !important;}}
+.desccol,#receiptContent td:nth-child(3){{
+  color:var(--ref-green) !important;
+  font-weight:700 !important;
+}}
+
+/* Construction summary */
+.summary-container{{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:7px !important;
+}}
+.summary-table{{
+  width:310px !important;
+  max-width:100% !important;
+}}
+.grand-total{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  color:#fff !important;
+  padding:11px 13px !important;
+  border:0 !important;
+  border-radius:8px !important;
+  margin-top:0 !important;
+  box-shadow:none !important;
+}}
+.balance-info{{font-size:8px !important;line-height:1.5 !important;}}
+.balance-row{{display:flex !important;justify-content:space-between !important;gap:12px !important;}}
+.material-row{{
+  font-size:12px !important;
+  font-weight:800 !important;
+  padding-bottom:5px !important;
+  border-bottom:1px solid rgba(255,255,255,.25) !important;
+}}
+.final-balance-row{{
+  display:flex !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  border-top:1px dashed rgba(255,255,255,.35) !important;
+  margin-top:5px !important;
+  padding-top:6px !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+}}
+
+/* Footer */
+.footer{{
+  margin:12px 0 0 !important;
+  padding-top:8px !important;
+  border-top:1px solid #e4e9e5 !important;
+  text-align:center !important;
+  font-size:6px !important;
+  color:#89938e !important;
+  letter-spacing:1px !important;
+}}
+
+/* Payroll-specific */
+.payroll-brand-cell{{
+  vertical-align:top !important;
+}}
+#receiptContent .payroll-brand-cell .brand-lockup{{
+  justify-content:flex-start !important;
+}}
+#receiptContent > table{{
+  margin-bottom:12px !important;
+}}
+#receiptContent > table:first-of-type{{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}}
+#receiptContent > table:first-of-type h1{{
+  font-size:18px !important;
+}}
+#receiptContent > table:nth-of-type(2) th{{
+  font-size:7px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:nth-of-type(2) td{{
+  font-size:8px !important;
+  padding:6px 5px !important;
+}}
+#receiptContent > table:last-of-type td[style*="background"]{{
+  background:linear-gradient(135deg,var(--ref-green),var(--ref-green-dark)) !important;
+  border:0 !important;
+  border-radius:8px !important;
+  padding:12px !important;
+}}
+#receiptContent span[style*="font-size: 32px"]{{
+  font-size:18px !important;
+}}
+#receiptContent table td[style*="font-size: 15px"]{{
+  font-size:9px !important;
+}}
+
+/* Schedule */
+.task-grid{{
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:9px !important;
+  margin-top:5px !important;
+}}
+.task-card{{
+  min-width:0 !important;
+  background:#fff !important;
+  border:1px solid #dfe7e1 !important;
+  border-left:4px solid var(--ref-green) !important;
+  border-radius:7px !important;
+  padding:10px !important;
+  box-shadow:none !important;
+}}
+.task-date{{
+  display:inline-block !important;
+  color:var(--ref-green) !important;
+  background:#edf5ef !important;
+  border:1px solid #d8e7db !important;
+  border-radius:4px !important;
+  padding:3px 6px !important;
+  font-size:7px !important;
+}}
+.task-name{{
+  color:var(--ref-green) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+}}
+.task-phase,.task-status{{
+  font-size:7px !important;
+}}
+.photo-gallery{{gap:5px !important;}}
+.photo-img{{max-width:100% !important;height:auto !important;border-radius:4px !important;}}
+
+/* Mobile: same reference look, compact enough to fit the V10 panel */
+@media(max-width:700px){{
+  body{{padding:0 !important;}}
+  .save-btn-container{{margin-bottom:5px !important;}}
+  .receipt-container,#receiptContent,.receipt-card{{
+    width:100% !important;
+    max-width:100% !important;
+    padding:12px 10px 9px !important;
+    border-top-width:5px !important;
+    border-bottom-width:3px !important;
+  }}
+  .receipt-container::after,#receiptContent::after,.receipt-card::after{{
+    top:-5px !important;height:5px !important;width:22% !important;
+  }}
+  .header{{
+    gap:8px !important;
+    margin-bottom:8px !important;
+    padding-bottom:8px !important;
+  }}
+  .brand-lockup{{gap:6px !important;}}
+  .brand-lockup .ah-logo,.brand-lockup .ah-logo svg{{
+    width:28px !important;height:28px !important;
+  }}
+  .company-info h1,.title h1{{font-size:13px !important;}}
+  .brand-tag{{font-size:5px !important;}}
+  .brand-subtitle{{margin-left:34px !important;font-size:5px !important;}}
+  .company-info p:not(.brand-subtitle){{font-size:5px !important;}}
+  .receipt-meta,.meta{{min-width:90px !important;}}
+  .receipt-meta h2,.meta h3{{font-size:8px !important;margin-bottom:3px !important;}}
+  .receipt-meta p,.meta p{{font-size:5px !important;}}
+  table{{font-size:6px !important;margin-bottom:7px !important;}}
+  th{{padding:4px 3px !important;font-size:5px !important;}}
+  td{{padding:4px 3px !important;font-size:6px !important;}}
+  .desccol,#receiptContent td:nth-child(3){{font-size:6px !important;}}
+  .summary-container{{margin-top:4px !important;}}
+  .summary-table{{width:48% !important;min-width:0 !important;}}
+  .grand-total{{padding:7px 8px !important;border-radius:6px !important;}}
+  .balance-info{{font-size:5px !important;}}
+  .material-row,.final-balance-row{{font-size:7px !important;}}
+  .footer{{font-size:4px !important;margin-top:6px !important;padding-top:5px !important;}}
+  .task-grid{{grid-template-columns:1fr !important;gap:6px !important;}}
+  .task-card{{padding:7px !important;}}
+  .task-name{{font-size:9px !important;}}
+  #receiptContent > table:first-of-type h1{{font-size:13px !important;}}
+  #receiptContent > table:nth-of-type(2) th,
+  #receiptContent > table:nth-of-type(2) td{{font-size:5px !important;padding:4px 2px !important;}}
+  #receiptContent span[style*="font-size: 32px"]{{font-size:14px !important;}}
+  #receiptContent table td[style*="font-size: 15px"]{{font-size:6px !important;}}
+}}
+
 </style>
+
+<style id="MAIN_ORIGINAL_RECEIPT_SIZE_LOCK">
+/* ================================================================
+   EDIT HERE — MAIN ORIGINAL RECEIPT SIZE
+   Reference MAIN receipt base: 1200px wide x 675px minimum.
+   Same proportion on every device; phone only scales it.
+   No 9:16 or 16:9 device-specific receipt is created.
+   ================================================================ */
+#receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+  width: 1200px !important;
+  max-width: 1200px !important;
+  min-width: 1200px !important;
+  min-height: 675px !important;
+  height: auto !important;
+  aspect-ratio: auto !important;
+  box-sizing: border-box !important;
+  margin: 0 auto !important;
+  transform-origin: top left !important;
+}}
+#receiptContent .head, #receiptContent .header {{
+  grid-template-columns: 1.55fr .85fr !important;
+}}
+#receiptContent .lower {{
+  grid-template-columns: 1fr .95fr !important;
+  gap: 70px !important;
+}}
+@media (max-width: 700px) {{
+  #receiptContent.receipt, #receiptContent.receipt-container, #receiptContent {{
+    width: 1200px !important;
+    max-width: 1200px !important;
+    min-width: 1200px !important;
+    min-height: 675px !important;
+    aspect-ratio: auto !important;
+  }}
+}}
+</style>
+<script>
+/* ================================================================
+   EDIT HERE — UNIVERSAL FIT OF THE MAIN ORIGINAL SIZE
+   The receipt remains 1200x675 internally. It is only visually scaled
+   to fit the client's viewport. Export is not changed by this scaling.
+   ================================================================ */
+function fitMainOriginalReceiptSize() {{
+  const el = document.getElementById('receiptContent');
+  if (!el) return;
+  const baseW = 1200;
+  const viewportW = Math.max(280, window.innerWidth);
+  const scale = Math.min(1, viewportW / baseW);
+  el.style.width = baseW + 'px';
+  el.style.maxWidth = baseW + 'px';
+  el.style.minWidth = baseW + 'px';
+  el.style.transformOrigin = 'top left';
+  el.style.transform = 'scale(' + scale + ')';
+  el.style.marginLeft = Math.max(0, (viewportW - baseW * scale) / 2) + 'px';
+  el.style.marginRight = '0';
+  el.style.marginBottom = Math.round(Math.max(0, el.offsetHeight * (scale - 1))) + 'px';
+  document.documentElement.style.overflowX = 'hidden';
+  document.body.style.overflowX = 'hidden';
+}}
+window.addEventListener('load', fitMainOriginalReceiptSize);
+window.addEventListener('resize', fitMainOriginalReceiptSize);
+</script>
+
 </head>
 <body>
 <div class="save-btn-container">
