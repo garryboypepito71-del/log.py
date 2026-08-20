@@ -3,29 +3,7 @@
   "labor_records": [],
   "payroll_expenses": [],
   "planner_tasks": [],
-  "budget": 8000.0,
-  "budget_entries": [
-    {
-      "id": "1787232509.2240286",
-      "date": "Aug 20, 2026",
-      "amount": 1000.0
-    },
-    {
-      "id": "1787232513.4267662",
-      "date": "Aug 20, 2026",
-      "amount": 1000.0
-    },
-    {
-      "id": "1787232955.4388337",
-      "date": "Aug 20, 2026",
-      "amount": 2000.0
-    },
-    {
-      "id": "1787232963.8518136",
-      "date": "Aug 20, 2026",
-      "amount": 4000.0
-    }
-  ],
+  "budget": 356.0,
   "remaining_money": 0.0,
-  "view": "home"
+  "view": "export"
 }

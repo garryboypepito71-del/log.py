@@ -1,8 +1,6 @@
 import os
 import time
 import base64
-import math
-import re
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import streamlit as st
@@ -10,10 +8,11 @@ import json
 import smtplib
 from email.message import EmailMessage
 
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+STATE_FILE = os.path.join(APP_DIR, "app_state.json")
 PHILIPPINES_TZ = ZoneInfo("Asia/Manila")
 
-def philippines_now():
-    """Return the current date and time in the Philippines."""
+def manila_now():
     return datetime.now(PHILIPPINES_TZ)
 
 #--- PERSISTENCE HELPERS
@@ -23,7 +22,6 @@ PERSISTENT_KEYS = [
     "payroll_expenses",
     "planner_tasks",
     "budget",
-    "budget_entries",
     "remaining_money",
     "view"
 ]
@@ -34,9 +32,9 @@ except ImportError:
     import json
     
     def load_state():
-        if os.path.exists("app_state.json"):
+        if os.path.exists(STATE_FILE):
             try:
-                with open("app_state.json", "r") as f:
+                with open(STATE_FILE, "r") as f:
                     data = json.load(f)
                 # Filter out any streamlit internal widget/form submitter keys
                 return {k: v for k, v in data.items() if k in PERSISTENT_KEYS}
@@ -46,23 +44,19 @@ except ImportError:
 
     def save_state(state):
         data = {k: state[k] for k in PERSISTENT_KEYS if k in state}
-        temp_path = "app_state.json.tmp"
-        with open(temp_path, "w") as f:
+        with open(STATE_FILE, "w") as f:
             json.dump(data, f, indent=2, default=str)
-        os.replace(temp_path, "app_state.json")
 
 def save_report_html(report_type, html_content, title="Receipt"):
-    safe_type = report_type if report_type in {"construction", "payroll"} else "construction"
-    safe_title = re.sub(r"[^A-Za-z0-9._-]+", "_", str(title or "Receipt")).strip("._")[:80] or "Receipt"
-    archive_dir = os.path.abspath(os.path.join("archive", safe_type))
-    os.makedirs(archive_dir, exist_ok=True)
-    filename = os.path.join(archive_dir, f"{safe_title}_{int(time.time())}.html")
+    folder = os.path.join(APP_DIR, "archive", report_type)
+    os.makedirs(folder, exist_ok=True)
+    filename = os.path.join(folder, f"{title}_{int(time.time())}.html")
     with open(filename, "w", encoding="utf-8") as f:
         f.write(html_content)
     return filename
 
 def list_saved_reports(report_type):
-    folder = f"archive/{report_type}"
+    folder = os.path.join(APP_DIR, "archive", report_type)
     if not os.path.exists(folder):
         return []
     from pathlib import Path
@@ -71,6 +65,11 @@ def list_saved_reports(report_type):
 def delete_report_file(path):
     if os.path.exists(path):
         os.remove(path)
+
+def clear_saved_reports():
+    for report_type in ("construction", "payroll"):
+        for report_path in list_saved_reports(report_type):
+            delete_report_file(report_path)
 
 #--- TIER SCHEDULE & PAYROLL CALCULATOR CORE LOGIC ---
 TIER_TABLE = {
@@ -96,12 +95,6 @@ def get_partial_rate(decimal_part: float, role: str) -> float:
     return TIER_TABLE.get(decimal_key, {}).get(role, 0.0)
 
 def calculate_labor_pay(worked_days: float, role: str):
-    if role not in FULL_DAY_RATES or not math.isfinite(float(worked_days)) or worked_days <= 0:
-        raise ValueError("Worked days and role must be valid.")
-    rounded_days = round(float(worked_days), 1)
-    if not math.isclose(float(worked_days), rounded_days, abs_tol=1e-9):
-        raise ValueError("Worked days must use 0.1 increments.")
-    worked_days = rounded_days
     full_days = int(worked_days)
     decimal_part = round(worked_days - full_days, 1)
     full_days_pay = full_days * FULL_DAY_RATES.get(role, 0.0)
@@ -119,8 +112,8 @@ APP_VERSION = "AILYHOUSEPROJECT — Ailyn Project Management System"
 RECEIVER_EMAIL = "garryboypepito2004@gmail.com"
 RECEIVER_AILYN = "ailyn_peps0678@yahoo.com"
 AILYN_LOGO_DATA = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJsAAAC5CAYAAAA/BU2xAAANMklEQVR4nO3de1gU9RrA8XcEr5kmnvB21DI1zSOleclQIw0yj2bFelBKCCQJD3hBQVGCRRINEJRFyAviXbSFQBHjYooJKpgim2IqykXIW2haltbj7/zRc56HR0V22Zn3NzP7fv51mHmd/Trs7M6MAmMMCMHQjPcAxHJQbAQNxUbQUGwEDcVG0FBsBA3FRtBQbAQNxUbQUGwEDcVG0FBsBA3FRtBQbAQNxUbQUGwEDcVG0FBsnHxz6juLu0SaYuNgy3cZLCYrmfcY6Cg2ZDFZyeyTdcG8x+DCmvcAliQoZQWLzdrIewxuKDYkXmuD2dbDGbzH4IpiQzAp2odllx7mPQZ3FJvE7EOnsO8vneY9hizQCYJEqm7Usj5znSi0eujIJoETl86wsUvd4Pf793iPIit0ZBNZnqGQvR7qQqE9BsUmop1HstiEKG/eY8gWxSaSxNwdzD1xAe8xZI3es4kgPC2BLU1P5D2G7FFsZpq7JYIl5u7gPYYiUGxmcE9cwHYeyeI9hmJQbE1w/XYd81gTBHmGQt6jKArFZqKztRfZx4kLoaSyjPcoikOxmaDw3Ak2LSEQauqu8h5FkSg2I+05cYB9GD8P7v/1J+9RFIs+ZzPCxvw0NnnlLArNTHRka8SKvRvY4p2xvMdQBTqyNYJCEw/FRtBQbAQNxUbQUGwEDcVG0FBsBA3FRtBQbAQNxUbQUGwEDcVG0FBsBA3FRtBQbASNImMLT0uwuOfRqoHiYgvYFkmhKZSiYpux/jOmy97CewzSRIq4LPynW9fZ3M0RkH48j/coxAyyj62sppz5b10GB04f4z0KMZOsYzt6voTN27oc6OmN6iDb2LJLD7N5W5fDhSuVvEchIpFlbLuO7mPzti6H67freI9CRCS72NYf+IrN27oc7v15n/coRGSyio1uCFY32cQW8tUqFrlnPe8xiIRkEdvsTUvZmv0pvMcgEuMe28dfLmQphXt5j0EQcI3tgxhfllWSz3MEgojLd6PlV6vY2KXuFJqFQT+ynag4w7zXfQaG6nPYmyacocZ24Mwx5r0+BKpu1GJulsgEWmxfF+cyn6RQuHX3DtYmicygxLYxP435bNACY3TdoyWT/ARh5b5N7NOkUAoNiaH6HDtUVizLnS1pbGGp8WzhjmgpN0HqST+ex4YuduY9RoMk+zU6d3MES8xT9v/pNDHS+9EjBAMAAX+Wxijhe2VJYvNcs4htL9gjxarRjAhxYScrzjz6BzIMzSdJy5LzU3mP0SjRY3OO9WN7Tx4Ue7VoLtddYW8t9YCK65cbX1gGRzmnZZ7sUFkx3yGMJFpsl+uuMPfEBVDw4wmxVomuqNzAPoj5L9y4c5P3KI0yVJ9jk6J9oPbmNd6jGE202N5bMRN+qD4v1urQbTz0NfPfEgF37/1h/A9xOqqlH89jU+Lm8tm4GUSLTcmhLd4Zw2L3bYIHDx40fSWMAQjS16eEE4GGcL/EiLcpurksvViE+1ERQlPKiUBDLDa2ogulzG9zOJyqOCv+yiU4cVDSiUBDLDK2zYfSWeD2KLh197Y0GxAxNCWeCDTE4mJblBLDYrKSeY9hFKWeCDTEYmI7WVHGwtNWg1Iu2FTyiUBDLCK2HYV7Wag+TjHX0Sn9RKAhqo9Nq9ex5bvX8h7DaGo4EWiIamM7ffkCC09brZjHbKnpRKAhqowttSiHfbZrJVy8Vs17lAaVXb4A5Ver2AudeghqOxFoiOpiW5r+JQtPW817jEZdv3MTNCtnwcs9+7OUwkze46BQTWznr1Sw8LQE2HV0H+9RjFZWUw5lNeW8x0CjitgyTx5ki1Ni4MefLkm2jT6de8J5elacWRT1AOfHid67gWli/SQLrW+X52Cb7wowRGYKgRO9JNmGpVBsbFU3atn0tYtZsIQffC6a5A2lX+wRnIc5CQAASybPFoo+18P4V96QbJtqpshfo+VXq+CDWF/JLmt699UxoNX4wUvdej/yLaddjxeFNP942F6wh4XqdVD980+SzKBGgli32LVyG4h0+5gAf19WIb5ett0h1NkXXEaMN/qrdDl+15oTtAFG9x8qu7slFPhrVJrQAid6wZnoLMGU0AAAIqb4CwVhKeBkN1KSudREgbGJa/wrb0DR53pYMnl2k48Erz4/QNg9P1FY6xUOXTrYijmeqlhsbN07doEN3hGQ5h8v2PV4UZRfOW6j3xMurdovzBrnJsbqVMciY/Mf7wHnY3MEV/uJkryviXQNEA6FbIMxA16TYvWKZVGxOdmNhIKwFIiY4i/5m+dhve2ErAXrhATPUHi2nY00G5HdKcCTWURsXTrYwlqvcNg9P1F49fkBqC+Rp4NGqI7PF2Y6uoq/clk+PqZhqo9t1jg3uLRqv+A2+j2ux4GYaUHCt8GbYFS/IRKsXRmHONXGNmbAa3AoZBtEugbI5pV4ve9gIXdRshDnHgw2T7UXcc3KOMSpLrZn29lAgmcoZC1YJwzrbSeb0OqbMdZFqE08LMwY68J7FFT8YpPgH+NMR1eojs8XPB00sozsYXHuwUJO0AYY0WeQqOvNOL5f1PWJRYFfVz1qVL8hEKbxg9f7DlZEZI+TkLudafU6uP37r6Ksz330+7DGa4ms9oeiY7N5qj1oNX4wY6yLrHZqU1375WcWmqqD5IPi3Fk1tNdAiHELgqG9Bspi/yg2thljXSDOPVgWO1Fs354+ykL1OiguLzV7XW1btYHlU+eD15uTue8rxcU2os8gCNP4yfKqBrHFfbOZafU6uHvfhMd4NcDrzckQ7xHCdZ8hxCYAA2b2J0HtWrcFrcYPZjq6qj6y+mpvXmOh+jjY8l2G2esa1tsO4tyD4ZWe/bnsQ0Uc2TwcnCHM2Q9s23e0qNDqyyk9zLR6HZx43HN+TdCudVuI+jAQ3Ee/j74vZR3b0BfsIEzjB2MGvGaxkT0sJiuZafU6uP/Xn2atx+etqRDrtgh1v8oytjYtWoFW4wezxrlRZI9RdaOWhep1sMPM+01H9BkE8R4hMOCfj17+LgXZxTZt1CQI08yCrh1sKbRGZJXkM61eB6VVPzZ5Hc+0eRpipgWBVJdb1SdKbJfrrrDecxzNWsfg514CrcYPnOxGUmQm+mL3OhaWGg8PWNOfCTxr3DSIdA2UdN+bHdu+kkPMd+MSqKm72uR1REzxB//xHpL8RU9VnpXdt9Qv9+wn+t/14rVqpk3Vwa4jTX8iwOh+QyHeIwT6dnlOktfCrNiWZaxhYanxZg3Qqf0/oFJ3QLJ/UW4JgcyURzIETJgOLZu3NHr5ovJSyCk9bPTyu+cnSnb0zik9zN6N9gHHgfaQayho0jps2raHVe7BMHn4ONFnbNJ9o9d++Zn5bQyHjO/l+YWvOcL/M8eknRyfvZWZEhuGgAnTYd0n4RCVmQSrc7aZ9LN1v/4C01YHwKnKs+xzE/dFY0y+6iPXUMBGhbmqMjQ16fzMs8KKjxYKf2w2CIsmeUNzK9OOK9GZSTAhyptVXK8R7W2ISbFFZSaxiVGfQqXJjwul9/wYnOxGCn9sNggPf5UX4uwr3Ek+KSyfOh86Pt3B6PXlGQphpHYqpB/PEyU4o3P/aPV8pj+WbfSKh/T6FzjZ2UO3Dp3B2soKrIRmYGVlDdZWVmDdzAqsrazBupkVtGnZukmDE9PNecddmPOOO2w4qGdRe5LgkhH/GdyNOzdhStxcCJrkzUKdfc06ajQa28Ezx5jvxnC4YOTjomY6ukLAhOnQhT4nky1PB43g6aAB/bFsFp2ZBCWVZY3+zLKMNVBSWcbiPw6BbjadmvTaPjG2lfs2saySfOjawRa6NnKnt33fwWBu+QSXZvjbgmb425BrKGBRmUmNLv/bvd/BY00QzB7nxv49yMHk1/qJsf3/sEvUzXGgveA40F7y7ajuhhciX6J9NypXaUU5zJQ70kf1G2LSr4fam9dY+dUqo5dvYd0chvd+2SLfbijyYYCm6GbTSdIXt2sHW6Gx97P1nbh0Wt3/up+Afo0SNBQbQUOxETQUG0Gj+hOEovJSyDUUGv2mPPh9H5NOJorLS1l2qfGX8zj0H2rK6lUFNbbkg6noZ2K7jmRB8cUfjF7e5qn2rHUL469n+/b0Ufjq2DdGL3/rt4/g/JVK9P3g4eDM/eMW1M/ZArZFMl32FrTtkb+1at4SbiUd5x4bvWcjaCg2ggb1PVvbVm0gaJI35iYh4/h+OFNzwejl/cd7QMvmLYxevrjcAHk/FBq9vMuI8dDLtrvRy6sJamw8LkEqv1rFenfuYfTymuFvQysTThC6d+wMbVq2Mnr5D+0nWuztiqr/Ip7IB71nI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoKGYiNoKDaChmIjaCg2goZiI2goNoLmfyASapdvGeRmAAAAAElFTkSuQmCC"
-SENDER_EMAIL = os.getenv("SENDER_EMAIL", "")
-SENDER_PASSWORD = os.getenv("SENDER_PASSWORD", "")
+SENDER_EMAIL = "garryboypepito71@gmail.com"
+SENDER_PASSWORD = "fhyv cimp gync wjmj"
 
 st.set_page_config(
     page_title="Ailyn Project Management System",
@@ -144,8 +137,6 @@ if "planner_tasks" not in st.session_state:
     st.session_state.planner_tasks = []
 if "budget" not in st.session_state:
     st.session_state.budget = 0.0
-if "budget_entries" not in st.session_state:
-    st.session_state.budget_entries = []
 if "remaining_money" not in st.session_state:
     st.session_state.remaining_money = 0.0
 if "view" not in st.session_state:
@@ -159,18 +150,16 @@ def set_view(v):
     st.rerun()
 
 def total_materials():
-    return sum(float(r.get("amount", 0.0)) for r in st.session_state.records if r.get("type") == "material")
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "material")
 
 def total_expenses():
-    return sum(float(r.get("amount", 0.0)) for r in st.session_state.records if r.get("type") == "expense")
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "expense")
 
 def total_excess():
-    return sum(float(r.get("amount", 0.0)) for r in st.session_state.records if r.get("type") == "excess")
+    return sum(r["amount"] for r in st.session_state.records if r["type"] == "excess")
 
 def get_total():
-    labor_total = sum(float(r.get("net", 0.0)) for r in st.session_state.labor_records)
-    payroll_total = sum(float(r.get("price", 0.0)) for r in st.session_state.payroll_expenses)
-    return total_materials() + total_expenses() + labor_total + payroll_total
+    return total_materials() + total_expenses()
 
 def get_balance():
     return float(st.session_state.budget) + total_excess() - get_total()
@@ -181,7 +170,6 @@ def clear_all():
     st.session_state.payroll_expenses = []
     st.session_state.planner_tasks = []
     st.session_state.budget = 0.0
-    st.session_state.budget_entries = []
     st.session_state.remaining_money = 0.0
     st.session_state.view = "home"
     st.session_state.selected_role = "Labor"
@@ -190,31 +178,17 @@ def clear_all():
 def persist_state():
     save_state(st.session_state)
 
-def add_budget(amount):
-    """Add one budget deposit to the running project total."""
-    value = float(amount or 0.0)
-    if value <= 0:
-        return False
-    st.session_state.budget = float(st.session_state.budget) + value
-    st.session_state.budget_entries.append({
-        "id": str(time.time()),
-        "date": philippines_now().strftime("%b %d, %Y"),
-        "amount": value,
-    })
-    persist_state()
-    return True
-
 def add_tx(name, price, qty, delivery, ttype, sender):
     p = float(price or 0.0)
     q = int(qty or 0)
     d = float(delivery or 0.0)
-    if not str(name or "").strip() or ttype not in {"material", "expense"} or p <= 0 or q <= 0:
+    if p <= 0 or q <= 0:
         return False
     amount = (p * q) + d if ttype == "material" else p
     st.session_state.records.append({
         "id": str(time.time()),
-        "date": philippines_now().strftime("%b %d, %Y"),
-        "name": name.strip().upper(),
+        "date": manila_now().strftime("%b %d, %Y"),
+        "name": name.upper(),
         "price": p,
         "qty": q,
         "delivery": d,
@@ -249,55 +223,13 @@ def add_tx(name, price, qty, delivery, ttype, sender):
 # MATERIALS + PAYROLL BELOW ARE COPIED VERBATIM FROM MAIN RECEIPT CODE
 # ================================================================
 
-def receipt_theme_css():
-    """Shared visual system for all exported receipts."""
-    return """
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
-:root { --receipt-ink:#18352a; --receipt-green:#0b6335; --receipt-green-dark:#063d23; --receipt-gold:#c79b3b; --receipt-paper:#fffefa; --receipt-muted:#63756b; --receipt-line:#dfe8e1; }
-* { box-sizing:border-box; }
-html { -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:geometricPrecision; }
-body, button, table, th, td { text-rendering:geometricPrecision; }
-img { image-rendering:auto; }
-body { margin:0 !important; padding:28px !important; background:linear-gradient(145deg,#eaf2ec,#f8f7f0) !important; color:var(--receipt-ink) !important; font-family:'Source Sans 3',sans-serif !important; }
-.save-btn-container { margin:0 auto 18px !important; text-align:center !important; }
-.save-img-btn { background:var(--receipt-green) !important; color:#fff !important; border:0 !important; border-radius:8px !important; padding:12px 22px !important; font:700 13px 'Source Sans 3',sans-serif !important; letter-spacing:.04em !important; box-shadow:0 8px 18px rgba(6,61,35,.18) !important; }
-.receipt-container,.receipt-card,#receiptContent { max-width:980px !important; margin:0 auto !important; background:var(--receipt-paper) !important; color:var(--receipt-ink) !important; border:1px solid #d7e2d9 !important; border-top:7px solid var(--receipt-green) !important; border-radius:12px !important; padding:34px !important; box-shadow:0 20px 55px rgba(22,58,38,.14) !important; overflow:hidden !important; }
-.header { display:flex !important; justify-content:space-between !important; align-items:flex-start !important; gap:24px !important; padding-bottom:20px !important; margin-bottom:24px !important; border-bottom:1px solid var(--receipt-line) !important; }
-.company-info h1,.title h1 { margin:0 !important; color:var(--receipt-green) !important; font:700 27px 'Playfair Display',Georgia,serif !important; letter-spacing:.01em !important; }
-.company-info p,.title p { margin:5px 0 0 !important; color:var(--receipt-muted) !important; font-size:12px !important; }
-.receipt-meta,.meta { min-width:190px !important; padding:12px 15px !important; background:#f5f1e5 !important; border:1px solid #e7d7ac !important; border-radius:8px !important; color:var(--receipt-ink) !important; text-align:right !important; }
-.receipt-meta h2,.meta h3 { margin:0 !important; color:var(--receipt-green) !important; font-size:14px !important; }
-table { width:100% !important; border-collapse:collapse !important; margin:0 0 22px !important; }
-th { padding:11px 10px !important; background:var(--receipt-green) !important; color:#fff !important; border:0 !important; font-size:11px !important; text-transform:uppercase !important; letter-spacing:.07em !important; }
-td { padding:11px 10px !important; color:var(--receipt-ink) !important; border-bottom:1px solid var(--receipt-line) !important; font-size:12px !important; vertical-align:middle !important; }
-tbody tr:nth-child(even) td { background:#f7faf7 !important; }
-.desccol { color:#fff !important; background:var(--receipt-green-dark) !important; font-weight:700 !important; }
-.summary-container { display:flex !important; justify-content:flex-end !important; }
-.summary-table { width:430px !important; }
-.grand-total { background:linear-gradient(135deg,var(--receipt-green),var(--receipt-green-dark)) !important; color:#fff !important; border:0 !important; border-radius:9px !important; padding:18px !important; box-shadow:0 10px 22px rgba(6,61,35,.16) !important; }
-.grand-total span { color:#fff !important; }
-.balance-row,.final-balance-row { display:flex !important; justify-content:space-between !important; gap:18px !important; }
-.final-balance-row { border-top:1px solid rgba(255,255,255,.3) !important; margin-top:10px !important; padding-top:10px !important; }
-.task-grid { display:grid !important; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)) !important; gap:16px !important; }
-.task-card { display:flex !important; flex-direction:column !important; gap:9px !important; min-height:170px !important; padding:18px !important; background:#f7faf7 !important; border:1px solid var(--receipt-line) !important; border-left:4px solid var(--receipt-gold) !important; border-radius:9px !important; box-shadow:0 7px 18px rgba(22,58,38,.07) !important; }
-.task-date { width:max-content !important; padding:4px 8px !important; background:#edf5ee !important; color:var(--receipt-green) !important; border-radius:5px !important; font-size:11px !important; font-weight:700 !important; }
-.task-name { color:var(--receipt-green-dark) !important; font-size:16px !important; font-weight:700 !important; }
-.task-phase { color:var(--receipt-muted) !important; font-size:12px !important; }
-.task-status { width:max-content !important; margin-top:auto !important; padding:4px 9px !important; border-radius:20px !important; font-size:10px !important; font-weight:700 !important; }
-.photo-gallery { display:flex !important; flex-wrap:wrap !important; gap:7px !important; padding-top:9px !important; border-top:1px dashed var(--receipt-line) !important; }
-.photo-img { width:74px !important; height:74px !important; object-fit:cover !important; border-radius:5px !important; }
-.footer { margin-top:26px !important; padding-top:14px !important; border-top:1px solid var(--receipt-line) !important; color:#84938b !important; font-size:10px !important; text-align:center !important; letter-spacing:.06em !important; }
-@media(max-width:700px) { body { padding:10px !important; } .receipt-container,.receipt-card,#receiptContent { padding:18px !important; border-radius:9px !important; } .header { flex-direction:column !important; } .receipt-meta,.meta { width:100% !important; text-align:left !important; } th,td { padding:8px 6px !important; font-size:10px !important; } .summary-table { width:100% !important; } }
-@media print { body { padding:0 !important; background:#fff !important; } .save-btn-container { display:none !important; } .receipt-container,.receipt-card,#receiptContent { border:0 !important; box-shadow:none !important; } }
-"""
-
 def build_html_report(records, budget, custom_title="AILYN HOUSE PROJECT"):
     material_and_expense_records = [r for r in records if r["type"] in ["material", "expense"]]
     excess_records = [r for r in records if r["type"] == "excess"]
     material_total = sum(r["amount"] for r in material_and_expense_records)
     excess_total = sum(r["amount"] for r in excess_records)
     remaining_balance = get_balance()
-    date_now = philippines_now().strftime("%B %d, %Y")
+    date_now = manila_now().strftime("%B %d, %Y")
     sobra_amount = 0.0
     kulang_amount = 0.0
     if remaining_balance > 0:
@@ -327,7 +259,7 @@ table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size:
 th {{ background-color: #1b5e20; color: #ffffff; text-align: left; padding: 10px; text-transform: uppercase; letter-spacing: 1px; }}
 td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 .qty-col, .desccol, .pricecol, .deliverycol, .totalcol {{ text-align: left; }}
-.desccol {{ font-weight: 700; color: #ffffff !important; background: #075d2c !important; }}
+.desccol {{ font-weight: 700; color: #1b5e20; }}
 .summary-container {{ display: flex; justify-content: flex-end; }}
 .summary-table {{ width: 100%; }}
 @media (min-width: 768px) {{ .summary-table {{ width: 420px; }} }}
@@ -356,7 +288,7 @@ th {{ background:var(--v10-green) !important; }}
 thead tr {{ box-shadow:inset 0 -2px 0 var(--v10-gold); }}
 td {{ border-bottom-color:var(--v10-line) !important; }}
 tr:nth-child(even) td {{ background:#fbfcfa; }}
-.desccol {{ color:#ffffff !important; background:var(--v10-green) !important; font-weight:800 !important; }}
+.desccol, .task-name {{ color:var(--v10-green) !important; }}
 .grand-total {{ background:linear-gradient(135deg,var(--v10-green),#064622) !important; border:1px solid rgba(214,168,79,.45); border-radius:14px !important; box-shadow:0 10px 25px rgba(7,93,44,.16); }}
 .task-card {{ border-left-color:var(--v10-gold) !important; border-radius:14px !important; box-shadow:0 6px 18px rgba(7,93,44,.07); }}
 .task-date {{ color:var(--v10-green) !important; background:#eef7f0 !important; }}
@@ -427,8 +359,6 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
   padding-left: 0 !important;
 }}
 
-{receipt_theme_css()}
-{receipt_theme_css()}
 </style>
 </head>
 <body>
@@ -521,8 +451,7 @@ This document was electronically generated and is valid without signature.
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
-    const exportScale = Math.max(4, window.devicePixelRatio || 1);
-    html2canvas(element, {{ scale: exportScale, useCORS: true, backgroundColor: '#fffefa', logging: false, imageTimeout: 0 }}).then(canvas => {{
+    html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
         const link = document.createElement('a');
         link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
         link.href = canvas.toDataURL('image/png');
@@ -541,7 +470,7 @@ function saveAsImage() {{
 # Phone/tablet/desktop use the same responsive receipt.
 # ================================================================
 def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, custom_title="AILYN HOUSE PROJECT"):
-    date_str = philippines_now().strftime("%B %d, %Y | %I:%M%p")
+    date_str = manila_now().strftime("%B %d, %Y | %I:%M%p")
     total_labor = sum(r['net'] for r in labor_records)
     total_expenses = sum(e['price'] for e in expense_records)
     sub_total = total_labor + total_expenses
@@ -644,7 +573,6 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
   padding-left: 0 !important;
 }}
 
-{receipt_theme_css()}
 </style>
 </head>
 <body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px;">
@@ -745,8 +673,7 @@ THIS DOCUMENT WAS ELECTRONICALLY GENERATED AND IS VALID WITHOUT SIGNATURE.
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
-    const exportScale = Math.max(4, window.devicePixelRatio || 1);
-    html2canvas(element, {{ scale: exportScale, useCORS: true, backgroundColor: '#fffefa', logging: false, imageTimeout: 0 }}).then(canvas => {{
+    html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
         const link = document.createElement('a');
         link.download = '{custom_title.replace(" ", "_")}_Receipt.png';
         link.href = canvas.toDataURL('image/png');
@@ -773,7 +700,7 @@ def generate_planner_html(planner_tasks, custom_title="AILYN HOUSE PROJECT"):
     # EDIT HERE - MAIN SCHEDULE RECEIPT (FULL MAIN DESIGN)
     # This function is copied from the MAIN receipt and applied fully to V10.
     # ================================================================
-    date_now = philippines_now().strftime("%B %d, %Y")
+    date_now = manila_now().strftime("%B %d, %Y")
     sorted_tasks = sorted(planner_tasks, key=lambda x: x.get('date_obj', ''))
     
     html = f"""<!DOCTYPE html>
@@ -938,8 +865,7 @@ Official Construction Task Schedule Document Electronically Generated
 <script>
 function saveAsImage() {{
     const element = document.getElementById('receiptContent');
-    const exportScale = Math.max(4, window.devicePixelRatio || 1);
-    html2canvas(element, {{ scale: exportScale, useCORS: true, backgroundColor: '#fffefa', logging: false, imageTimeout: 0 }}).then(canvas => {{
+    html2canvas(element, {{ scale: 2, useCORS: true }}).then(canvas => {{
         const link = document.createElement('a');
         link.download = 'Schedule_Receipt.png';
         link.href = canvas.toDataURL('image/png');
@@ -1411,38 +1337,28 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
   padding-left: 0 !important;
 }}
 
-</style>
-""", unsafe_allow_html=True)
+/* Keep the same content centered and readable across screen sizes. */
+[data-testid="stAppViewContainer"] .main .block-container {
+    width: 100% !important;
+    max-width: 1500px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+}
+@media (max-width: 700px) {
+    [data-testid="stAppViewContainer"] .main .block-container {
+        max-width: 100% !important;
+        padding: 14px 10px 28px !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+    }
+    [data-testid="stHorizontalBlock"] > [data-testid="column"] {
+        min-width: 100% !important;
+        flex: 1 1 100% !important;
+    }
+}
 
-st.markdown("""
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap');
-:root { --app-display:'Source Sans 3','Segoe UI',sans-serif; --app-body:'Source Sans 3','Segoe UI',sans-serif; --app-white:#f8fff9; --app-muted:#c7dfcf; }
-html,body,[class*="css"],button,input,textarea,select { font-family:var(--app-body)!important; letter-spacing:0!important; }
-h1,h2,h3,h4,h5,h6,.dashboard-heading-title,.section-title,.schedule-title,.cal-task-title,.brand-title,.budget-title { font-family:var(--app-display)!important; font-weight:700!important; letter-spacing:.02em!important; }
-[data-testid="stMarkdownContainer"] p,[data-testid="stMarkdownContainer"] li,[data-testid="stCaptionContainer"],.tx-name,.cal-task-title,.cal-phase,.section-title,.schedule-title,.schedule-muted,.dashboard-welcome,label,label p,.stMarkdown,.stMarkdown p { color:var(--app-white)!important; }
-[data-testid="stCaptionContainer"],.cal-phase,.schedule-muted,.dashboard-welcome,.tx-type,.tx-date { color:var(--app-muted)!important; }
-[data-testid="stForm"],[data-testid="stExpander"],[data-testid="stMetric"],.dash-section,.cal-card { text-align:center; }
-[data-testid="stMetricLabel"],[data-testid="stMetricValue"],[data-testid="stMetricDelta"],button,.stDownloadButton>button,.stFormSubmitButton>button { justify-content:center!important; text-align:center!important; }
-input,textarea,[data-baseweb="select"] { text-align:center!important; font-family:var(--app-body)!important; }
-section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3 { font-family:var(--app-display)!important; font-size:15px!important; text-align:center!important; color:var(--app-white)!important; }
-.sidebar-brand { padding:20px 14px!important; text-align:center!important; }
-.brand-row { flex-direction:column!important; gap:9px!important; }
-.brand-logo { width:66px!important; height:66px!important; flex-basis:66px!important; }
-.brand-copy { width:100%!important; overflow:visible!important; }
-.brand-title { font-size:22px!important; line-height:.9!important; color:#fff!important; }
-.brand-sub,.sidebar-live { color:var(--app-white)!important; text-align:center!important; }
-section[data-testid="stSidebar"] .stButton>button,section[data-testid="stSidebar"] .stButton>button p,section[data-testid="stSidebar"] .stButton>button span { justify-content:center!important; text-align:center!important; color:#fff!important; font-family:var(--app-body)!important; font-weight:700!important; }
-.sidebar-budget-card,.budget-title { text-align:center!important; color:#fff!important; }
-.budget-panel { margin:12px 0 8px!important; padding:16px 14px 12px!important; border:1px solid rgba(114,247,176,.22)!important; border-radius:16px!important; background:rgba(6,38,23,.72)!important; }
-.budget-panel-title { color:#fff!important; font-size:16px!important; font-weight:700!important; }
-.budget-panel-total { margin-top:4px!important; color:#9fe5b8!important; font-size:12px!important; }
-section[data-testid="stSidebar"] .budget-input-wrap { margin:0 2px 8px!important; }
-section[data-testid="stSidebar"] .budget-input-wrap label { color:#dff7e6!important; font-size:11px!important; font-weight:600!important; }
-section[data-testid="stSidebar"] .budget-input-wrap div[data-baseweb="input"] { min-height:52px!important; border-radius:10px!important; }
-section[data-testid="stSidebar"] .budget-input-wrap input { min-height:50px!important; padding:0 54px 0 14px!important; text-align:left!important; font-size:15px!important; }
-section[data-testid="stSidebar"] .budget-action { margin-top:8px!important; }
-@media (max-width:700px) { .brand-title{font-size:20px!important;} .dashboard-heading-title{font-size:24px!important;} }
 </style>
 """, unsafe_allow_html=True)
 
@@ -1460,69 +1376,67 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     st.markdown(
         f"<div class='sidebar-live'><span>●</span> &nbsp; LIVE SYSTEM &nbsp; • &nbsp; "
-        f"{philippines_now().strftime('%I:%M %p  |  %b %d')}</div>",
+        f"{manila_now().strftime('%I:%M %p  |  %b %d')}</div>",
         unsafe_allow_html=True
     )
 
     st.subheader("Executive Overview")
-    if st.button("⌂   Dashboard", use_container_width=True, key="side_dashboard"):
+    if st.button("▣   Dashboard   ›", use_container_width=True, key="side_dashboard"):
         set_view("home")
 
-    st.markdown(
-        f"<div class='budget-panel'><div class='budget-panel-title'>Budget Funding</div>"
-        f"<div class='budget-panel-total'>Current total: PHP {float(st.session_state.budget):,.2f}</div></div>",
-        unsafe_allow_html=True,
-    )
-    budget_input = st.number_input(
-        "Amount to add",
-        min_value=0.01,
-        value=None,
-        placeholder="Enter amount...",
-        key="budget_input_sidebar",
-    )
-    add_budget_submitted = st.button("＋   Add funds", use_container_width=True, key="side_apply_budget")
-    if add_budget_submitted:
-        if add_budget(budget_input):
-            st.success(f"Budget total: PHP {st.session_state.budget:,.2f}")
-            st.rerun()
+    st.markdown("<div class='sidebar-budget-card'><div class='budget-title'>Set Account Budget</div></div>", unsafe_allow_html=True)
+    with st.form(key="budget_form", clear_on_submit=True):
+        budget_input = st.number_input(
+            "Set Account Budget",
+            min_value=0.0,
+            key="budget_input_sidebar",
+            value=None,
+            placeholder="Enter budget...",
+            label_visibility="collapsed",
+        )
+        apply_budget = st.form_submit_button("＋   Apply Budget", use_container_width=True)
+    if apply_budget:
+        if budget_input is not None:
+            st.session_state.budget += float(budget_input)
+            persist_state()
+            st.success("Budget applied!")
         else:
-            st.warning("Please enter a budget amount greater than zero.")
+            st.warning("Please enter a budget amount.")
 
-    confirm_reset = st.checkbox("I understand reset removes all project data", key="confirm_reset")
-    if st.button("↻   Reset Workspace", use_container_width=True, key="side_restart", disabled=not confirm_reset):
+    if st.button("⚙   Restart System   ›", use_container_width=True, key="side_restart"):
         clear_all()
         set_view("home")
 
     st.subheader("Project Control")
-    if st.button("＋   Add Work Task", use_container_width=True, key="side_new_work"):
+    if st.button("▣   New Work Entry   ›", use_container_width=True, key="side_new_work"):
         set_view("planner_input")
-    if st.button("▦   Project Schedule", use_container_width=True, key="side_schedule"):
+    if st.button("☷   Schedule & Progress   ›", use_container_width=True, key="side_schedule"):
         set_view("planner_output")
 
     st.subheader("Financial Operations")
-    if st.button("▤   Add Material", use_container_width=True, key="side_material"):
+    if st.button("◇   Material Entry   ›", use_container_width=True, key="side_material"):
         set_view("material")
-    if st.button("$   Add Expense", use_container_width=True, key="side_expense"):
+    if st.button("▤   Expense Entry   ›", use_container_width=True, key="side_expense"):
         set_view("expense")
-    if st.button("↗   Add Project Funds", use_container_width=True, key="side_excess"):
+    if st.button("♨   Encash Deposit   ›", use_container_width=True, key="side_excess"):
         set_view("excess")
-    if st.button("☷   Expense Ledger", use_container_width=True, key="side_ledger"):
+    if st.button("▣   Financial Ledger   ›", use_container_width=True, key="side_ledger"):
         set_view("ledger")
-    if st.button("▤   Construction Report", use_container_width=True, key="side_financial_report"):
+    if st.button("▥   Financial Report   ›", use_container_width=True, key="side_financial_report"):
         set_view("export")
 
     st.subheader("Payroll Operations")
-    if st.button("♙   Add Labor Account", use_container_width=True, key="side_labor"):
+    if st.button("●   Labor Account   ›", use_container_width=True, key="side_labor"):
         set_view("add_labor")
-    if st.button("$   Add Payroll Expense", use_container_width=True, key="side_payroll_expense"):
+    if st.button("▣   Payroll Expense   ›", use_container_width=True, key="side_payroll_expense"):
         set_view("add_payroll_expense")
-    if st.button("◷   Payroll Balance", use_container_width=True, key="side_payroll_remaining"):
+    if st.button("♟   Account Remainder   ›", use_container_width=True, key="side_payroll_remaining"):
         set_view("payroll_remaining")
-    if st.button("☷   Payroll Ledger", use_container_width=True, key="side_payroll_ledger"):
+    if st.button("♟   Labor Accounts   ›", use_container_width=True, key="side_payroll_ledger"):
         set_view("payroll_ledger")
-    if st.button("▤   Payroll Report", use_container_width=True, key="side_payroll_report"):
+    if st.button("▤   Payroll Report   ›", use_container_width=True, key="side_payroll_report"):
         set_view("payroll_export")
-    if st.button("▥   Receipt Archive", use_container_width=True, key="side_archive"):
+    if st.button("▣   Receipts Archive   ›", use_container_width=True, key="side_archive"):
         set_view("receipt_archive")
 
 view = st.session_state.view
@@ -1540,7 +1454,7 @@ if view == "home":
     p1 = material / chart_total * 360
     p2 = p1 + labor / chart_total * 360
     p3 = p2 + expenses / chart_total * 360
-    today_key = philippines_now().strftime("%Y-%m-%d")
+    today_key = manila_now().strftime("%Y-%m-%d")
     today_tasks = [t for t in st.session_state.planner_tasks if t.get("date_obj") == today_key]
     upcoming_tasks = [t for t in st.session_state.planner_tasks if t.get("date_obj", "") >= today_key]
 
@@ -1594,7 +1508,7 @@ if view == "home":
     <div class="dash-section">
       <div class="schedule">
         <div class="schedule-icon">▦</div>
-        <div><div class="schedule-title">TODAY'S SCHEDULE</div><div style="font-weight:800;font-size:13px;margin-top:4px">{philippines_now().strftime('%B %d, %Y (%A)')}</div><div class="schedule-muted">{len(today_tasks)} task(s) scheduled for today.</div></div>
+        <div><div class="schedule-title">TODAY'S SCHEDULE</div><div style="font-weight:800;font-size:13px;margin-top:4px">{manila_now().strftime('%B %d, %Y (%A)')}</div><div class="schedule-muted">{len(today_tasks)} task(s) scheduled for today.</div></div>
         <div style="width:1px;height:58px;background:#dfe8e1;margin:0 12px"></div>
         <div><div class="schedule-title">UPCOMING TASKS</div><div style="font-weight:800;font-size:13px;margin-top:4px">{len(upcoming_tasks)} task(s) planned</div><div class="schedule-muted">Stay on track and manage your construction tasks.</div></div>
         <div style="margin-left:auto"><div class="open-planner">▣ &nbsp; Open Planner</div></div>
@@ -1608,7 +1522,7 @@ elif view == "planner_input":
     st.subheader("📅 PLANNER INPUT - ADD NEW WORK TASK")
     st.caption("Select date details, work description, and optional photo proofs.")
     with st.form(key="planner_input_form", clear_on_submit=True):
-        selected_date = st.date_input("Select Day, Month, and Year", value=philippines_now().date())
+        selected_date = st.date_input("Select Day, Month, and Year", value=manila_now().date())
         work_description = st.text_area("Work Description / Task Details", placeholder="Describe construction work...")
         phase = st.selectbox("Construction Phase", ["Site Prep", "Foundation", "Framing & Masonry", "Roofing", "Plumbing & Electrical", "Finishing", "Inspection"])
         uploaded_files = st.file_uploader("Upload Work Proof Photos (Optional)", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
@@ -1782,7 +1696,7 @@ elif view == "excess":
             if amount and amount > 0:
                 st.session_state.records.append({
                     "id": str(time.time()),
-                    "date": philippines_now().strftime("%b %d, %Y"),
+                    "date": manila_now().strftime("%b %d, %Y"),
                     "name": name.upper(),
                     "price": float(amount),
                     "qty": 1,
@@ -1802,34 +1716,19 @@ elif view == "excess":
 
 elif view == "ledger":
     st.subheader("📖 CONSTRUCTION LEDGER")
-    st.caption("Records are saved automatically. Open an entry to edit it or delete it deliberately.")
     if not st.session_state.records:
         st.info("No transaction records found in ledger.")
     else:
         for r in list(st.session_state.records):
-            with st.expander(f"{r.get('name', 'Entry')} • PHP {float(r.get('amount', 0)):,.2f}"):
-                with st.form(key=f"edit_record_{r['id']}"):
-                    edited_name = st.text_input("Description", value=r.get("name", ""))
-                    edited_price = st.number_input("Unit Price / Amount", min_value=0.01, value=float(r.get("price", 0.01)))
-                    edited_qty = st.number_input("Quantity", min_value=1, value=int(r.get("qty", 1)))
-                    edited_delivery = st.number_input("Delivery", min_value=0.0, value=float(r.get("delivery", 0.0)))
-                    save_edit = st.form_submit_button("Save Changes")
-                    if save_edit:
-                        if edited_name.strip():
-                            r["name"] = edited_name.strip().upper()
-                            r["price"] = float(edited_price)
-                            r["qty"] = int(edited_qty)
-                            r["delivery"] = float(edited_delivery) if r.get("type") == "material" else 0.0
-                            r["amount"] = (r["price"] * r["qty"] + r["delivery"]) if r.get("type") == "material" else r["price"]
-                            persist_state()
-                            st.success("Entry updated.")
-                            st.rerun()
-                        else:
-                            st.warning("Description cannot be empty.")
-                if st.button("Delete Entry", key=f"del_{r['id']}", use_container_width=True):
-                    st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
-                    persist_state()
-                    st.rerun()
+            st.markdown(f"""
+            ---
+            **{r['name']}** • PHP {float(r['amount']):,.2f}  
+            👤 {r['sender']} | 🏷️ {r['type']} | 📅 {r['date']}
+            """)
+            if st.button("❌ DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
+                st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
+                persist_state()
+                st.rerun()
 
 elif view == "export":
     st.subheader("📄 EXPORT CONSTRUCTION REPORT")
@@ -1884,23 +1783,21 @@ elif view == "add_labor":
             d = float(days or 0.0)
             c = float(ca or 0.0)
             if d > 0 and name.strip():
-                try:
-                    gross_pay, full_pay, partial_pay = calculate_labor_pay(d, active_role)
-                except ValueError as error:
-                    st.warning(str(error))
-                else:
-                    if c > gross_pay:
-                        st.warning("Cash advance cannot be greater than gross pay.")
-                    else:
-                        net = gross_pay - c
-                        st.session_state.labor_records.append({
-                            "name": name.strip().upper(), "role": active_role,
-                            "days": d, "rate": FULL_DAY_RATES[active_role],
-                            "gross_pay": gross_pay, "ca": c, "net": net
-                        })
-                        persist_state()
-                        st.success(f"Record for {name.strip().upper()} ({active_role}, {d:.1f} day) added. Net: PHP {net:,.2f}")
-                        st.rerun()
+                gross_pay, full_pay, partial_pay = calculate_labor_pay(d, active_role)
+                net = gross_pay - c
+                rate = FULL_DAY_RATES.get(active_role, 0.0)
+                st.session_state.labor_records.append({
+                    "name": name.upper(),
+                    "role": active_role,
+                    "days": d,
+                    "rate": rate,
+                    "gross_pay": gross_pay,
+                    "ca": c,
+                    "net": net
+                })
+                persist_state()
+                st.success(f"Record for {name.upper()} ({active_role}, {d:.1f} day) added. Net: PHP {net:,.2f}")
+                st.rerun()
             else:
                 st.warning("Please enter a worker name and valid worked days/points.")
 
@@ -1911,16 +1808,16 @@ elif view == "add_payroll_expense":
         amt = st.number_input("Amount", min_value=0.01, value=None, placeholder="0.00")
         submitted = st.form_submit_button("💾 SAVE EXPENSE")
         if submitted:
-            if desc.strip() and amt and amt > 0:
+            if amt and amt > 0:
                 st.session_state.payroll_expenses.append({
-                    "item": desc.strip().upper(),
+                    "item": desc.upper(),
                     "price": float(amt)
                 })
                 persist_state()
-                st.success(f"Expense {desc.strip().upper()} added.")
+                st.success(f"Expense {desc.upper()} added.")
                 st.rerun()
             else:
-                st.warning("Please enter a description and a valid amount.")
+                st.warning("Please enter a valid amount.")
 
 elif view == "payroll_remaining":
     st.subheader("⚙️ SET REMAINING MONEY")
@@ -1936,38 +1833,24 @@ elif view == "payroll_remaining":
 
 elif view == "payroll_ledger":
     st.subheader("📋 LABOR & PAYROLL LEDGER")
-    st.caption("Payroll records are saved automatically. Edit values before deleting an entry.")
     st.markdown("### Labor Records")
     if not st.session_state.labor_records:
         st.info("No labor records.")
     else:
         for i, r in enumerate(list(st.session_state.labor_records)):
-            with st.expander(f"{r.get('name', 'Worker')} • {r.get('role', 'Labor')}"):
-                with st.form(key=f"edit_labor_{i}"):
-                    edited_worker = st.text_input("Worker Name", value=r.get("name", ""))
-                    edited_role = st.selectbox("Role", list(FULL_DAY_RATES), index=list(FULL_DAY_RATES).index(r.get("role", "Labor")))
-                    edited_days = st.number_input("Worked Days", min_value=0.1, value=float(r.get("days", 0.1)), step=0.1)
-                    edited_ca = st.number_input("Cash Advance", min_value=0.0, value=float(r.get("ca", 0.0)))
-                    save_labor_edit = st.form_submit_button("Save Payroll Changes")
-                    if save_labor_edit:
-                        try:
-                            gross_pay, _, _ = calculate_labor_pay(float(edited_days), edited_role)
-                        except ValueError as error:
-                            st.warning(str(error))
-                        else:
-                            if edited_ca > gross_pay:
-                                st.warning("Cash advance cannot be greater than gross pay.")
-                            elif not edited_worker.strip():
-                                st.warning("Worker name cannot be empty.")
-                            else:
-                                r.update({"name": edited_worker.strip().upper(), "role": edited_role, "days": float(edited_days), "rate": FULL_DAY_RATES[edited_role], "gross_pay": gross_pay, "ca": float(edited_ca), "net": gross_pay - float(edited_ca)})
-                                persist_state()
-                                st.success("Payroll entry updated.")
-                                st.rerun()
-                if st.button("Delete Labor Entry", key=f"del_lab_{i}", use_container_width=True):
-                    st.session_state.labor_records.pop(i)
-                    persist_state()
-                    st.rerun()
+            role_disp = r.get('role', 'Labor')
+            gross_disp = r.get('gross_pay', r['days'] * r['rate'])
+            st.markdown(f"""
+            ---
+            **{r['name']}** ({role_disp}) • Worked: {r['days']:.1f} Day(s)  
+            • Gross Pay: PHP {gross_disp:,.2f}  
+            • C.A.: PHP {r['ca']:,.2f}  
+            • **Net Pay: PHP {r['net']:,.2f}**
+            """)
+            if st.button("❌ DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
+                st.session_state.labor_records.pop(i)
+                persist_state()
+                st.rerun()
                 
     st.markdown("<div class='sidebar-gap'></div>", unsafe_allow_html=True)
     st.markdown("### Payroll Expenses")
@@ -1975,24 +1858,11 @@ elif view == "payroll_ledger":
         st.info("No payroll expenses.")
     else:
         for i, e in enumerate(list(st.session_state.payroll_expenses)):
-            with st.expander(f"{e.get('item', 'Payroll Expense')} • PHP {float(e.get('price', 0)):,.2f}"):
-                with st.form(key=f"edit_payroll_expense_{i}"):
-                    edited_item = st.text_input("Expense Description", value=e.get("item", ""))
-                    edited_amount = st.number_input("Amount", min_value=0.01, value=float(e.get("price", 0.01)))
-                    save_expense_edit = st.form_submit_button("Save Expense Changes")
-                    if save_expense_edit:
-                        if edited_item.strip():
-                            e["item"] = edited_item.strip().upper()
-                            e["price"] = float(edited_amount)
-                            persist_state()
-                            st.success("Payroll expense updated.")
-                            st.rerun()
-                        else:
-                            st.warning("Expense description cannot be empty.")
-                if st.button("Delete Payroll Expense", key=f"del_pay_exp_{i}", use_container_width=True):
-                    st.session_state.payroll_expenses.pop(i)
-                    persist_state()
-                    st.rerun()
+            st.markdown(f"- **{e['item']}**: PHP {e['price']:,.2f}")
+            if st.button("❌ DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
+                st.session_state.payroll_expenses.pop(i)
+                persist_state()
+                st.rerun()
 
 elif view == "payroll_export":
     st.subheader("📄 EXPORT PAYROLL REPORT")
@@ -2021,10 +1891,8 @@ elif view == "payroll_export":
         set_view("receipt_archive")
     if st.button("📧 EMAIL PAYROLL REPORT", use_container_width=True):
         try:
-            if not SENDER_EMAIL or not SENDER_PASSWORD:
-                raise RuntimeError("Configure SENDER_EMAIL and SENDER_PASSWORD environment variables first.")
             msg = EmailMessage()
-            msg['Subject'] = f"Construction Report: PHP {total:,.2f} - {philippines_now().strftime('%Y-%m-%d')}"
+            msg['Subject'] = f"Construction Report: PHP {total:,.2f} - {manila_now().strftime('%Y-%m-%d')}"
             msg['From'] = SENDER_EMAIL
             msg['To'] = RECEIVER_EMAIL
             msg.add_alternative(html, subtype='html')
@@ -2037,7 +1905,11 @@ elif view == "payroll_export":
 
 elif view == "receipt_archive":
     st.subheader("📂 RECEIPT ARCHIVE")
-    st.caption("Browse saved receipts in neat construction and payroll folders.")
+    st.caption("Browse newly saved construction and payroll receipts.")
+    if st.button("🗑️ CLEAR RECEIPT HISTORY", use_container_width=True, key="clear_receipt_history"):
+        clear_saved_reports()
+        st.success("Previous receipt history cleared.")
+        st.rerun()
     if st.button("⬅️ BACK TO CONSTRUCTION EXPORT", use_container_width=True):
         set_view("export")
     if st.button("⬅️ BACK TO PAYROLL EXPORT", use_container_width=True):
