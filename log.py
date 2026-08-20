@@ -143,6 +143,12 @@ if "view" not in st.session_state:
     st.session_state.view = "home"
 if "selected_role" not in st.session_state:
     st.session_state.selected_role = "Labor"
+if "editing_record_id" not in st.session_state:
+    st.session_state.editing_record_id = None
+if "editing_labor_index" not in st.session_state:
+    st.session_state.editing_labor_index = None
+if "editing_payroll_expense_index" not in st.session_state:
+    st.session_state.editing_payroll_expense_index = None
 
 def set_view(v):
     st.session_state.view = v
@@ -1720,11 +1726,64 @@ elif view == "ledger":
         st.info("No transaction records found in ledger.")
     else:
         for r in list(st.session_state.records):
+            if st.session_state.editing_record_id == r["id"]:
+                with st.form(key=f"edit_record_form_{r['id']}"):
+                    edited_name = st.text_input("Name", value=r.get("name", ""))
+                    edited_amount = st.number_input(
+                        "Amount / Unit Price",
+                        min_value=0.01,
+                        value=float(r.get("price", r.get("amount", 0.01))),
+                    )
+                    edited_qty = st.number_input(
+                        "Quantity",
+                        min_value=1,
+                        value=int(r.get("qty", 1)),
+                        step=1,
+                        disabled=r.get("type") != "material",
+                    )
+                    edited_delivery = st.number_input(
+                        "Delivery",
+                        min_value=0.0,
+                        value=float(r.get("delivery", 0.0)),
+                        disabled=r.get("type") != "material",
+                    )
+                    edited_sender = st.selectbox(
+                        "Sender",
+                        ["Garr", "Aily"],
+                        index=0 if r.get("sender") == "Garr" else 1,
+                    )
+                    save_record = st.form_submit_button("SAVE EDIT")
+                    cancel_record = st.form_submit_button("CANCEL")
+                if save_record:
+                    if edited_name.strip() and edited_amount > 0:
+                        r["name"] = edited_name.strip().upper()
+                        r["price"] = float(edited_amount)
+                        r["qty"] = int(edited_qty)
+                        r["delivery"] = float(edited_delivery)
+                        r["sender"] = edited_sender
+                        r["amount"] = (
+                            float(edited_amount) * int(edited_qty) + float(edited_delivery)
+                            if r.get("type") == "material"
+                            else float(edited_amount)
+                        )
+                        st.session_state.editing_record_id = None
+                        persist_state()
+                        st.rerun()
+                    else:
+                        st.warning("Please enter a name and a valid amount.")
+                if cancel_record:
+                    st.session_state.editing_record_id = None
+                    st.rerun()
+                continue
+
             st.markdown(f"""
             ---
             **{r['name']}** • PHP {float(r['amount']):,.2f}  
             👤 {r['sender']} | 🏷️ {r['type']} | 📅 {r['date']}
             """)
+            if st.button("✏️ EDIT ENTRY", key=f"edit_{r['id']}", use_container_width=True):
+                st.session_state.editing_record_id = r["id"]
+                st.rerun()
             if st.button("❌ DELETE ENTRY", key=f"del_{r['id']}", use_container_width=True):
                 st.session_state.records = [x for x in st.session_state.records if x["id"] != r["id"]]
                 persist_state()
@@ -1838,6 +1897,51 @@ elif view == "payroll_ledger":
         st.info("No labor records.")
     else:
         for i, r in enumerate(list(st.session_state.labor_records)):
+            if st.session_state.editing_labor_index == i:
+                with st.form(key=f"edit_labor_form_{i}"):
+                    edited_worker = st.text_input("Worker Name", value=r.get("name", ""))
+                    edited_role = st.selectbox(
+                        "Role",
+                        list(FULL_DAY_RATES),
+                        index=list(FULL_DAY_RATES).index(r.get("role", "Labor")),
+                    )
+                    edited_days = st.number_input(
+                        "Worked Days / Point",
+                        min_value=0.1,
+                        value=float(r.get("days", 0.1)),
+                        step=0.1,
+                    )
+                    edited_ca = st.number_input(
+                        "Cash Advance (C.A.)",
+                        min_value=0.0,
+                        value=float(r.get("ca", 0.0)),
+                    )
+                    save_labor = st.form_submit_button("SAVE EDIT")
+                    cancel_labor = st.form_submit_button("CANCEL")
+                if save_labor:
+                    if edited_worker.strip() and edited_days > 0:
+                        gross_pay, full_pay, partial_pay = calculate_labor_pay(float(edited_days), edited_role)
+                        r.update({
+                            "name": edited_worker.strip().upper(),
+                            "role": edited_role,
+                            "days": float(edited_days),
+                            "rate": FULL_DAY_RATES[edited_role],
+                            "gross_pay": gross_pay,
+                            "full_pay": full_pay,
+                            "partial_pay": partial_pay,
+                            "ca": float(edited_ca),
+                            "net": gross_pay - float(edited_ca),
+                        })
+                        st.session_state.editing_labor_index = None
+                        persist_state()
+                        st.rerun()
+                    else:
+                        st.warning("Please enter a worker name and valid worked days.")
+                if cancel_labor:
+                    st.session_state.editing_labor_index = None
+                    st.rerun()
+                continue
+
             role_disp = r.get('role', 'Labor')
             gross_disp = r.get('gross_pay', r['days'] * r['rate'])
             st.markdown(f"""
@@ -1847,6 +1951,9 @@ elif view == "payroll_ledger":
             • C.A.: PHP {r['ca']:,.2f}  
             • **Net Pay: PHP {r['net']:,.2f}**
             """)
+            if st.button("✏️ EDIT LABOR ENTRY", key=f"edit_lab_{i}", use_container_width=True):
+                st.session_state.editing_labor_index = i
+                st.rerun()
             if st.button("❌ DELETE LABOR ENTRY", key=f"del_lab_{i}", use_container_width=True):
                 st.session_state.labor_records.pop(i)
                 persist_state()
@@ -1858,7 +1965,34 @@ elif view == "payroll_ledger":
         st.info("No payroll expenses.")
     else:
         for i, e in enumerate(list(st.session_state.payroll_expenses)):
+            if st.session_state.editing_payroll_expense_index == i:
+                with st.form(key=f"edit_payroll_expense_form_{i}"):
+                    edited_description = st.text_input("Expense Description", value=e.get("item", ""))
+                    edited_price = st.number_input(
+                        "Amount",
+                        min_value=0.01,
+                        value=float(e.get("price", 0.01)),
+                    )
+                    save_payroll_expense = st.form_submit_button("SAVE EDIT")
+                    cancel_payroll_expense = st.form_submit_button("CANCEL")
+                if save_payroll_expense:
+                    if edited_description.strip() and edited_price > 0:
+                        e["item"] = edited_description.strip().upper()
+                        e["price"] = float(edited_price)
+                        st.session_state.editing_payroll_expense_index = None
+                        persist_state()
+                        st.rerun()
+                    else:
+                        st.warning("Please enter a description and valid amount.")
+                if cancel_payroll_expense:
+                    st.session_state.editing_payroll_expense_index = None
+                    st.rerun()
+                continue
+
             st.markdown(f"- **{e['item']}**: PHP {e['price']:,.2f}")
+            if st.button("✏️ EDIT PAYROLL EXPENSE", key=f"edit_pay_exp_{i}", use_container_width=True):
+                st.session_state.editing_payroll_expense_index = i
+                st.rerun()
             if st.button("❌ DELETE PAYROLL EXPENSE", key=f"del_pay_exp_{i}", use_container_width=True):
                 st.session_state.payroll_expenses.pop(i)
                 persist_state()
