@@ -102,6 +102,10 @@ def calculate_labor_pay(worked_days: float, role: str):
     gross_pay = full_days_pay + partial_days_pay
     return gross_pay, full_days_pay, partial_days_pay
 
+def receipt_preview_height(item_count, row_height=55, base_height=620):
+    """Reserve enough preview space for every report row and its totals."""
+    return max(base_height, base_height + item_count * row_height)
+
 APP_VERSION = "AILYHOUSEPROJECT — Ailyn Project Management System"
 
 # ================================================================
@@ -364,6 +368,33 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
 #receiptContent .title {{
   padding-left: 0 !important;
 }}
+body {{
+    margin: 0 !important;
+    padding: 12px !important;
+    overflow-x: hidden !important;
+}}
+#receiptContent {{
+    width: 100% !important;
+    max-width: 900px !important;
+    box-sizing: border-box !important;
+    padding: clamp(16px, 4vw, 40px) !important;
+    margin: 0 auto !important;
+}}
+#receiptContent table {{
+    width: 100% !important;
+    table-layout: fixed !important;
+}}
+#receiptContent th,
+#receiptContent td {{
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}}
+@media (max-width: 700px) {{
+    #receiptContent h1 {{ font-size: 22px !important; }}
+    #receiptContent h3 {{ font-size: 15px !important; }}
+    #receiptContent th,
+    #receiptContent td {{ padding: 7px 4px !important; font-size: 10px !important; }}
+}}
 
 </style>
 </head>
@@ -577,6 +608,33 @@ section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
 .receipt-card .title,
 #receiptContent .title {{
   padding-left: 0 !important;
+}}
+body {{
+    margin: 0 !important;
+    padding: 12px !important;
+    overflow-x: hidden !important;
+}}
+#receiptContent {{
+    width: 100% !important;
+    max-width: 900px !important;
+    box-sizing: border-box !important;
+    padding: clamp(16px, 4vw, 40px) !important;
+    margin: 0 auto !important;
+}}
+#receiptContent table {{
+    width: 100% !important;
+    table-layout: fixed !important;
+}}
+#receiptContent th,
+#receiptContent td {{
+    overflow-wrap: anywhere !important;
+    word-break: break-word !important;
+}}
+@media (max-width: 700px) {{
+    #receiptContent h1 {{ font-size: 22px !important; }}
+    #receiptContent h3 {{ font-size: 15px !important; }}
+    #receiptContent th,
+    #receiptContent td {{ padding: 7px 4px !important; font-size: 10px !important; }}
 }}
 
 </style>
@@ -1641,7 +1699,11 @@ elif view == "planner_output":
     custom_receipt_title = st.text_input("Receipt Title", value="Construction Schedule Receipt", placeholder="Enter a custom title...")
     html_report = generate_planner_html(sorted_tasks, custom_title=custom_receipt_title)
     st.markdown("### 🖼️ SEE PHOTO & DOWNLOAD SCHEDULE RECEIPT")
-    st.components.v1.html(html_report, height=620, scrolling=False)
+    st.components.v1.html(
+        html_report,
+        height=receipt_preview_height(len(sorted_tasks), row_height=150),
+        scrolling=False,
+    )
     st.download_button(
         label="📥 DOWNLOAD SCHEDULE RECEIPT HTML",
         data=html_report,
@@ -1793,7 +1855,11 @@ elif view == "export":
     st.subheader("📄 EXPORT CONSTRUCTION REPORT")
     receipt_title = st.text_input("Receipt Title", value="AILYN HOUSE PROJECT", placeholder="Enter a title for this receipt")
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
-    st.components.v1.html(html, height=620, scrolling=False)
+    st.components.v1.html(
+        html,
+        height=receipt_preview_height(len(st.session_state.records), row_height=42),
+        scrolling=False,
+    )
     if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
         if receipt_title.strip():
             archive_path = save_report_html("construction", html, title=receipt_title)
@@ -2007,7 +2073,14 @@ elif view == "payroll_export":
         st.session_state.remaining_money,
         custom_title=receipt_title
     )
-    st.components.v1.html(html, height=620, scrolling=False)
+    st.components.v1.html(
+        html,
+        height=receipt_preview_height(
+            len(st.session_state.labor_records) + len(st.session_state.payroll_expenses),
+            row_height=55,
+        ),
+        scrolling=False,
+    )
     if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
         if receipt_title.strip():
             archive_path = save_report_html("payroll", html, title=receipt_title)
@@ -2059,7 +2132,16 @@ elif view == "receipt_archive":
                 st.markdown(f"- **{report_path.name}**")
                 with open(report_path, "r", encoding="utf-8") as handle:
                     report_html = handle.read()
-                st.components.v1.html(report_html, height=620, scrolling=False)
+                st.components.v1.html(
+                    report_html,
+                    height=receipt_preview_height(
+                        len(st.session_state.labor_records)
+                        if report_type == "payroll"
+                        else len(st.session_state.records),
+                        row_height=55 if report_type == "payroll" else 42,
+                    ),
+                    scrolling=False,
+                )
                 st.download_button(
                     label="📥 DOWNLOAD THIS RECEIPT HTML",
                     data=report_html,
