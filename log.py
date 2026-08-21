@@ -219,11 +219,11 @@ table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size:
 th {{ background-color: #1b5e20; color: #ffffff; text-align: left; padding: 10px; text-transform: uppercase; letter-spacing: 1px; }}
 td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 .qty-col, .desccol, .pricecol, .deliverycol, .totalcol {{ text-align: left; }}
-.desccol {{ font-weight: 700; color: #1b5e20; }}
+.desccol {{ font-weight: 700; color: #FFFFFF; }}
 .summary-container {{ display: flex; justify-content: flex-end; }}
 .summary-table {{ width: 100%; }}
 @media (min-width: 768px) {{ .summary-table {{ width: 420px; }} }}
-.grand-total {{ background: #1b5e20; color: white; padding: 20px; border-radius: 4px; margin-top: 15px; }}
+.grand-total {{ background: #013220; color: white; padding: 20px; border-radius: 4px; margin-top: 15px; }}
 .balance-info {{ font-size: 13px; line-height: 1.8; }}
 .balance-row {{ display: flex; justify-content: space-between; }}
 .material-row {{ font-size: 18px; font-weight: bold; }}
@@ -231,7 +231,7 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 .footer {{ margin-top: 30px; text-align: center; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }}
 .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
-.save-img-btn:hover {{ background-color: #2e7d32; }}
+.save-img-btn:hover {{ background-color:#013220; }}
 @media print {{ .save-btn-container {{ display: none; }} }}
 </style>
 </head>
