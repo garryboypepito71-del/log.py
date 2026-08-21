@@ -189,7 +189,7 @@ def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
     material_total = sum(r["amount"] for r in material_and_expense_records)
     excess_total = sum(r["amount"] for r in excess_records)
     remaining_balance = get_balance()
-    date_now = datetime.now().strftime("%B %d, %Y")
+    date_now = manila_now().strftime("%B %d, %Y")
     sobra_amount = 0.0
     kulang_amount = 0.0
     if remaining_balance > 0:
@@ -242,7 +242,7 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
-<h1>AILYN HOUSE PROJECT</h1>
+<h1></h1>
 <p>Official Material & Expense Inventory</p>
 <p>Management System {APP_VERSION}</p>
 <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
@@ -338,7 +338,7 @@ function saveAsImage() {{
     return html
 
 def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, custom_title="INVENTORY RECEIPT"):
-    date_str = datetime.now().strftime("%B %d, %Y | %I:%M%p")
+    date_str = manila_now().strftime("%B %d, %Y | %I:%M %p")
     total_labor = sum(r['net'] for r in labor_records)
     total_expenses = sum(e['price'] for e in expense_records)
     sub_total = total_labor + total_expenses
@@ -353,10 +353,15 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 <style>
 * {{ box-sizing: border-box; }}
 html, body {{ width: 100%; max-width: 100%; margin: 0; overflow-x: hidden; }}
-body {{ margin: 0 !important; padding: 20px !important; }}
-#receiptContent {{ width: min(100%, 900px); margin: 0 auto !important; }}
-table {{ max-width: 100%; }}
-th, td {{ overflow-wrap: anywhere; }}
+@import url('https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap');
+body {{ font-family: 'Inter', sans-serif !important; background-color: #f0f4f0 !important; color: #333; padding: 20px !important; }}
+#receiptContent {{ width: min(100%, 1000px); margin: 0 auto !important; background: #fff !important; padding: 30px !important; border-radius: 4px !important; box-shadow: 0 4px 20px rgba(0,0,0,0.08) !important; border-top: 10px solid #1b5e20 !important; }}
+#receiptContent table {{ max-width: 100%; }}
+#receiptContent th {{ background-color: #1b5e20 !important; color: #fff !important; text-transform: uppercase; letter-spacing: 1px; }}
+#receiptContent td {{ border-bottom: 1px solid #f0f0f0 !important; overflow-wrap: anywhere; }}
+#receiptContent h1, #receiptContent h3 {{ color: #1b5e20 !important; }}
+#receiptContent > table:first-child {{ margin-bottom: 30px !important; }}
+#receiptContent > table:last-of-type td:last-child {{ background: #013220 !important; color: #fff !important; }}
 .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
 .save-img-btn:hover {{ background-color: #2e7d32; }}
