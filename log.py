@@ -206,8 +206,8 @@ def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap');
-body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 20px; color: #333; }}
-.receipt-container {{ max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 40px; color: #333; }}
+.receipt-container {{ max-width: 900px; margin: auto; background: #fff; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 10px solid #1b5e20; }}
 .header {{ display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }}
 .company-info h1 {{ color: #1b5e20; margin: 0; font-size: 24px; letter-spacing: -1px; }}
 .company-info p {{ margin: 4px 0; font-size: 12px; color: #666; }}
@@ -1501,7 +1501,7 @@ elif view == "export":
     html = build_html_report(st.session_state.records, st.session_state.budget, custom_title=receipt_title)
     st.components.v1.html(
         html,
-        height=receipt_preview_height(len(st.session_state.records), row_height=35, base_height=540),
+        height=receipt_preview_height(len(st.session_state.records), row_height=58),
         scrolling=True,
     )
     if st.button("💾 SAVE RECEIPT TO ARCHIVE", use_container_width=True):
@@ -1594,7 +1594,7 @@ elif view == "receipt_archive":
                         len(st.session_state.labor_records)
                         if report_type == "payroll"
                         else len(st.session_state.records),
-                        row_height=58 if report_type == "payroll" else 35,
+                        row_height=58,
                     ),
                     scrolling=True,
                 )
