@@ -242,7 +242,7 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 <div class="receipt-container" id="receiptContent">
 <div class="header">
 <div class="company-info">
-<h1></h1>
+<h1>AILYN OFFICIAL RECEIPT</h1>
 <p>Official Material & Expense Inventory</p>
 <p>Management System {APP_VERSION}</p>
 <p>Backup Receiver: <i>{RECEIVER_AILYN}</i></p>
