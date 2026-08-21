@@ -123,7 +123,6 @@ if "editing_labor_index" not in st.session_state:
     st.session_state.editing_labor_index = None
 if "editing_payroll_expense_index" not in st.session_state:
     st.session_state.editing_payroll_expense_index = None
-
 def set_view(v):
     st.session_state.view = v
     persist_state()
@@ -206,8 +205,9 @@ def build_html_report(records, budget, custom_title="INVENTORY RECEIPT"):
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Inter:wght@400;600;700&display=swap');
-body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 20px; color: #333; }}
-.receipt-container {{ max-width: 1000px; margin: auto; background: #fff; padding: 30px; border-radius: 4px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 10px solid #1b5e20; }}
+* {{ box-sizing: border-box; }}
+body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; padding: 12px; color: #333; overflow-x: hidden; }}
+.receipt-container {{ width: 100%; max-width: 900px; margin: auto; background: #fff; padding: 18px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #1b5e20; overflow: hidden; }}
 .header {{ display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 15px; }}
 .company-info h1 {{ color: #1b5e20; margin: 0; font-size: 24px; letter-spacing: -1px; }}
 .company-info p {{ margin: 4px 0; font-size: 12px; color: #666; }}
@@ -215,15 +215,15 @@ body {{ font-family: 'Inter', sans-serif; background-color: #f0f4f0; margin: 0; 
 @media (min-width: 768px) {{ .receipt-meta {{ text-align: right; margin-top: 0; }} }}
 .receipt-meta h2 {{ margin: 0; font-size: 16px; text-transform: uppercase; color: #1b5e20; }}
 .receipt-meta p {{ margin: 4px 0; font-size: 12px; font-weight: bold; }}
-table {{ width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }}
-th {{ background-color: #1b5e20; color: #ffffff; text-align: left; padding: 10px; text-transform: uppercase; letter-spacing: 1px; }}
-td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
+table {{ width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }}
+th {{ background-color: #1b5e20; color: #ffffff; text-align: left; padding: 6px 4px; text-transform: uppercase; letter-spacing: .3px; overflow-wrap: anywhere; }}
+td {{ padding: 7px 4px; border-bottom: 1px solid #f0f0f0; overflow-wrap: anywhere; }}
 .qty-col, .desccol, .pricecol, .deliverycol, .totalcol {{ text-align: left; }}
 .desccol {{ font-weight: 700; color: #1b5e20; }}
 .summary-container {{ display: flex; justify-content: flex-end; }}
 .summary-table {{ width: 100%; }}
 @media (min-width: 768px) {{ .summary-table {{ width: 420px; }} }}
-.grand-total {{ background: #1b5e20; color: white; padding: 20px; border-radius: 4px; margin-top: 15px; }}
+.grand-total {{ background: #1b5e20; color: white; padding: 14px; border-radius: 4px; margin-top: 15px; }}
 .balance-info {{ font-size: 13px; line-height: 1.8; }}
 .balance-row {{ display: flex; justify-content: space-between; }}
 .material-row {{ font-size: 18px; font-weight: bold; }}
@@ -233,6 +233,21 @@ td {{ padding: 10px 8px; border-bottom: 1px solid #f0f0f0; }}
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
 .save-img-btn:hover {{ background-color: #2e7d32; }}
 @media print {{ .save-btn-container {{ display: none; }} }}
+@media (max-width: 600px) {{
+    body {{ padding: 5px; }}
+    .receipt-container {{ padding: 10px; border-top-width: 6px; }}
+    .header {{ margin-bottom: 16px; padding-bottom: 10px; }}
+    .company-info h1 {{ font-size: 17px; letter-spacing: 0; }}
+    .company-info p, .receipt-meta p {{ font-size: 10px; }}
+    .receipt-meta h2 {{ font-size: 12px; }}
+    table {{ font-size: 9px; margin-bottom: 12px; }}
+    th {{ padding: 5px 2px; }}
+    td {{ padding: 5px 2px; }}
+    .summary-table {{ width: 100%; }}
+    .material-row, .final-balance-row {{ font-size: 13px; }}
+    .balance-info {{ font-size: 10px; line-height: 1.5; }}
+    .save-img-btn {{ max-width: 100%; padding: 9px 12px; font-size: 11px; }}
+}}
 </style>
 </head>
 <body>
@@ -351,17 +366,35 @@ def generate_payroll_html(labor_records, expense_records, remaining_money=0.0, c
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
+* {{ box-sizing: border-box; }}
+body {{ margin: 0; overflow-x: hidden; }}
 .save-btn-container {{ text-align: center; margin-bottom: 25px; }}
 .save-img-btn {{ background-color: #1b5e20; color: white; border: none; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }}
 .save-img-btn:hover {{ background-color: #2e7d32; }}
 @media print {{ .save-btn-container {{ display: none; }} }}
+table {{ width: 100%; max-width: 100%; table-layout: fixed; }}
+td, th {{ overflow-wrap: anywhere; word-break: break-word; }}
+@media (max-width: 600px) {{
+    body {{ padding: 5px !important; }}
+    #receiptContent {{ width: 100% !important; max-width: 900px !important; padding: 10px !important; border-top-width: 6px !important; }}
+    #receiptContent table {{ font-size: 9px !important; margin-bottom: 14px !important; }}
+    #receiptContent td, #receiptContent th {{ padding: 5px 2px !important; }}
+    #receiptContent h1 {{ font-size: 17px !important; }}
+    #receiptContent h3 {{ font-size: 12px !important; }}
+    #receiptContent p {{ font-size: 10px !important; }}
+    #receiptContent td[style*="width: 350px"] {{ width: 100% !important; padding: 12px !important; }}
+    #receiptContent span[style*="font-size: 32px"] {{ font-size: 22px !important; }}
+    #receiptContent > table:first-of-type td {{ display: block; width: 100% !important; text-align: left !important; }}
+    #receiptContent > table:first-of-type td:last-child {{ margin-top: 8px; }}
+    .save-img-btn {{ max-width: 100%; padding: 9px 12px; font-size: 11px; }}
+}}
 </style>
 </head>
-<body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 40px;">
+<body style="font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 12px;">
 <div class="save-btn-container">
 <button class="save-img-btn" onclick="saveAsImage()">SEE PHOTO & DOWNLOAD IMAGE (Phone & Laptop)</button>
 </div>
-<div id="receiptContent" style="max-width: 900px; margin: auto; background: white; border-top: 10px solid #1b5e20; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+<div id="receiptContent" style="width: 100%; max-width: 900px; margin: auto; background: white; border-top: 8px solid #1b5e20; padding: 18px; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;">
 <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
 <tr>
 <td>
@@ -679,46 +712,6 @@ section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3{
   .dashboard-heading img{width:44px;height:44px;}
 }
 
-/* ================================================================
-   EDIT HERE #SIDEBAR
-   Native Streamlit sidebar controls its own open/closed width.
-   Do NOT force a fixed width here.
-   ================================================================ */
-section[data-testid="stSidebar"] {{
-  box-sizing: border-box !important;
-  overflow-x: hidden !important;
-  min-width: 0 !important;
-}}
-section[data-testid="stSidebar"] > div,
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {{
-  box-sizing: border-box !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-}}
-/* Let Streamlit's main area use all space released by the sidebar. */
-[data-testid="stAppViewContainer"] > .main,
-[data-testid="stAppViewContainer"] .main .block-container {{
-  box-sizing: border-box !important;
-  max-width: none !important;
-}}
-/* Never style the collapse button as a normal sidebar menu button. */
-section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
-[data-testid="collapsedControl"] button {{
-  transform: none !important;
-  min-height: 42px !important;
-}}
-/* Phone: sidebar is allowed to occupy the screen normally when open. */
-@media (max-width: 700px) {{
-  section[data-testid="stSidebar"] {{ width: min(88vw, 320px) !important; }}
-}}
-/* ================================================================
-   No overlay logo. Logo/name stay in normal document flow.
-   ================================================================ */
-}
-}
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -728,6 +721,12 @@ st.markdown("""
 <style>
 /* Keep Streamlit's sidebar stable and readable. */
 
+section[data-testid="stSidebar"] {
+    width: clamp(240px, 22vw, 340px) !important;
+    min-width: 240px !important;
+    max-width: 340px !important;
+    overflow-x: hidden !important;
+}
 section[data-testid="stSidebar"] > div {
   width: 100% !important;
   max-width: 100% !important;
@@ -825,52 +824,16 @@ button[data-testid="stSidebarCollapseButton"],
 }
 /* Phone: sidebar may open, but it must remain inside the viewport. */
 @media (max-width: 700px) {
-  
+    section[data-testid="stSidebar"] {
+        width: min(88vw, 320px) !important;
+        min-width: min(88vw, 320px) !important;
+        max-width: 320px !important;
+    }
   section[data-testid="stSidebar"] > div { padding:16px 12px 28px !important; }
   .sidebar-brand { padding:15px 13px !important; }
   .brand-logo { flex-basis:46px !important; width:46px !important; height:46px !important; }
   .brand-title { font-size:14px !important; }
   section[data-testid="stSidebar"] .stButton > button { min-height:46px !important; padding:10px 12px !important; }
-}
-
-/* ================================================================
-   EDIT HERE #SIDEBAR
-   Native Streamlit sidebar controls its own open/closed width.
-   Do NOT force a fixed width here.
-   ================================================================ */
-section[data-testid="stSidebar"] {{
-  box-sizing: border-box !important;
-  overflow-x: hidden !important;
-  min-width: 0 !important;
-}}
-section[data-testid="stSidebar"] > div,
-section[data-testid="stSidebar"] [data-testid="stSidebarContent"] {{
-  box-sizing: border-box !important;
-  width: 100% !important;
-  min-width: 0 !important;
-  max-width: 100% !important;
-}}
-/* Let Streamlit's main area use all space released by the sidebar. */
-[data-testid="stAppViewContainer"] > .main,
-[data-testid="stAppViewContainer"] .main .block-container {{
-  box-sizing: border-box !important;
-  max-width: none !important;
-}}
-/* Never style the collapse button as a normal sidebar menu button. */
-section[data-testid="stSidebar"] [data-testid="stSidebarCollapseButton"],
-[data-testid="collapsedControl"] button {{
-  transform: none !important;
-  min-height: 42px !important;
-}}
-/* Phone: sidebar is allowed to occupy the screen normally when open. */
-@media (max-width: 700px) {{
-  section[data-testid="stSidebar"] {{ width: min(88vw, 320px) !important; }}
-}}
-/* ================================================================
-   No overlay logo. Logo/name stay in normal document flow.
-   ================================================================ */
-}
-}
 }
 
 /* Keep the same content centered and readable across screen sizes. */
@@ -915,7 +878,6 @@ with st.sidebar:
         f"{manila_now().strftime('%I:%M %p  |  %b %d')}</div>",
         unsafe_allow_html=True
     )
-
     st.subheader("Executive Overview")
     if st.button("▣   Dashboard   ›", use_container_width=True, key="side_dashboard"):
         set_view("home")
